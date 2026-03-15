@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>../qml/main.qml</file>
+        <file>../qml/components/BalanceCard.qml</file>
+        <file>../qml/components/AccountListView.qml</file>
+        <file>../qml/pages/Dashboard.qml</file>
+        <file>../qml/pages/Settings.qml</file>
+    </qresource>
+</RCC>

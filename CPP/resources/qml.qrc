@@ -1,9 +1,24 @@
 <RCC>
     <qresource prefix="/qml">
+        <!-- 主界面 -->
         <file>../qml/main.qml</file>
+
+        <!-- Views -->
+        <file>../qml/views/DashboardView.qml</file>
+        <file>../qml/views/AccountManagementView.qml</file>
+        <file>../qml/views/AlertSettingsView.qml</file>
+        <file>../qml/views/AboutView.qml</file>
+
+        <!-- Components -->
         <file>../qml/components/BalanceCard.qml</file>
         <file>../qml/components/AccountListView.qml</file>
-        <file>../qml/pages/Dashboard.qml</file>
-        <file>../qml/pages/Settings.qml</file>
+        <file>../qml/components/AccountListItem.qml</file>
+        <file>../qml/components/AccountOverviewCard.qml</file>
+        <file>../qml/components/AlertRuleItem.qml</file>
+
+        <!-- Dialogs -->
+        <file>../qml/dialogs/AddAccountDialog.qml</file>
+        <file>../qml/dialogs/EditAccountDialog.qml</file>
+        <file>../qml/dialogs/AddAlertDialog.qml</file>
     </qresource>
 </RCC>

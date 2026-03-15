@@ -52,6 +52,8 @@ find_package(Qt6 REQUIRED COMPONENTS
     Network
     Sql
     Widgets
+    Test
+    Concurrent
 )
 
 # 检查是否找到 Qt
@@ -85,12 +87,39 @@ set(RESOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
 # ============================================================================
 # 源文件
 # ============================================================================
-file(GLOB_RECURSE SOURCES
-    ${SRC_DIR}/*.cpp
+# 使用精确的文件列表避免 Windows Glob 的 .h.h 重复问题
+set(SOURCES
+    ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/viewmodels/BalanceViewModel.cpp
+    ${SRC_DIR}/viewmodels/DashboardViewModel.cpp
+    ${SRC_DIR}/viewmodels/AccountViewModel.cpp
+    ${SRC_DIR}/viewmodels/AccountListViewModel.cpp
+    ${SRC_DIR}/viewmodels/AlertViewModel.cpp
+    ${SRC_DIR}/repositories/impl/DatabaseRepository.cpp
+    ${SRC_DIR}/repositories/impl/DatabaseBalanceRepository.cpp
+    ${SRC_DIR}/repositories/impl/DatabaseAccountRepository.cpp
+    ${SRC_DIR}/repositories/impl/DatabaseAlertRepository.cpp
+    ${SRC_DIR}/repositories/impl/NetworkBalanceRepository.cpp
 )
 
-file(GLOB_RECURSE HEADERS
-    ${SRC_DIR}/*.h
+set(HEADERS
+    ${SRC_DIR}/core/di/ServiceLocator.h
+    ${SRC_DIR}/viewmodels/BalanceViewModel.h
+    ${SRC_DIR}/viewmodels/DashboardViewModel.h
+    ${SRC_DIR}/viewmodels/AccountViewModel.h
+    ${SRC_DIR}/viewmodels/AccountListViewModel.h
+    ${SRC_DIR}/viewmodels/AlertViewModel.h
+    ${SRC_DIR}/models/Account.h
+    ${SRC_DIR}/models/BalanceInfo.h
+    ${SRC_DIR}/models/AlertRule.h
+    ${SRC_DIR}/repositories/interfaces/IBalanceRepository.h
+    ${SRC_DIR}/repositories/interfaces/IAccountRepository.h
+    ${SRC_DIR}/repositories/interfaces/IAlertRepository.h
+    ${SRC_DIR}/repositories/impl/DatabaseRepository.h
+    ${SRC_DIR}/repositories/impl/DatabaseBalanceRepository.h
+    ${SRC_DIR}/repositories/impl/DatabaseAccountRepository.h
+    ${SRC_DIR}/repositories/impl/DatabaseAlertRepository.h
+    ${SRC_DIR}/repositories/impl/NetworkBalanceRepository.h
 )
 
 # QML 资源文件
@@ -117,6 +146,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Network
     Qt6::Sql
     Qt6::Widgets
+    Qt6::Test
+    Qt6::Concurrent
 )
 
 # ============================================================================
@@ -125,9 +156,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}
     ${SRC_DIR}/core
-    ${SRC_DIR}/database
+    ${SRC_DIR}/core/di
+    ${SRC_DIR}/viewmodels
     ${SRC_DIR}/models
-    ${SRC_DIR}/utils
+    ${SRC_DIR}/repositories
+    ${SRC_DIR}/repositories/interfaces
+    ${SRC_DIR}/repositories/impl
 )
 
 # ============================================================================
@@ -174,6 +208,12 @@ endif()
 if(UNIX AND NOT APPLE)
     # 安装 .desktop 文件和图标（待实现）
 endif()
+
+# ============================================================================
+# 单元测试配置
+# ============================================================================
+enable_testing()
+add_subdirectory(tests)
 
 # ============================================================================
 # 安装规则

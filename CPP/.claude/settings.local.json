@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Read(//c//**)",
-      "Read(//d//**)"
+      "Read(//d//**)",
+      "Bash(find \"D:/100work/003Project/003AIBalancer/AIBalancer/CPP/src/repositories/interfaces\" -type f -name \"*.h\" | xargs basename -a)",
+      "Bash(cd \"D:/100work/003Project/003AIBalancer/AIBalancer/CPP/src/repositories/interfaces\" && ls -1 *.h)",
+      "Bash(ls -1 \"D:/100work/003Project/003AIBalancer/AIBalancer/CPP/src/repositories/interfaces/\" | xargs -I{} basename)",
+      "Bash(cd:*)",
+      "Bash(cmake:*)"
     ]
   }
 }

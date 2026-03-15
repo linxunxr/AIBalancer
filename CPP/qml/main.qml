@@ -1,55 +1,120 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick 6.0
+import QtQuick.Controls 6.0
+import QtQuick.Layouts 6.0
+import AIBalance 1.0
+
+import "views"
+import "components"
+import "dialogs"
 
 ApplicationWindow {
     id: mainWindow
     visible: true
-    width: 800
-    height: 600
+    width: 1024
+    height: 768
     title: "AI余额管家 v" + Qt.application.version
 
-    Column {
-        anchors.centerIn: parent
-        spacing: 20
+    color: "#f5f5f5"
 
-        Text {
-            id: titleText
-            text: "AI余额管家"
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pixelSize: 32
-            font.bold: true
-            color: "#2c3e50"
-        }
+    // 全局字体配置
+    font.family: "Microsoft YaHei UI"
+    font.pixelSize: 14
 
-        Text {
-            id: statusText
-            text: "C++20 + Qt 6.10 + QML"
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pixelSize: 16
-            color: "#7f8c8d"
-        }
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 0
 
+        // 顶部导航栏
         Rectangle {
-            width: 200
-            height: 60
-            radius: 8
-            color: "#3498db"
-            anchors.horizontalCenter: parent.horizontalCenter
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
+            color: "#ffffff"
+            border.color: "#e0e0e0"
+            border.width: 1
 
-            Text {
-                text: "项目已启动"
-                anchors.centerIn: parent
-                color: "white"
-                font: statusText.font
-                font.bold: true
-            }
-
-            MouseArea {
+            RowLayout {
                 anchors.fill: parent
-                onClicked: {
-                    statusText.text = "点击时间: " + new Date().toLocaleTimeString()
+                anchors.leftMargin: 20
+                anchors.rightMargin: 20
+                spacing: 20
+
+                // Logo 区域
+                RowLayout {
+                    spacing: 10
+
+                    Rectangle {
+                        width: 32
+                        height: 32
+                        radius: 6
+                        color: "#3498db"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "AI"
+                            color: "white"
+                            font.pixelSize: 14
+                            font.bold: true
+                        }
+                    }
+
+                    Text {
+                        text: "余额管家"
+                        font.pixelSize: 18
+                        font.bold: true
+                        color: "#2c3e50"
+                    }
+                }
+
+                Item { Layout.fillWidth: true }
+
+                // 导航按钮
+                Repeater {
+                    model: ["仪表盘", "账户管理", "告警设置", "关于"]
+
+                    delegate: Button {
+                        id: navButton
+                        text: modelData
+                        flat: true
+
+                        background: Rectangle {
+                            color: navButton.hovered ? "#f0f0f0" : "transparent"
+                            radius: 4
+                        }
+
+                        contentItem: Text {
+                            text: navButton.text
+                            font.pixelSize: 14
+                            color: navButton.pressed ? "#3498db" :
+                                   navButton.hovered ? "#2c3e50" : "#6c757d"
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                    }
                 }
             }
+        }
+
+        // 主内容区域
+        StackLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            currentIndex: 0
+
+            DashboardView {
+                dashboardViewModel: dashboardViewModel
+                balanceViewModel: balanceViewModel
+                accountListViewModel: accountListViewModel
+            }
+
+            AccountManagementView {
+                accountListViewModel: accountListViewModel
+            }
+
+            AlertSettingsView {
+                alertViewModel: alertViewModel
+            }
+
+            AboutView {}
         }
     }
 }

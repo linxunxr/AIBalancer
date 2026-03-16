@@ -1,16 +1,18 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick 6.0
+import QtQuick.Controls 6.0
+import QtQuick.Layouts 6.0
+import "../components"
 
 Page {
     id: dashboard
-    property: var dashboardViewModel
-    property: var balanceViewModel
-    property: var accountListViewModel
+    property var dashboardViewModel
+    property var balanceViewModel
+    property var accountListViewModel
 
     padding: 20
 
     Binding {
+        when: accountListViewModel !== null && accountListViewModel !== undefined
         target: accountListViewModel
         property: "accountId"
         value: ""
@@ -34,52 +36,19 @@ Page {
 
             // 余额卡片
             BalanceCard {
+                id: balanceCard
                 Layout.fillWidth: true
                 Layout.preferredHeight: 200
 
-                Binding {
-                    target: balanceCard
-                    property: "totalBalance"
-                    value: balanceViewModel ? balanceViewModel.totalBalance : 0
-                }
+                totalBalance: balanceViewModel ? balanceViewModel.totalBalance : 0
+                usedBalance: balanceViewModel ? balanceViewModel.usedBalance : 0
+                remainingBalance: balanceViewModel ? balanceViewModel.remainingBalance : 0
+                currency: balanceViewModel ? balanceViewModel.currency : "USD"
+                lastUpdated: balanceViewModel ? balanceViewModel.lastUpdated : new Date()
+                isLoading: balanceViewModel ? balanceViewModel.isLoading : false
+                errorMessage: balanceViewModel ? balanceViewModel.errorMessage : ""
 
-                Binding {
-                    target: balanceCard
-                    property: "usedBalance"
-                    value: balanceViewModel ? balanceViewModel.usedBalance : 0
-                }
-
-                Binding {
-                    target: balanceCard
-                    property: "remainingBalance"
-                    value: balanceViewModel ? balanceViewModel.remainingBalance : 0
-                }
-
-                Binding {
-                    target: balanceCard
-                    property: "currency"
-                    value: balanceViewModel ? balanceViewModel.currency : "USD"
-                }
-
-                Binding {
-                    target: balanceCard
-                    property: "lastUpdated"
-                    value: balanceViewModel ? balanceViewModel.lastUpdated : new Date()
-                }
-
-                Binding {
-                    target: balanceCard
-                    property: "isLoading"
-                    value: balanceViewModel ? balanceViewModel.isLoading : false
-                }
-
-                Binding {
-                    target: balanceCard
-                    property: "errorMessage"
-                    value: balanceViewModel ? balanceViewModel.errorMessage : ""
-                }
-
-                onClicked: refresh() {
+                onClicked: {
                     if (balanceViewModel) {
                         balanceViewModel.refreshBalance()
                     }

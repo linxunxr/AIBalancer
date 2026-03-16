@@ -103,8 +103,8 @@ Dialog {
                 id: emailField
                 placeholderText: "例如: user@example.com"
                 Layout.fillWidth: true
-                validator: RegExpValidator {
-                    regExp: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+                validator: RegularExpressionValidator {
+                    regularExpression: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
                 }
             }
         }

@@ -17,7 +17,7 @@ QFuture<BalanceInfo> MockBalanceRepository::fetchBalance(const QString& apiKey) 
         QThread::msleep(m_mockDelayMs);
     }
 
-    if (!m_mockError.isEmpty()) {
+    if (m_mockError.isEmpty()) {
         return QtConcurrent::run([this]() {
             return m_mockBalance;
         });
@@ -25,6 +25,7 @@ QFuture<BalanceInfo> MockBalanceRepository::fetchBalance(const QString& apiKey) 
         return QtConcurrent::run([this]() {
             QThread::msleep(m_mockDelayMs);
             throw std::runtime_error(m_mockError.toStdString());
+            return BalanceInfo{};
         });
     }
 }

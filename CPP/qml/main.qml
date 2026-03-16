@@ -76,19 +76,12 @@ ApplicationWindow {
                         text: modelData
                         flat: true
 
-                        background: Rectangle {
-                            color: navButton.hovered ? "#f0f0f0" : "transparent"
-                            radius: 4
+                        onClicked: {
+                            mainStack.currentIndex = index
                         }
 
-                        contentItem: Text {
-                            text: navButton.text
-                            font.pixelSize: 14
-                            color: navButton.pressed ? "#3498db" :
-                                   navButton.hovered ? "#2c3e50" : "#6c757d"
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                        }
+                        palette.text: index === mainStack.currentIndex ? "#3498db" :
+                                      navButton.hovered ? "#2c3e50" : "#6c757d"
                     }
                 }
             }
@@ -96,6 +89,7 @@ ApplicationWindow {
 
         // 主内容区域
         StackLayout {
+            id: mainStack
             Layout.fillWidth: true
             Layout.fillHeight: true
             currentIndex: 0

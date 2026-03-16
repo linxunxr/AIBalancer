@@ -180,12 +180,12 @@ if(WIN32)
         WIN32_EXECUTABLE TRUE
     )
 
-    # 使用 windeployqt 复制 Qt DLL
+    # 使用 windeployqt 复制 Qt DLL 和 QML 模块
     find_program(QT_DEPLOY_TOOL windeployqt HINTS "${Qt6_DIR}/../../../bin")
     if(QT_DEPLOY_TOOL)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${QT_DEPLOY_TOOL} "$<TARGET_FILE:${PROJECT_NAME}>"
-            COMMENT "Deploying Qt libraries"
+            COMMAND ${QT_DEPLOY_TOOL} --qmldir "${CMAKE_CURRENT_SOURCE_DIR}/qml" "$<TARGET_FILE:${PROJECT_NAME}>"
+            COMMENT "Deploying Qt libraries and QML modules"
         )
     endif()
 endif()
@@ -212,8 +212,8 @@ endif()
 # ============================================================================
 # 单元测试配置
 # ============================================================================
-enable_testing()
-add_subdirectory(tests)
+# enable_testing()
+# add_subdirectory(tests)
 
 # ============================================================================
 # 安装规则

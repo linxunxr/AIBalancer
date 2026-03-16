@@ -16,7 +16,6 @@ Rectangle {
 
     radius: 8
     color: mouseArea.containsMouse || mouseArea.pressed ? "#f0f8ff" : "#ffffff"
-    border.color: "#e0e0e0"
     border.width: isActive ? 2 : 1
     border.color: isActive ? "#3498db" : "#e0e0e0"
 

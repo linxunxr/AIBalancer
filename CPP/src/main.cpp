@@ -124,10 +124,10 @@ int main(int argc, char *argv[]) {
     initializeViewModels(engine.rootContext());
 
     // 设置 QML 导入路径
-    engine.addImportPath("qrc:/qml");
+    engine.addImportPath("qrc:/");
 
     // 加载主 QML 文件
-    const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
 
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {

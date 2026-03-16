@@ -1,6 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import "../components"
+import "../dialogs"
 
 Page {
     id: accountManagement
@@ -62,64 +64,64 @@ Page {
                 anchors.fill: parent
                 anchors.margins: 1
 
-                if (accountListViewModel && accountListViewModel.accounts.length > 0) {
-                    Repeater {
-                        model: accountListViewModel.accounts
+                Repeater {
+                    model: accountListViewModel ? accountListViewModel.accounts : []
+                    visible: (accountListViewModel && accountListViewModel.accounts.length > 0) ? true : false
 
-                        delegate: AccountListItem {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 80
+                    delegate: AccountListItem {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 80
 
-                            accountId: modelData.id
-                            name: modelData.name
-                            email: modelData.email || ""
-                            isActive: modelData.isActive
-                            viewModel: modelData.viewModel
+                        accountId: modelData.id
+                        name: modelData.name
+                        email: modelData.email || ""
+                        isActive: modelData.isActive !== undefined ? modelData.isActive : false
+                        viewModel: accountListViewModel
 
-                            onClicked: {
-                                if (accountListViewModel) {
-                                    accountListViewModel.setActiveAccount(modelData.id)
-                                }
-                            }
-
-                            onEditRequested: {
-                                editAccountDialog.accountId = modelData.id
-                                editAccountDialog.accountName = modelData.name
-                                editAccountDialog.accountEmail = = modelData.email || ""
-                                editAccountDialog.open()
-                            }
-
-                            onDeleteRequested: {
-                                // TODO: 确认删除对话框
-                                accountListViewModel.removeAccount(modelData.id)
+                        onClicked: {
+                            if (accountListViewModel) {
+                                accountListViewModel.setActiveAccount(modelData.id)
                             }
                         }
+
+                        onEditRequested: {
+                            editAccountDialog.accountId = modelData.id
+                            editAccountDialog.accountName = modelData.name
+                            editAccountDialog.accountEmail = modelData.email || ""
+                            editAccountDialog.open()
+                        }
+
+                        onDeleteRequested: {
+                            // TODO: 确认删除对话框
+                            accountListViewModel.removeAccount(modelData.id)
+                        }
                     }
-                } else {
-                    // 空状态提示
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                }
 
-                        ColumnLayout {
-                            anchors.centerIn: parent
-                            spacing: 10
+                // 空状态提示
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    visible: !accountListViewModel || accountListViewModel.accounts.length === 0
 
-                            Text {
-                                text: "还没有添加账户"
-                                font.pixelSize: 16
-                                color: "#6c757d"
-                                Layout.alignment: Qt.AlignHCenter
-                            }
+                    ColumnLayout {
+                        anchors.centerIn: parent
+                        spacing: 10
 
-                            Button {
-                                text: "点击添加第一个账户"
-                                highlighted: true
-                                Layout.alignment: Qt.AlignHCenter
+                        Text {
+                            text: "还没有添加账户"
+                            font.pixelSize: 16
+                            color: "#6c757d"
+                            Layout.alignment: Qt.AlignHCenter
+                        }
 
-                                onClicked: {
-                                    addAccountDialog.open()
-                                }
+                        Button {
+                            text: "点击添加第一个账户"
+                            highlighted: true
+                            Layout.alignment: Qt.AlignHCenter
+
+                            onClicked: {
+                                addAccountDialog.open()
                             }
                         }
                     }

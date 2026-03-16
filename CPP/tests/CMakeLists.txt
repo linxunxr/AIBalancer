@@ -20,6 +20,7 @@ if(TEST_SOURCES)
         Qt6::Core
         Qt6::Test
         Qt6::Sql
+        Qt6::Concurrent
     )
 
     # 设置包含目录

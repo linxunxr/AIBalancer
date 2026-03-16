@@ -97,8 +97,8 @@ private slots:
         auto mockRepo = std::make_shared<MockBalanceRepository>();
         BalanceViewModel viewModel(mockRepo, nullptr);
 
-        BalanceInfo mockBalance1{100.0, 30.0, 70.0, "USD"};
-        BalanceInfo mockBalance2{150.0, 50.0, 100.0, "USD"};
+        BalanceInfo mockBalance1{100.0, 30.0, 70.0, 0.0, "USD"};
+        BalanceInfo mockBalance2{150.0, 50.0, 100.0, 0.0, "USD"};
 
         // 第一次刷新
         mockRepo->setMockBalance(mockBalance1);

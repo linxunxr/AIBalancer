@@ -16,7 +16,7 @@ public:
     ~MockBalanceRepository() override = default;
 
     // IBalanceRepository 接口实现
-    std::future<BalanceInfo> fetchBalance(const QString& apiKey) override;
+    QFuture<BalanceInfo> fetchBalance(const QString& apiKey) override;
     bool saveBalanceRecord(const QString& accountId, const BalanceInfo& info) override;
     QVector<BalanceInfo> getBalanceHistory(const QString& accountId,
                                          const QDateTime& since,

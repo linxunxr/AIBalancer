@@ -53,15 +53,15 @@ Rectangle {
                 anchors.centerIn: parent
                 spacing: 8
 
-                if (accountListViewModel && accountListViewModel.accountCount > 0) {
-                    Text {
-                        text: "总账户数: " + accountListViewModel.accountCount
-                        font.pixelSize: 14
-                        color: "#495057"
-                        Layout.alignment: Qt.AlignHCenter
-                    }
+                Text {
+                    text: "总账户数: " + (accountListViewModel ? accountListViewModel.accountCount : 0)
+                    font.pixelSize: 14
+                    color: "#495057"
+                    Layout.alignment: Qt.AlignHCenter
+                    visible: accountListViewModel && accountListViewModel.accountCount > 0
+                }
 
-                    // TODO: 显示活动账户和余额概览
+                // TODO: 显示活动账户和余额概览
                     RowLayout {
                         spacing: 20
                         Layout.alignment: Qt.AlignHCenter
@@ -74,7 +74,7 @@ Rectangle {
                                 color: "#6c757d"
                             }
                             Text {
-                                text: accountListViewModel.activeAccountId ?
+                                text: (accountListViewModel && accountListViewModel.activeAccountId) ?
                                     accountListViewModel.activeAccountId.substring(0, 8) + "..." :
                                     "无"
                                 font.pixelSize: 16
@@ -97,13 +97,13 @@ Rectangle {
                             }
                         }
                     }
-                } else {
-                    Text {
-                        text: "暂无账户"
-                        font.pixelSize: 14
-                        color: "#6c757d"
-                        Layout.alignment: Qt.AlignHCenter
-                    }
+
+                Text {
+                    text: "暂无账户"
+                    font.pixelSize: 14
+                    color: "#6c757d"
+                    Layout.alignment: Qt.AlignHCenter
+                    visible: !accountListViewModel || accountListViewModel.accountCount <= 0
                 }
             }
         }

@@ -1,24 +1,24 @@
 <RCC>
-    <qresource prefix="/qml">
+    <qresource prefix="/">
         <!-- 主界面 -->
-        <file>../qml/main.qml</file>
+        <file alias="main.qml">../qml/main.qml</file>
 
         <!-- Views -->
-        <file>../qml/views/DashboardView.qml</file>
-        <file>../qml/views/AccountManagementView.qml</file>
-        <file>../qml/views/AlertSettingsView.qml</file>
-        <file>../qml/views/AboutView.qml</file>
+        <file alias="views/DashboardView.qml">../qml/views/DashboardView.qml</file>
+        <file alias="views/AccountManagementView.qml">../qml/views/AccountManagementView.qml</file>
+        <file alias="views/AlertSettingsView.qml">../qml/views/AlertSettingsView.qml</file>
+        <file alias="views/AboutView.qml">../qml/views/AboutView.qml</file>
 
         <!-- Components -->
-        <file>../qml/components/BalanceCard.qml</file>
-        <file>../qml/components/AccountListView.qml</file>
-        <file>../qml/components/AccountListItem.qml</file>
-        <file>../qml/components/AccountOverviewCard.qml</file>
-        <file>../qml/components/AlertRuleItem.qml</file>
+        <file alias="components/BalanceCard.qml">../qml/components/BalanceCard.qml</file>
+        <file alias="components/AccountListView.qml">../qml/components/AccountListView.qml</file>
+        <file alias="components/AccountListItem.qml">../qml/components/AccountListItem.qml</file>
+        <file alias="components/AccountOverviewCard.qml">../qml/components/AccountOverviewCard.qml</file>
+        <file alias="components/AlertRuleItem.qml">../qml/components/AlertRuleItem.qml</file>
 
         <!-- Dialogs -->
-        <file>../qml/dialogs/AddAccountDialog.qml</file>
-        <file>../qml/dialogs/EditAccountDialog.qml</file>
-        <file>../qml/dialogs/AddAlertDialog.qml</file>
+        <file alias="dialogs/AddAccountDialog.qml">../qml/dialogs/AddAccountDialog.qml</file>
+        <file alias="dialogs/EditAccountDialog.qml">../qml/dialogs/EditAccountDialog.qml</file>
+        <file alias="dialogs/AddAlertDialog.qml">../qml/dialogs/AddAlertDialog.qml</file>
     </qresource>
 </RCC>

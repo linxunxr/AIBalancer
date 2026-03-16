@@ -27,7 +27,7 @@ Rectangle {
         Switch {
             id: enableSwitch
             checked: isEnabled
-            LayoutLayout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignVCenter
 
             onCheckedChanged: root.toggleEnabled(checked)
         }
@@ -75,7 +75,7 @@ Rectangle {
         // 删除按钮
         Button {
             width: 40
-            height: 4040
+            height: 40
             text: "×"
             flat: true
             font.pixelSize: 24

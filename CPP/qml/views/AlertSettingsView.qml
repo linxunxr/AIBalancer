@@ -1,6 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import "../components"
+import "../dialogs"
 
 Page {
     id: alertSettings
@@ -30,12 +32,11 @@ Page {
                 color: "#2c3e50"
             }
 
-            if (alertViewModel && alertViewModel.ruleCount > 0) {
-                Text {
-                    text: "(" + alertViewModel.ruleCount + ")"
-                    font.pixelSize: 16
-                    color: "#6c757d"
-                }
+            Text {
+                text: "(" + (alertViewModel ? alertViewModel.ruleCount : 0) + ")"
+                font.pixelSize: 16
+                color: "#6c757d"
+                visible: alertViewModel && alertViewModel.ruleCount > 0 ? true : false
             }
 
             Item { Layout.fillWidth: true }
@@ -64,52 +65,52 @@ Page {
                 anchors.margins: 1
                 spacing: 10
 
-                if (alertViewModel && alertViewModel.alertRules.length > 0) {
-                    Repeater {
-                        model: alertViewModel.alertRules
+                Repeater {
+                    model: alertViewModel && alertViewModel.alertRules.length > 0 ? alertViewModel.alertRules : []
+                    visible: (alertViewModel && alertViewModel.alertRules.length > 0) ? true : false
 
-                        delegate: AlertRuleItem {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 60
+                    delegate: AlertRuleItem {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 60
 
-                            ruleId: modelData.id
-                            typeName: modelData.typeName
-                            threshold: modelData.threshold
-                            isEnabled: modelData.isEnabled
-                            triggerCount: modelData.triggerCount
+                        ruleId: modelData.id
+                        typeName: modelData.typeName
+                        threshold: modelData.threshold || 0
+                        isEnabled: modelData.isEnabled !== undefined ? modelData.isEnabled : true
+                        triggerCount: modelData.triggerCount
 
-                            onToggleEnabled: function(enabled) {
-                                if (alertViewModel) {
-                                    alertViewModel.setAlertEnabled(modelData.id, enabled)
-                                }
+                        onToggleEnabled: function(enabled) {
+                            if (alertViewModel) {
+                                alertViewModel.setAlertEnabled(modelData.id, enabled)
                             }
                         }
                     }
-                } else {
-                    // 空状态提示
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                }
 
-                        ColumnLayout {
-                            anchors.centerIn: parent
-                            spacing: 10
+                // 空状态提示
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    visible: !alertViewModel || alertViewModel.alertRules.length === 0
 
-                            Text {
-                                text: "还没有设置告警规则"
-                                font.pixelSize: 16
-                                color: "#6c757d"
-                                Layout.alignment: Qt.AlignHCenter
-                            }
+                    ColumnLayout {
+                        anchors.centerIn: parent
+                        spacing: 10
 
-                            Button {
-                                text: "点击添加第一条规则"
-                                highlighted: true
-                                Layout.alignment: Qt.AlignHCenter
+                        Text {
+                            text: "还没有设置告警规则"
+                            font.pixelSize: 16
+                            color: "#6c757d"
+                            Layout.alignment: Qt.AlignHCenter
+                        }
 
-                                onClicked: {
-                                    addAlertDialog.open()
-                                }
+                        Button {
+                            text: "点击添加第一条规则"
+                            highlighted: true
+                            Layout.alignment: Qt.AlignHCenter
+
+                            onClicked: {
+                                addAlertDialog.open()
                             }
                         }
                     }

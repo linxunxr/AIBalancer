@@ -13,7 +13,8 @@ Dialog {
     closePolicy: Popup.NoAutoClose
 
     onAccepted: {
-        if (thresholdField.value <= 0) {
+        var threshold = parseFloat(thresholdField.text)
+        if (isNaN(threshold) || threshold <= 0) {
             errorLabel.text = "阈值必须大于 0"
             errorLabel.visible = true
             thresholdField.focus = true
@@ -24,7 +25,7 @@ Dialog {
         var alertType = alertTypeCombo.model[alertTypeCombo.currentIndex].value
         var notificationMethod = methodCombo.model[methodCombo.currentIndex].value
 
-        alertViewModel.addAlertRule(alertType, thresholdField.value, notificationMethod)
+        alertViewModel.addAlertRule(alertType, threshold, notificationMethod)
 
         if (alertViewModel.hasError) {
             errorLabel.text = alertViewModel.errorMessage
@@ -43,7 +44,7 @@ Dialog {
 
     function resetForm() {
         alertTypeCombo.currentIndex = 0
-        thresholdField.value = 10.0
+        thresholdField.text = "10.0"
         methodCombo.currentIndex = 0
         errorLabel.visible = false
     }
@@ -102,16 +103,17 @@ Dialog {
                 font.bold: true
             }
 
-            SpinBox {
+            TextField {
                 id: thresholdField
-                from: 0.01
-                to: 10000.0
-                step: 1.0
-                decimals: 2
-                value: 10.0
+                text: "10.0"
+                placeholderText: "输入阈值"
                 Layout.fillWidth: true
 
-                onValueChanged: errorLabel.visible = false
+                validator: RegularExpressionValidator {
+                    regularExpression: /^\d+(\.\d{1,2})?$/
+                }
+
+                onTextChanged: errorLabel.visible = false
             }
         }
 
@@ -135,8 +137,8 @@ Dialog {
         // 说明
         Label {
             text: {
-                var type = alertTypeModel[alertTypeCombo.currentIndex].text
-                var method = methodModel[methodCombo.currentIndex].text
+                var type = alertTypeModel.get(alertTypeCombo.currentIndex).text
+                var method = methodModel.get(methodCombo.currentIndex).text
                 return "当 %1 时，通过 %2 发送通知".arg(type).arg(method)
             }
             font.pixelSize: 11

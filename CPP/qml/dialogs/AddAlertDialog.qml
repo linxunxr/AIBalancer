@@ -12,6 +12,13 @@ Dialog {
     standardButtons: Dialog.Ok | Dialog.Cancel
     closePolicy: Popup.NoAutoClose
 
+    width: 480
+    height: implicitHeight
+
+    // 居中显示在父窗口中
+    x: (parent.width - width) / 2
+    y: (parent.height - height) / 2
+
     onAccepted: {
         var threshold = parseFloat(thresholdField.text)
         if (isNaN(threshold) || threshold <= 0) {

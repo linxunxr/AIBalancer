@@ -1,22 +1,13 @@
-import { invoke } from "@tauri-apps/api/core";
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import naive from 'naive-ui';
+import App from './App.vue';
+import './styles.css';
 
-let greetInputEl: HTMLInputElement | null;
-let greetMsgEl: HTMLElement | null;
+const app = createApp(App);
+const pinia = createPinia();
 
-async function greet() {
-  if (greetMsgEl && greetInputEl) {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsgEl.textContent = await invoke("greet", {
-      name: greetInputEl.value,
-    });
-  }
-}
+app.use(pinia);
+app.use(naive);
 
-window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
-});
+app.mount('#app');

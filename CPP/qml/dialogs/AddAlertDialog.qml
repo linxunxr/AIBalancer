@@ -19,7 +19,32 @@ Dialog {
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
 
+    // 如果没有传入，自动使用根上下文的全局实例
+    Component.onCompleted: {
+        if (!alertViewModel && typeof alertViewModel !== 'undefined') {
+            alertViewModel = alertViewModel
+        }
+    }
+
+    // 打开前确保 viewModel 已设置
+    function openWithViewModel(viewModel) {
+        if (viewModel) {
+            alertViewModel = viewModel
+        } else if (!alertViewModel && typeof alertViewModel !== 'undefined') {
+            // 回退到根上下文的全局实例
+            alertViewModel = alertViewModel
+        }
+        resetForm()
+        open()
+    }
+
     onAccepted: {
+        if (!alertViewModel) {
+            errorLabel.text = "视图模型未初始化"
+            errorLabel.visible = true
+            return
+        }
+
         var threshold = parseFloat(thresholdField.text)
         if (isNaN(threshold) || threshold <= 0) {
             errorLabel.text = "阈值必须大于 0"

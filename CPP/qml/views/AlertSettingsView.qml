@@ -13,8 +13,11 @@ Page {
     // 添加告警对话框
     AddAlertDialog {
         id: addAlertDialog
-        alertViewModel: alertViewModel
         visible: false
+
+        Binding on alertViewModel {
+            value: alertSettings.alertViewModel
+        }
     }
 
     ColumnLayout {
@@ -46,7 +49,7 @@ Page {
                 highlighted: true
 
                 onClicked: {
-                    addAlertDialog.open()
+                    addAlertDialog.openWithViewModel(alertViewModel)
                 }
             }
         }
@@ -110,7 +113,7 @@ Page {
                             Layout.alignment: Qt.AlignHCenter
 
                             onClicked: {
-                                addAlertDialog.open()
+                                addAlertDialog.openWithViewModel(alertViewModel)
                             }
                         }
                     }

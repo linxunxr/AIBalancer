@@ -90,6 +90,7 @@ set(RESOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
 # 使用精确的文件列表避免 Windows Glob 的 .h.h 重复问题
 set(SOURCES
     ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/core/Logging.cpp
     ${SRC_DIR}/viewmodels/BalanceViewModel.cpp
     ${SRC_DIR}/viewmodels/DashboardViewModel.cpp
     ${SRC_DIR}/viewmodels/AccountViewModel.cpp
@@ -104,6 +105,7 @@ set(SOURCES
 
 set(HEADERS
     ${SRC_DIR}/core/di/ServiceLocator.h
+    ${SRC_DIR}/core/Logging.h
     ${SRC_DIR}/viewmodels/BalanceViewModel.h
     ${SRC_DIR}/viewmodels/DashboardViewModel.h
     ${SRC_DIR}/viewmodels/AccountViewModel.h

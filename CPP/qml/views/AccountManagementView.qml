@@ -13,15 +13,18 @@ Page {
     // 添加账户对话框
     AddAccountDialog {
         id: addAccountDialog
-        accountListViewModel: accountListViewModel
         visible: false
+        viewModel: accountManagement.accountListViewModel
     }
 
     // 编辑账户对话框
     EditAccountDialog {
         id: editAccountDialog
-        accountListViewModel: accountListViewModel
         visible: false
+
+        Binding on accountListViewModel {
+            value: accountManagement.accountListViewModel
+        }
     }
 
     ColumnLayout {
@@ -46,7 +49,7 @@ Page {
                 highlighted: true
 
                 onClicked: {
-                    addAccountDialog.open()
+                    addAccountDialog.openWithViewModel()
                 }
             }
         }
@@ -85,10 +88,7 @@ Page {
                         }
 
                         onEditRequested: {
-                            editAccountDialog.accountId = modelData.id
-                            editAccountDialog.accountName = modelData.name
-                            editAccountDialog.accountEmail = modelData.email || ""
-                            editAccountDialog.open()
+                            editAccountDialog.openWithViewModel(accountListViewModel, modelData.id, modelData.name, modelData.email || "")
                         }
 
                         onDeleteRequested: {
@@ -121,7 +121,7 @@ Page {
                             Layout.alignment: Qt.AlignHCenter
 
                             onClicked: {
-                                addAccountDialog.open()
+                                addAccountDialog.openWithViewModel()
                             }
                         }
                     }

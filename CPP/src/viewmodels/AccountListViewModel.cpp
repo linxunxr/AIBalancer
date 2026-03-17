@@ -8,6 +8,8 @@ AccountListViewModel::AccountListViewModel(
     : QObject(parent)
     , m_accountRepo(std::move(accountRepo)) {
 
+    qInfo("AccountListViewModel created");
+
     // 连接账户仓储信号
     auto* dbRepo = dynamic_cast<DatabaseAccountRepository*>(m_accountRepo.get());
     if (dbRepo) {
@@ -24,6 +26,7 @@ void AccountListViewModel::loadAccounts() {
     clearError();
     setLoading(true);
 
+    qInfo("Loading accounts from repository");
     // 加载所有账户
     QVector<Account> accounts = m_accountRepo->getAllAccounts();
 
@@ -59,14 +62,21 @@ void AccountListViewModel::addAccount(const QString& name, const QString& email,
     Account account = Account::create(name, email);
 
     if (!m_accountRepo->addAccount(account)) {
+        qWarning("Failed to add account to repository");
         setError("添加账户失败");
         return;
     }
 
     // 保存 API Key
     if (!apiKey.isEmpty()) {
-        m_accountRepo->saveApiKey(account.id, apiKey);
+        if (!m_accountRepo->saveApiKey(account.id, apiKey)) {
+            qWarning("Failed to save API key for account");
+        }
     }
+
+    qInfo("Account added: id=%s, name=%s",
+          qPrintable(account.id),
+          qPrintable(account.name));
 
     clearError();
 }
@@ -167,6 +177,10 @@ AccountViewModel* AccountListViewModel::findAccountViewModel(const QString& acco
 void AccountListViewModel::onAccountAdded(const Account& account) {
     auto* accountVM = new AccountViewModel(account, this);
     m_accountModels.append(accountVM);
+
+    qInfo("onAccountAdded: id=%s, name=%s",
+          qPrintable(account.id),
+          qPrintable(account.name));
 
     updateAccountsList();
     emit accountAdded(account.id);

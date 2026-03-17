@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 
 Dialog {
     id: root
-    property var accountListViewModel: null
+    property var viewModel: accountListViewModel
     property bool isEditing: false
 
     title: isEditing ? "编辑账户" : "添加新账户"
@@ -19,7 +19,25 @@ Dialog {
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
 
+    // 打开前重置表单，使用当前的 viewModel（通常是根上下文的全局 accountListViewModel）
+    function openWithViewModel() {
+        console.log("AddAccountDialog.openWithViewModel called, viewModel =", viewModel)
+        resetForm()
+        open()
+    }
+
     onAccepted: {
+        console.log("AddAccountDialog.onAccepted called")
+        console.log("  vm =", viewModel, "typeof =", typeof viewModel)
+        console.log("  nameField =", nameField.text, "emailField =", emailField.text, "apiKeyField =", apiKeyField.text)
+
+        if (!viewModel) {
+            errorLabel.text = "视图模型未初始化"
+            errorLabel.visible = true
+            console.log("  ERROR: accountListViewModel is null")
+            return
+        }
+
         if (nameField.text.length === 0) {
             nameField.focus = true
             return
@@ -27,21 +45,24 @@ Dialog {
 
         if (isEditing) {
             // 编辑模式
-            accountListViewModel.updateAccount(
+            viewModel.updateAccount(
                 accountIdField.text,
                 nameField.text,
                 emailField.text
             )
         } else {
             // 添加模式
-            accountListViewModel.addAccount(
+            console.log("  calling viewModel.addAccount(...)")
+            viewModel.addAccount(
                 nameField.text,
                 emailField.text,
                 apiKeyField.text
             )
         }
 
-        if (accountListViewModel.hasError) {
+        console.log("  after add/update, hasError =", viewModel.hasError, "errorMessage =", viewModel.errorMessage)
+
+        if (viewModel.hasError) {
             // 显示错误
             errorLabel.text = accountListViewModel.errorMessage
             errorLabel.visible = true
@@ -69,6 +90,13 @@ Dialog {
     ColumnLayout {
         spacing: 20
         width: 400
+
+        // 隐藏的账户 ID 字段，用于避免引用错误
+        TextField {
+            id: accountIdField
+            visible: false
+            Layout.fillWidth: true
+        }
 
         // 错误提示
         Label {

@@ -11,13 +11,6 @@ Page {
 
     padding: 20
 
-    Binding {
-        when: accountListViewModel !== null && accountListViewModel !== undefined
-        target: accountListViewModel
-        property: "accountId"
-        value: ""
-    }
-
     ScrollView {
         anchors.fill: parent
         clip: true

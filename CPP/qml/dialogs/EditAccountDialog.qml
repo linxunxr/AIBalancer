@@ -21,13 +21,40 @@ Dialog {
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
 
+    // 如果没有传入，自动使用根上下文的全局实例
     Component.onCompleted: {
+        if (!accountListViewModel && typeof accountListViewModel !== 'undefined') {
+            accountListViewModel = accountListViewModel
+        }
         accountIdField.text = accountId
         nameField.text = accountName
         emailField.text = accountEmail
     }
 
+    // 打开前确保 viewModel 已设置
+    function openWithViewModel(viewModel, id, name, email) {
+        if (viewModel) {
+            accountListViewModel = viewModel
+        } else if (!accountListViewModel && typeof accountListViewModel !== 'undefined') {
+            // 回退到根上下文的全局实例
+            accountListViewModel = accountListViewModel
+        }
+        accountId = id
+        accountName = name
+        accountEmail = email
+        accountIdField.text = accountId
+        nameField.text = accountName
+        emailField.text = accountEmail
+        open()
+    }
+
     onAccepted: {
+        if (!accountListViewModel) {
+            errorLabel.text = "视图模型未初始化"
+            errorLabel.visible = true
+            return
+        }
+
         if (nameField.text.length === 0) {
             nameField.focus = true
             return

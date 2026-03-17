@@ -5,6 +5,8 @@
 #include <QStandardPaths>
 #include <QDir>
 
+#include "core/Logging.h"
+
 // Core - Dependency Injection
 #include "core/di/ServiceLocator.h"
 
@@ -99,6 +101,9 @@ void setupApplicationDirectories() {
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
+
+    // 初始化日志系统（尽量在最前面）
+    initializeLogging();
 
     // 设置应用程序信息
     app.setApplicationName("AIBalanceManager");

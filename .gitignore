@@ -39,3 +39,5 @@ cmake-build-debug/
 logs/
 
 CPP/build/
+
+.drop/

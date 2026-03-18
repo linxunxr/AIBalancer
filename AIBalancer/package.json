@@ -14,9 +14,16 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "@vicons/ionicons5": "^0.13.0",
+    "@vicons/tabler": "^0.13.0",
+    "@vue/reactivity": "^3.5.30",
+    "dayjs": "^1.11.20",
+    "echarts": "^6.0.0",
     "naive-ui": "^2.44.1",
     "pinia": "^3.0.4",
-    "vue": "^3.5.30"
+    "vue": "^3.5.30",
+    "vue-echarts": "^8.0.1",
+    "vue-router": "^5.0.3",
+    "vue-virtual-scroller": "^2.0.0-beta.10"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",

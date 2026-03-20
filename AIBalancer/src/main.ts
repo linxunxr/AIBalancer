@@ -3,6 +3,7 @@ import { createPinia } from 'pinia';
 import naive from 'naive-ui';
 import App from './App.vue';
 import './styles.css';
+import './styles/design-system.css';
 import themeStore from './models/stores/themeStore';
 
 const app = createApp(App);

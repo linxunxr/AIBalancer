@@ -20,7 +20,7 @@ use tracing_appender::rolling;
 use flate2::{write::GzEncoder, Compression};
 use tokio::fs;
 
-use crate::logging::config::{LogConfig, RotationConfig};
+use crate::logging::config::LogConfig;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LogEntry {

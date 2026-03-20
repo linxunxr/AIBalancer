@@ -1,11 +1,13 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 mod logging;
+mod database;
 
 use std::path::PathBuf;
 use std::sync::Mutex;
 use logging::{LogConfig, LogManager, LogManagerState};
 use logging::commands::*;
+use database::commands::*;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -35,6 +37,15 @@ pub fn run() {
             list_log_files,
             export_logs,
             clean_old_logs,
+            execute_sql,
+            storage_get,
+            storage_set,
+            storage_remove,
+            storage_clear,
+            storage_keys,
+            storage_size,
+            app_get_version,
+            app_check_updates,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

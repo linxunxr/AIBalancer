@@ -36,11 +36,12 @@ CPP/.claude/
 
 cmake-build-debug/
 
-# Logs directory (all log files, but keep config)
-**/logs/
+# Logs - ignore specific patterns but keep config
+**/logs/*.log
+**/logs/*.gz
+**/logs/panics/
+**/logs/errors/
 AIBalancer/logs/
-AIBalancer/src-tauri/logs/*.log
-AIBalancer/src-tauri/logs/*.gz
 AIBalancer/src-tauri/logs/panics/
 AIBalancer/src-tauri/logs/errors/
 

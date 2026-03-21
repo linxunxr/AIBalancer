@@ -1,0 +1,22 @@
+mode: development
+default_level: DEBUG
+console_output: true
+file_output: true
+rotation:
+  enabled: true
+  max_size: 10485760
+  max_files: 10
+  compression: true
+  compression_level: 6
+  retention_days: 30
+sources:
+  update: DEBUG
+  plugin: DEBUG
+  api: DEBUG
+  balance: DEBUG
+  ui: DEBUG
+  system: DEBUG
+  database: DEBUG
+  account: DEBUG
+  crypto: DEBUG
+  tauri: DEBUG

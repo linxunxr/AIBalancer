@@ -535,24 +535,29 @@ button.n-button {
   background: rgba(94, 114, 235, 0.25) !important;
 }
 
-/* 选中状态 */
+/* 选中状态 - 使用柔和的半透明背景而非渐变 */
 .n-base-select-option--selected,
 .n-select-option--selected {
-  background: var(--gradient-primary) !important;
-  color: white !important;
+  background: rgba(94, 114, 235, 0.25) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid rgba(94, 114, 235, 0.4) !important;
 }
 
 .n-base-select-option--selected *,
 .n-select-option--selected * {
-  color: white !important;
+  color: var(--text-primary) !important;
 }
 
-/* 选中状态勾选图标 */
+/* 选中状态勾选图标 - 改为强调色 */
 .n-base-select-option--selected .n-base-select-option__check,
+.n-base-select-option--selected .n-base-select-option__checkmark,
+.n-base-select-option--selected .n-icon,
 .n-select-option--selected .n-select-option__check,
+.n-select-option--selected .n-select-option__checkmark,
+.n-select-option--selected .n-icon,
 .n-base-select-option--selected .n-base-select-option__check,
 .n-select-option--selected .n-select-option__check {
-  color: white !important;
+  color: var(--primary-start) !important;
 }
 
 /* 禁用状态 */
@@ -949,14 +954,21 @@ button.n-button {
 .light-theme .n-dropdown-menu .n-dropdown-item--selected,
 .light-theme .n-base-select-menu .n-base-select-option--selected,
 .light-theme .n-select-menu .n-select-option--selected {
-  background: var(--gradient-primary) !important;
-  color: white !important;
+  background: rgba(94, 114, 235, 0.15) !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  border: 1px solid rgba(94, 114, 235, 0.3) !important;
 }
 
 .light-theme .n-dropdown-menu .n-dropdown-item--selected *,
 .light-theme .n-base-select-menu .n-base-select-option--selected *,
 .light-theme .n-select-menu .n-select-option--selected * {
-  color: white !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .n-dropdown-menu .n-dropdown-item--selected .n-dropdown-item__icon,
+.light-theme .n-base-select-menu .n-base-select-option--selected .n-base-select-option__check,
+.light-theme .n-select-menu .n-select-option--selected .n-select-option__check {
+  color: var(--primary-start) !important;
 }
 
 /* 浅色主题消息 */

@@ -1186,3 +1186,87 @@ pub fn export_accounts(
         _ => Err(format!("不支持的导出格式: {}", format))
     }
 }
+
+// ==================== 账户连接测试命令 ====================
+
+/// 通过账户ID测试连接（在后端解密API Key后测试）
+#[tauri::command]
+pub async fn test_account_connection_by_id(
+    db: State<'_, Mutex<Connection>>,
+    account_id: String,
+) -> Result<crate::api_client::providers::ApiTestResult, String> {
+    use crate::api_client::providers::test_api_connection;
+
+    tracing::info!("测试账户连接: {}", account_id);
+
+    // 获取账户信息
+    let (account_type, encrypted_keys): (String, String) = {
+        let conn = db.lock().unwrap();
+        conn.query_row(
+            "SELECT type, api_keys FROM accounts_v2 WHERE id = ?1",
+            params![&account_id],
+            |row| Ok((row.get(0)?, row.get(1)?)),
+        ).map_err(|e| {
+            tracing::error!("查询账户失败: {}", e);
+            format!("查询账户失败: {}", e)
+        })?
+    };
+
+    // 解析 API Keys
+    let api_keys: Vec<ApiKeyInfo> = serde_json::from_str(&encrypted_keys)
+        .map_err(|e| {
+            tracing::error!("解析 API Keys 失败: {}", e);
+            format!("解析 API Keys 失败: {}", e)
+        })?;
+
+    // 获取活跃的 API Key 并解密
+    let decrypted_key = api_keys.iter()
+        .find(|k| k.is_active)
+        .map(|k| decrypt_api_key(&k.key))
+        .transpose()
+        .map_err(|e| {
+            tracing::error!("解密 API Key 失败: {}", e);
+            format!("解密 API Key 失败: {}", e)
+        })?;
+
+    let api_key = decrypted_key.ok_or("没有可用的 API 密钥")?;
+
+    // 测试连接
+    let result = test_api_connection(&account_type, &api_key).await;
+
+    // 更新账户状态
+    {
+        let conn = db.lock().unwrap();
+        let now = chrono::Utc::now().to_rfc3339();
+        let new_status = if result.success { "active" } else { "error" };
+
+        conn.execute(
+            "UPDATE accounts_v2 SET status = ?1, updated_at = ?2 WHERE id = ?3",
+            params![new_status, &now, &account_id],
+        ).map_err(|e| {
+            tracing::error!("更新账户状态失败: {}", e);
+            format!("更新账户状态失败: {}", e)
+        })?;
+
+        // 如果测试成功且有余额信息，更新余额
+        if result.success {
+            if let Some(balance) = result.balance {
+                conn.execute(
+                    "UPDATE accounts_v2 SET current_balance = ?1, updated_at = ?2 WHERE id = ?3",
+                    params![balance, &now, &account_id],
+                ).map_err(|e| {
+                    tracing::error!("更新账户余额失败: {}", e);
+                    format!("更新账户余额失败: {}", e)
+                })?;
+            }
+        }
+    }
+
+    tracing::info!(
+        "账户 {} 连接测试{}",
+        account_id,
+        if result.success { "成功" } else { "失败" }
+    );
+
+    Ok(result)
+}

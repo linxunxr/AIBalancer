@@ -274,31 +274,11 @@ export class AccountService {
    * 测试账户连接
    */
   async testAccountConnection(id: string): Promise<ConnectionTestResult> {
-    const account = await this.repository.findById(id);
-    if (!account) {
-      return {
-        success: false,
-        message: `账户 ${id} 不存在`
-      };
-    }
-
-    const apiKey = account.apiKeys.find(k => k.isActive)?.key;
-    if (!apiKey) {
-      return {
-        success: false,
-        message: '没有可用的 API 密钥'
-      };
-    }
-
     try {
-      const result = await this.testApiKey(account.type, apiKey);
-
-      // 更新账户状态
-      if (result.success) {
-        await this.updateAccount(id, { status: 'active' as AccountStatus });
-      } else {
-        await this.updateAccount(id, { status: 'error' as AccountStatus });
-      }
+      // 调用后端命令，在后端解密 API Key 后测试连接
+      const result = await invoke<ConnectionTestResult>('test_account_connection_by_id', {
+        accountId: id
+      });
 
       return result;
     } catch (error) {

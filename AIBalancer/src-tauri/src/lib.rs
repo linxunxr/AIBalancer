@@ -93,6 +93,8 @@ pub fn run() {
             rotate_api_key,
             // 数据导出命令
             export_accounts,
+            // 账户连接测试命令
+            test_account_connection_by_id,
             // 代理配置命令
             get_proxy_config,
             save_proxy_config,

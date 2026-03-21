@@ -41,3 +41,5 @@ logs/
 CPP/build/
 
 .drop/
+
+AIBalancer/aibalancer.db

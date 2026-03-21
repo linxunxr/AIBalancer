@@ -155,6 +155,210 @@ pub fn run_migrations(conn: &Connection) -> Result<(), rusqlite::Error> {
         [],
     )?;
 
+    // ==================== 多维度配额系统表 ====================
+
+    // 创建额度策略组表
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS quota_strategy_groups (
+            id TEXT PRIMARY KEY,
+            account_id TEXT NOT NULL,
+            name TEXT NOT NULL,
+            strategy_type TEXT NOT NULL DEFAULT 'nested',
+            is_active INTEGER NOT NULL DEFAULT 1,
+            priority INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            FOREIGN KEY (account_id) REFERENCES accounts_v2(id)
+        )",
+        [],
+    )?;
+
+    // 创建额度维度表
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS quota_dimensions (
+            id TEXT PRIMARY KEY,
+            group_id TEXT NOT NULL,
+            dimension_name TEXT NOT NULL,
+            dimension_type TEXT NOT NULL DEFAULT 'time_based',
+            unit TEXT NOT NULL DEFAULT 'tokens',
+            total_quota REAL NOT NULL DEFAULT 0,
+            current_balance REAL NOT NULL DEFAULT 0,
+            reserved_balance REAL NOT NULL DEFAULT 0,
+            time_period TEXT,
+            reset_time TEXT,
+            reset_day INTEGER,
+            timezone TEXT DEFAULT 'Asia/Shanghai',
+            last_reset_at TEXT,
+            next_reset_at TEXT,
+            auto_reset INTEGER NOT NULL DEFAULT 1,
+            parent_dimension_id TEXT,
+            nesting_level INTEGER NOT NULL DEFAULT 0,
+            warning_threshold REAL,
+            critical_threshold REAL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            FOREIGN KEY (group_id) REFERENCES quota_strategy_groups(id),
+            FOREIGN KEY (parent_dimension_id) REFERENCES quota_dimensions(id)
+        )",
+        [],
+    )?;
+
+    // 创建维度关联表
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS dimension_relations (
+            id TEXT PRIMARY KEY,
+            parent_dimension_id TEXT NOT NULL,
+            child_dimension_id TEXT NOT NULL,
+            relation_type TEXT NOT NULL DEFAULT 'nested',
+            deduction_ratio REAL NOT NULL DEFAULT 1.0,
+            sync_deduction INTEGER NOT NULL DEFAULT 1,
+            require_both_available INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (parent_dimension_id) REFERENCES quota_dimensions(id),
+            FOREIGN KEY (child_dimension_id) REFERENCES quota_dimensions(id)
+        )",
+        [],
+    )?;
+
+    // 创建扣减事务表
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS deduction_transactions (
+            transaction_id TEXT PRIMARY KEY,
+            account_id TEXT NOT NULL,
+            operation_type TEXT NOT NULL,
+            total_usage REAL NOT NULL,
+            usage_unit TEXT NOT NULL DEFAULT 'tokens',
+            status TEXT NOT NULL DEFAULT 'pending',
+            started_at TEXT NOT NULL,
+            committed_at TEXT,
+            rolled_back_at TEXT,
+            error_message TEXT,
+            metadata TEXT DEFAULT '{}',
+            FOREIGN KEY (account_id) REFERENCES accounts_v2(id)
+        )",
+        [],
+    )?;
+
+    // 创建维度扣减记录表
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS dimension_deductions (
+            id TEXT PRIMARY KEY,
+            transaction_id TEXT NOT NULL,
+            dimension_id TEXT NOT NULL,
+            deduction_amount REAL NOT NULL,
+            balance_before REAL NOT NULL,
+            balance_after REAL NOT NULL,
+            deduction_status TEXT NOT NULL DEFAULT 'pending',
+            related_dimension_ids TEXT DEFAULT '[]',
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (transaction_id) REFERENCES deduction_transactions(transaction_id),
+            FOREIGN KEY (dimension_id) REFERENCES quota_dimensions(id)
+        )",
+        [],
+    )?;
+
+    // ==================== 索引创建 ====================
+
+    // 配额系统索引
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_quota_strategy_groups_account ON quota_strategy_groups(account_id)",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_quota_dimensions_group ON quota_dimensions(group_id)",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_quota_dimensions_parent ON quota_dimensions(parent_dimension_id)",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_quota_dimensions_time_period ON quota_dimensions(time_period)",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_dimension_relations_parent ON dimension_relations(parent_dimension_id)",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_dimension_relations_child ON dimension_relations(child_dimension_id)",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_deduction_transactions_account ON deduction_transactions(account_id)",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_deduction_transactions_status ON deduction_transactions(status)",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_dimension_deductions_transaction ON dimension_deductions(transaction_id)",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_dimension_deductions_dimension ON dimension_deductions(dimension_id)",
+        [],
+    )?;
+
+    // ==================== 表结构扩展 ====================
+
+    // 扩展 accounts_v2 表（添加 quota_strategy 字段）
+    // SQLite 不支持 IF NOT EXISTS for ALTER TABLE，需要检查列是否存在
+    let quota_strategy_exists: bool = conn.query_row(
+        "SELECT COUNT(*) > 0 FROM pragma_table_info('accounts_v2') WHERE name='quota_strategy'",
+        [],
+        |row| row.get::<_, i32>(0),
+    ).unwrap_or(0) > 0;
+
+    if !quota_strategy_exists {
+        conn.execute(
+            "ALTER TABLE accounts_v2 ADD COLUMN quota_strategy TEXT DEFAULT '{}'",
+            [],
+        )?;
+    }
+
+    // 扩展 usage_records 表
+    let transaction_id_exists: bool = conn.query_row(
+        "SELECT COUNT(*) > 0 FROM pragma_table_info('usage_records') WHERE name='transaction_id'",
+        [],
+        |row| row.get::<_, i32>(0),
+    ).unwrap_or(0) > 0;
+
+    if !transaction_id_exists {
+        conn.execute(
+            "ALTER TABLE usage_records ADD COLUMN transaction_id TEXT",
+            [],
+        )?;
+    }
+
+    let dimension_usage_exists: bool = conn.query_row(
+        "SELECT COUNT(*) > 0 FROM pragma_table_info('usage_records') WHERE name='dimension_usage'",
+        [],
+        |row| row.get::<_, i32>(0),
+    ).unwrap_or(0) > 0;
+
+    if !dimension_usage_exists {
+        conn.execute(
+            "ALTER TABLE usage_records ADD COLUMN dimension_usage TEXT DEFAULT '{}'",
+            [],
+        )?;
+    }
+
+    // ==================== 数据迁移 ====================
+
+    // 迁移现有账户到配额系统
+    migrate_accounts_to_quota_system(conn)?;
+
     Ok(())
 }
 
@@ -276,5 +480,89 @@ fn migrate_accounts_to_v2(conn: &Connection) -> Result<(), rusqlite::Error> {
     }
 
     println!("账户数据迁移完成");
+    Ok(())
+}
+
+/// 迁移现有账户到配额系统
+/// 为每个现有账户创建默认策略组和单维度配额
+fn migrate_accounts_to_quota_system(conn: &Connection) -> Result<(), rusqlite::Error> {
+    // 检查是否已经迁移过（检查 quota_strategy_groups 表是否有数据）
+    let migrated: bool = conn.query_row(
+        "SELECT COUNT(*) > 0 FROM quota_strategy_groups",
+        [],
+        |row| row.get::<_, i32>(0),
+    ).unwrap_or(0) > 0;
+
+    if migrated {
+        return Ok(());
+    }
+
+    // 获取所有没有配额策略的账户
+    let mut stmt = conn.prepare(
+        "SELECT id, name, current_balance FROM accounts_v2 WHERE quota_strategy = '{}' OR quota_strategy IS NULL"
+    )?;
+
+    let accounts = stmt.query_map([], |row| {
+        Ok((
+            row.get::<_, String>(0)?,
+            row.get::<_, String>(1)?,
+            row.get::<_, f64>(2)?,
+        ))
+    })?;
+
+    let now = chrono::Utc::now().to_rfc3339();
+
+    for account in accounts {
+        let (account_id, account_name, current_balance) = account?;
+
+        // 创建默认策略组
+        let strategy_group_id = uuid::Uuid::new_v4().to_string();
+        let strategy_group_name = format!("{}-默认策略", account_name);
+
+        conn.execute(
+            "INSERT INTO quota_strategy_groups (id, account_id, name, strategy_type, is_active, priority, created_at, updated_at)
+             VALUES (?1, ?2, ?3, 'single', 1, 0, ?4, ?5)",
+            rusqlite::params![
+                &strategy_group_id,
+                &account_id,
+                &strategy_group_name,
+                &now,
+                &now,
+            ],
+        )?;
+
+        // 创建默认配额维度（永久配额）
+        let dimension_id = uuid::Uuid::new_v4().to_string();
+
+        conn.execute(
+            "INSERT INTO quota_dimensions (
+                id, group_id, dimension_name, dimension_type, unit,
+                total_quota, current_balance, reserved_balance,
+                time_period, auto_reset, nesting_level,
+                created_at, updated_at
+            ) VALUES (?1, ?2, '默认余额', 'permanent', 'tokens', ?3, ?4, 0, 'permanent', 0, 0, ?5, ?6)",
+            rusqlite::params![
+                &dimension_id,
+                &strategy_group_id,
+                current_balance,
+                current_balance,
+                &now,
+                &now,
+            ],
+        )?;
+
+        // 更新账户的 quota_strategy 字段
+        let quota_strategy = serde_json::json!({
+            "defaultGroupId": strategy_group_id,
+            "defaultDimensionId": dimension_id,
+        }).to_string();
+
+        conn.execute(
+            "UPDATE accounts_v2 SET quota_strategy = ?1 WHERE id = ?2",
+            rusqlite::params![&quota_strategy, &account_id],
+        )?;
+    }
+
+    println!("配额系统数据迁移完成");
     Ok(())
 }

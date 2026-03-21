@@ -5,6 +5,7 @@ mod database;
 mod crypto;
 mod api_client;
 mod proxy;
+mod quota;
 
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -15,6 +16,8 @@ use database::commands::*;
 use crypto::commands::*;
 use api_client::commands::*;
 use proxy::commands::*;
+use quota::commands::*;
+use quota::scheduler::*;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -133,6 +136,28 @@ pub fn run() {
             get_proxy_status,
             clear_proxy_config,
             should_use_proxy,
+            // 配额策略组命令
+            create_quota_strategy_group,
+            get_quota_strategy_groups,
+            update_quota_strategy_group,
+            delete_quota_strategy_group,
+            // 配额维度命令
+            create_quota_dimension,
+            get_quota_dimensions,
+            get_quota_dimension,
+            update_quota_dimension,
+            delete_quota_dimension,
+            // 配额检查与扣减命令
+            check_quota_availability_cmd,
+            execute_deduction_cmd,
+            // 维度关联命令
+            create_dimension_relation,
+            get_dimension_relations,
+            delete_dimension_relation,
+            // 配额概览命令
+            get_quota_overview,
+            // 刷新调度命令
+            get_refresh_schedule,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

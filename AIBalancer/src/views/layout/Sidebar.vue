@@ -37,6 +37,7 @@ const activeKey = ref<string>('dashboard');
 const menuItems: MenuItem[] = [
   { key: 'dashboard', label: '仪表盘', path: '/dashboard' },
   { key: 'accounts', label: '账户管理', path: '/accounts' },
+  { key: 'quota', label: '配额管理', path: '/quota' },
   { key: 'settings', label: '系统设置', path: '/settings' },
 ];
 

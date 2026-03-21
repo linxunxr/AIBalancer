@@ -604,6 +604,7 @@ const breadcrumbs = computed(() => {
   const routeMap: Record<string, { label: string; parent?: string }> = {
     'dashboard': { label: '仪表盘' },
     'accounts': { label: '账户管理' },
+    'quota': { label: '配额管理' },
     'settings': { label: '系统设置' }
   };
 
@@ -625,6 +626,7 @@ const breadcrumbs = computed(() => {
 const menuItems = [
   { key: 'dashboard', label: '仪表盘', icon: '📊', path: '/dashboard' },
   { key: 'accounts', label: '账户管理', icon: '💳', path: '/accounts' },
+  { key: 'quota', label: '配额管理', icon: '📦', path: '/quota' },
   { key: 'settings', label: '系统设置', icon: '⚙', path: '/settings' },
 ];
 

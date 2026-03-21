@@ -389,8 +389,8 @@ button.n-button {
    ============================================ */
 
 .n-switch {
-  background: var(--glass-bg) !important;
-  border: 1px solid var(--glass-border) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .n-switch--active {
@@ -400,13 +400,19 @@ button.n-button {
 }
 
 .n-switch__rail {
-  background: var(--glass-bg) !important;
-  border: 1px solid var(--glass-border) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .n-switch--active .n-switch__rail {
   background: var(--gradient-primary) !important;
   border-color: transparent !important;
+}
+
+/* 开关按钮 */
+.n-switch__button {
+  background: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* ============================================
@@ -750,13 +756,31 @@ button.n-button {
 
 /* 浅色主题开关 */
 .light-theme .n-switch {
-  background: rgba(0, 0, 0, 0.15) !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
 }
 
 .light-theme .n-switch__rail {
-  background: rgba(0, 0, 0, 0.15) !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 浅色主题开关 - 激活状态 */
+.light-theme .n-switch--active {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+  box-shadow: 0 2px 8px rgba(94, 114, 235, 0.3) !important;
+}
+
+.light-theme .n-switch--active .n-switch__rail {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+}
+
+/* 浅色主题开关按钮 */
+.light-theme .n-switch__button {
+  background: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* 浅色主题模态框 */

@@ -24,6 +24,37 @@ fn greet(name: &str) -> String {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // 设置 panic hook 来捕获并记录 panic
+    std::panic::set_hook(Box::new(|panic_info| {
+        let msg = if let Some(s) = panic_info.payload().downcast_ref::<&str>() {
+            s.to_string()
+        } else if let Some(s) = panic_info.payload().downcast_ref::<String>() {
+            s.clone()
+        } else {
+            "Unknown panic".to_string()
+        };
+
+        let location = panic_info.location()
+            .map(|l| format!("{}:{}:{}", l.file(), l.line(), l.column()))
+            .unwrap_or_else(|| "unknown location".to_string());
+
+        eprintln!("[PANIC] {} at {}", msg, location);
+
+        // 尝试写入 panic 日志
+        if let Ok(log_dir) = std::env::current_dir() {
+            let log_file = log_dir.join("logs").join("panic.log");
+            if let Ok(mut file) = std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(&log_file)
+            {
+                use std::io::Write;
+                let timestamp = chrono::Utc::now().to_rfc3339();
+                let _ = writeln!(file, "[{}] PANIC: {} at {}", timestamp, msg, location);
+            }
+        }
+    }));
+
     // Initialize logging
     // Use software installation directory for logs
     let config = LogConfig::default();

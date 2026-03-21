@@ -138,6 +138,11 @@ pub fn get_encryptor() -> &'static Encryptor {
     })
 }
 
+/// 尝试获取加密器（不会 panic）
+pub fn try_get_encryptor() -> Option<&'static Encryptor> {
+    ENCRYPTOR.get()
+}
+
 /// 加密 API Key
 pub fn encrypt_api_key(api_key: &str) -> Result<String, CryptoError> {
     let encryptor = get_encryptor();

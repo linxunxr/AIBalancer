@@ -464,7 +464,9 @@ button.n-button {
 .n-base-select-menu,
 .n-select-menu,
 .n-select-dropdown,
-.n-popover-menu {
+.n-popover-menu,
+[class*="select-menu"],
+[class*="select-dropdown"] {
   background: rgba(30, 30, 30, 0.95) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
@@ -474,11 +476,9 @@ button.n-button {
   padding: 6px !important;
 }
 
-/* 强制覆盖所有选项元素 */
-.n-base-select-option,
-.n-select-option,
-.n-base-select-menu .n-base-select-option,
-.n-select-menu .n-select-option {
+/* 强制覆盖所有选项元素 - 使用属性选择器确保覆盖 */
+[class*="base-select-option"],
+[class*="select-option"] {
   border-radius: var(--radius-md) !important;
   color: var(--text-primary) !important;
   transition: all var(--transition-fast) !important;
@@ -490,94 +490,81 @@ button.n-button {
 }
 
 /* 选项内部结构 - 强制覆盖文本颜色 */
-.n-base-select-option *,
-.n-select-option *,
-.n-base-select-menu .n-base-select-option * {
+[class*="base-select-option"] *,
+[class*="select-option"] * {
   color: var(--text-primary) !important;
 }
 
 /* 选项内容 */
-.n-base-select-option .n-base-select-option__content,
-.n-select-option .n-select-option__content,
-.n-base-select-option__content {
+[class*="base-select-option__content"],
+[class*="select-option__content"] {
   color: var(--text-primary) !important;
   font-size: 14px !important;
 }
 
 /* 选项标签 */
-.n-base-select-option .n-base-select-option__label,
-.n-select-option .n-select-option__label {
+[class*="base-select-option__label"],
+[class*="select-option__label"] {
   color: var(--text-primary) !important;
 }
 
 /* 选项勾选图标 */
-.n-base-select-option .n-base-select-option__check,
-.n-select-option .n-select-option__check {
+[class*="base-select-option__check"],
+[class*="select-option__check"],
+[class*="base-select-option__checkmark"],
+[class*="select-option__checkmark"] {
   color: var(--primary-start) !important;
 }
 
 /* 悬停状态 */
-.n-base-select-option:hover,
-.n-select-option:hover,
-.n-base-select-menu .n-base-select-option:hover,
-.n-select-menu .n-select-option:hover {
+[class*="base-select-option"]:hover,
+[class*="select-option"]:hover {
   background: rgba(255, 255, 255, 0.12) !important;
 }
 
-.n-base-select-option:hover *,
-.n-select-option:hover * {
+[class*="base-select-option"]:hover *,
+[class*="select-option"]:hover * {
   color: #ffffff !important;
 }
 
 /* 待选中状态（键盘导航高亮） */
-.n-base-select-option--pending,
-.n-select-option--pending {
+[class*="--pending"] {
   background: rgba(94, 114, 235, 0.25) !important;
 }
 
 /* 选中状态 - 使用柔和的半透明背景而非渐变 */
-.n-base-select-option--selected,
-.n-select-option--selected {
+[class*="--selected"] {
   background: rgba(94, 114, 235, 0.25) !important;
   color: var(--text-primary) !important;
   border: 1px solid rgba(94, 114, 235, 0.4) !important;
 }
 
-.n-base-select-option--selected *,
-.n-select-option--selected * {
+[class*="--selected"] * {
   color: var(--text-primary) !important;
 }
 
 /* 选中状态勾选图标 - 改为强调色 */
-.n-base-select-option--selected .n-base-select-option__check,
-.n-base-select-option--selected .n-base-select-option__checkmark,
-.n-base-select-option--selected .n-icon,
-.n-select-option--selected .n-select-option__check,
-.n-select-option--selected .n-select-option__checkmark,
-.n-select-option--selected .n-icon,
-.n-base-select-option--selected .n-base-select-option__check,
-.n-select-option--selected .n-select-option__check {
+[class*="--selected"] [class*="__check"],
+[class*="--selected"] [class*="__checkmark"],
+[class*="--selected"] [class*="__icon"],
+[class*="--selected"] .n-icon {
   color: var(--primary-start) !important;
 }
 
 /* 禁用状态 */
-.n-base-select-option--disabled,
-.n-select-option--disabled {
+[class*="--disabled"] {
   opacity: 0.4 !important;
   cursor: not-allowed !important;
   background: transparent !important;
 }
 
-.n-base-select-option--disabled *,
-.n-select-option--disabled * {
+[class*="--disabled"] * {
   color: var(--text-tertiary) !important;
 }
 
 /* 空状态 */
-.n-base-select-menu .n-select-empty,
-.n-select-menu .n-select-empty,
-.n-base-select-menu .n-empty,
-.n-select-menu .n-empty {
+[class*="select-empty"],
+[class*="select-menu"] [class*="empty"] {
   color: var(--text-tertiary) !important;
 }
 
@@ -933,41 +920,37 @@ button.n-button {
   margin: 2px 4px !important;
 }
 
-.light-theme .n-dropdown-menu .n-dropdown-item *,
-.light-theme .n-base-select-menu .n-base-select-option *,
-.light-theme .n-select-menu .n-select-option * {
+.light-theme [class*="dropdown-item"] *,
+.light-theme [class*="base-select-option"] *,
+.light-theme [class*="select-option"] * {
   color: rgba(0, 0, 0, 0.85) !important;
 }
 
-.light-theme .n-dropdown-menu .n-dropdown-item:hover,
-.light-theme .n-base-select-menu .n-base-select-option:hover,
-.light-theme .n-select-menu .n-select-option:hover {
+.light-theme [class*="dropdown-item"]:hover,
+.light-theme [class*="base-select-option"]:hover,
+.light-theme [class*="select-option"]:hover {
   background: rgba(0, 0, 0, 0.06) !important;
 }
 
-.light-theme .n-dropdown-menu .n-dropdown-item:hover *,
-.light-theme .n-base-select-menu .n-base-select-option:hover *,
-.light-theme .n-select-menu .n-select-option:hover * {
+.light-theme [class*="dropdown-item"]:hover *,
+.light-theme [class*="base-select-option"]:hover *,
+.light-theme [class*="select-option"]:hover * {
   color: rgba(0, 0, 0, 0.95) !important;
 }
 
-.light-theme .n-dropdown-menu .n-dropdown-item--selected,
-.light-theme .n-base-select-menu .n-base-select-option--selected,
-.light-theme .n-select-menu .n-select-option--selected {
+.light-theme [class*="--selected"] {
   background: rgba(94, 114, 235, 0.15) !important;
   color: rgba(0, 0, 0, 0.85) !important;
   border: 1px solid rgba(94, 114, 235, 0.3) !important;
 }
 
-.light-theme .n-dropdown-menu .n-dropdown-item--selected *,
-.light-theme .n-base-select-menu .n-base-select-option--selected *,
-.light-theme .n-select-menu .n-select-option--selected * {
+.light-theme [class*="--selected"] * {
   color: rgba(0, 0, 0, 0.85) !important;
 }
 
-.light-theme .n-dropdown-menu .n-dropdown-item--selected .n-dropdown-item__icon,
-.light-theme .n-base-select-menu .n-base-select-option--selected .n-base-select-option__check,
-.light-theme .n-select-menu .n-select-option--selected .n-select-option__check {
+.light-theme [class*="--selected"] [class*="__icon"],
+.light-theme [class*="--selected"] [class*="__check"],
+.light-theme [class*="--selected"] [class*="__checkmark"] {
   color: var(--primary-start) !important;
 }
 

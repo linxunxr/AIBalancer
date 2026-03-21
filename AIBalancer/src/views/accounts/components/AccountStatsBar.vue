@@ -117,79 +117,151 @@ function formatTokens(tokens: number): string {
 </script>
 
 <style scoped>
+/* 玻璃拟态统计栏 */
 .account-stats-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: var(--space-md);
 }
 
+/* 玻璃拟态统计卡片 */
 .stat-card {
   text-align: center;
-  border-left: 3px solid var(--border-color, #0f3460);
-  transition: transform 0.2s ease;
+  padding: 20px 16px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.02) 100%);
+  pointer-events: none;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  transition: all var(--transition-normal);
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-color);
 }
 
-.stat-card.total {
-  border-left-color: var(--primary-color, #e94560);
+.stat-card:hover::after {
+  width: 6px;
+  box-shadow: var(--glow-primary);
 }
 
-.stat-card.active {
-  border-left-color: var(--success-color, #28a745);
+/* 各类型统计卡片颜色 */
+.stat-card.total::after {
+  background: var(--gradient-primary);
 }
 
-.stat-card.inactive {
-  border-left-color: var(--text-secondary, #6c757d);
+.stat-card.active::after {
+  background: linear-gradient(180deg, #10b981, #059669);
 }
 
-.stat-card.error {
-  border-left-color: var(--error-color, #dc3545);
+.stat-card.inactive::after {
+  background: linear-gradient(180deg, #6b7280, #4b5563);
 }
 
-.stat-card.balance {
-  border-left-color: var(--warning-color, #ffc107);
+.stat-card.error::after {
+  background: linear-gradient(180deg, #ef4444, #dc2626);
 }
 
-.stat-card.usage {
-  border-left-color: var(--info-color, #17a2b8);
+.stat-card.balance::after {
+  background: linear-gradient(180deg, #f59e0b, #d97706);
+}
+
+.stat-card.usage::after {
+  background: linear-gradient(180deg, #3b82f6, #2563eb);
 }
 
 .stat-label {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 13px;
   color: var(--text-secondary);
+  margin-bottom: 8px;
 }
 
 .stat-icon {
-  font-size: 14px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stat-value {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'SF Mono', 'Monaco', monospace;
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .stat-value.warning {
-  color: var(--warning-color, #ffc107);
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 覆盖Naive UI组件样式 - 保持玻璃拟态背景 */
+:deep(.n-card) {
+  background: var(--glass-bg) !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 :deep(.n-card__content) {
-  padding: 16px;
+  padding: 0;
 }
 
 :deep(.n-statistic) {
-  --n-value-font-size: 24px;
+  --n-value-font-size: 28px;
+  --n-label-font-size: 13px;
+}
+
+:deep(.n-number-animation) {
+  font-family: 'SF Mono', 'Monaco', monospace;
 }
 
 @media (max-width: 768px) {
   .account-stats-bar {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .stat-card {
+    padding: 16px 12px;
+  }
+
+  .stat-value {
+    font-size: 22px;
   }
 }
 </style>

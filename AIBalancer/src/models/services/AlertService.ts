@@ -4,8 +4,8 @@
  */
 
 import { SettingsRepository } from '../repositories/SettingsRepository';
-import { AlertRule, AlertRuleEntity, AlertType, PlatformType, NotificationMethod } from '../entities/AlertRule';
-import { AppError, ErrorCode } from '../../core/errors';
+import { AlertRule, AlertRuleEntity, AlertType, NotificationMethod } from '../entities/AlertRule';
+import { PlatformType } from '../entities/PlatformType';
 
 export interface Alert {
   id: string;
@@ -20,9 +20,9 @@ export interface Alert {
 export class AlertService {
   private settingsRepository: SettingsRepository;
   private alerts: Map<string, Alert> = new Map();
-  private alertRules: AlertRule[] = [];
+  private alertRules: AlertRuleEntity[] = [];
 
-  constructor(settingsRepository?: AppSettingsRepository) {
+  constructor(settingsRepository?: SettingsRepository) {
     this.settingsRepository = settingsRepository || new SettingsRepository();
   }
 
@@ -249,7 +249,11 @@ export class AlertService {
    * 添加告警规则
    */
   addAlertRule(rule: AlertRule): void {
-    this.alertRules.push(rule);
+    // 将AlertRule转换为AlertRuleEntity
+    const entity = rule instanceof AlertRuleEntity
+      ? rule
+      : AlertRuleEntity.create(rule);
+    this.alertRules.push(entity);
   }
 
   /**

@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import {
   NModal,
   NForm,
@@ -273,11 +273,136 @@ async function handleSubmit(): Promise<void> {
 </script>
 
 <style scoped>
+/* 玻璃拟态模态框 */
 :deep(.n-card) {
-  background: var(--bg-card);
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-xl, 20px) !important;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-xl), var(--glow-primary);
 }
 
+:deep(.n-card-header) {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-xl, 20px) var(--radius-xl, 20px) 0 0;
+}
+
+:deep(.n-card-header__main) {
+  font-weight: 700;
+  font-size: 18px;
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:deep(.n-card__content) {
+  padding: 24px;
+}
+
+:deep(.n-card__footer) {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0 0 var(--radius-xl, 20px) var(--radius-xl, 20px);
+}
+
+/* 表单项 */
 :deep(.n-form-item) {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+:deep(.n-form-item-label) {
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+:deep(.n-form-item-label__text) {
+  padding-left: 4px;
+}
+
+/* 输入框和选择器 */
+:deep(.n-input),
+:deep(.n-select),
+:deep(.n-input-number) {
+  --n-color: rgba(255, 255, 255, 0.03) !important;
+  --n-color-disabled: rgba(255, 255, 255, 0.02) !important;
+  --n-border: 1px solid var(--glass-border) !important;
+  --n-border-hover: 1px solid var(--primary-color) !important;
+  --n-border-focus: 1px solid var(--primary-color) !important;
+  --n-text-color: var(--text-primary) !important;
+  --n-text-color-disabled: var(--text-secondary) !important;
+  --n-placeholder-color: var(--text-muted) !important;
+  --n-caret-color: var(--primary-color) !important;
+  --n-input-color: var(--text-primary) !important;
+  --n-selection-color: rgba(94, 114, 235, 0.2) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-radius: var(--radius-md, 12px);
+  transition: all var(--transition-normal);
+}
+
+:deep(.n-input:hover),
+:deep(.n-select:hover),
+:deep(.n-input-number:hover) {
+  border-color: var(--primary-color) !important;
+}
+
+:deep(.n-input:focus-within),
+:deep(.n-select:focus),
+:deep(.n-input-number:focus) {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(94, 114, 235, 0.15) !important;
+}
+
+:deep(.n-base-selection) {
+  border-radius: var(--radius-md, 12px);
+}
+
+/* 文本域 */
+:deep(.n-input--textarea) {
+  border-radius: var(--radius-md, 12px);
+}
+
+/* 按钮 */
+:deep(.n-button) {
+  transition: all var(--transition-normal);
+  border-radius: var(--radius-md, 12px);
+}
+
+:deep(.n-button:not(.n-button--disabled):hover) {
+  transform: translateY(-2px);
+}
+
+:deep(.n-button[type="primary"]) {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+  box-shadow: var(--glow-primary);
+}
+
+:deep(.n-button[type="primary"]:hover) {
+  box-shadow: 0 6px 20px rgba(94, 114, 235, 0.4);
+}
+
+:deep(.n-button--quaternary) {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+}
+
+:deep(.n-button--quaternary:hover) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary-color);
+}
+
+/* 模态框遮罩 */
+:deep(.n-modal) {
+  --n-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+:deep(.n-dialog) {
+  border-radius: var(--radius-xl, 20px) !important;
 }
 </style>

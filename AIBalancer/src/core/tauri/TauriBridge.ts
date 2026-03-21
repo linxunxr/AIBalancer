@@ -114,22 +114,29 @@ export class TauriBridge {
    * 监听事件
    */
   on<T = any>(
-    event: string,
+    eventName: string,
     callback: (payload: T) => void
   ): UnsubscribeFn {
-    const unsubscribe = listen<T>(event, (event) => {
+    const unsubscribe = listen<T>(eventName, (event) => {
       callback(event.payload);
     });
 
     // 添加到监听器列表
-    if (!this.eventListeners.has(event)) {
-      this.eventListeners.set(event, []);
+    if (!this.eventListeners.has(eventName)) {
+      this.eventListeners.set(eventName, []);
     }
-    this.eventListeners.get(event)!.push(unsubscribe);
+
+    // 创建包装的取消函数
+    const wrappedUnsubscribe = async () => {
+      const result = await unsubscribe;
+      result();
+    };
+
+    this.eventListeners.get(eventName)!.push(wrappedUnsubscribe);
 
     return () => {
       // 取消监听
-      return unsubscribe.then((fn) => fn());
+      wrappedUnsubscribe();
     };
   }
 
@@ -137,7 +144,7 @@ export class TauriBridge {
    * 取消所有事件监听
    */
   removeAllListeners(): void {
-    this.eventListeners.forEach((listeners, event) => {
+    this.eventListeners.forEach((listeners) => {
       listeners.forEach(unsubscribe => {
         unsubscribe();
       });

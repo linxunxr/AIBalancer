@@ -104,29 +104,31 @@
 
     <!-- 视图切换 -->
     <div class="view-controls">
-      <n-radio-group :value="viewMode" size="small" @update:value="handleViewModeChange">
-        <n-radio-button value="table">
-          <n-icon :size="14"><ListOutline /></n-icon>
-          表格
-        </n-radio-button>
-        <n-radio-button value="grid">
-          <n-icon :size="14"><GridOutline /></n-icon>
-          网格
-        </n-radio-button>
-        <n-radio-button value="card">
-          <n-icon :size="14"><AppsOutline /></n-icon>
-          卡片
-        </n-radio-button>
-      </n-radio-group>
+      <div class="view-switcher">
+        <n-radio-group :value="viewMode" @update:value="handleViewModeChange">
+          <n-radio-button value="table">
+            <n-icon :size="16"><ListOutline /></n-icon>
+            表格
+          </n-radio-button>
+          <n-radio-button value="grid">
+            <n-icon :size="16"><GridOutline /></n-icon>
+            网格
+          </n-radio-button>
+          <n-radio-button value="card">
+            <n-icon :size="16"><AppsOutline /></n-icon>
+            卡片
+          </n-radio-button>
+        </n-radio-group>
+      </div>
       <n-button
-        text
-        size="small"
+        type="info"
+        size="medium"
         @click="handleToggleAdvancedFilter"
       >
         <template #icon>
           <n-icon><FilterOutline /></n-icon>
         </template>
-        {{ showAdvancedFilter ? '隐藏' : '高级' }}过滤
+        {{ showAdvancedFilter ? '隐藏过滤' : '高级过滤' }}
       </n-button>
     </div>
 
@@ -206,19 +208,17 @@
     />
 
     <!-- 删除确认对话框 -->
-    <n-dialog-provider>
-      <n-dialog
-        :show="showDeleteConfirm"
-        type="warning"
-        title="确认删除"
-        :content="deleteConfirmMessage"
-        positive-text="确认删除"
-        negative-text="取消"
-        @positive-click="executeDelete"
-        @negative-click="showDeleteConfirm = false"
-        @close="showDeleteConfirm = false"
-      />
-    </n-dialog-provider>
+    <n-modal
+      v-model:show="showDeleteConfirm"
+      type="warning"
+      preset="dialog"
+      title="确认删除"
+      :content="deleteConfirmMessage"
+      positive-text="确认删除"
+      negative-text="取消"
+      @positive-click="executeDelete"
+      @negative-click="showDeleteConfirm = false"
+    />
   </div>
 </template>
 
@@ -238,8 +238,7 @@ import {
   NCard,
   NCollapseTransition,
   NEmpty,
-  NDialogProvider,
-  NDialog,
+  NModal,
   NAlert,
   useMessage
 } from 'naive-ui';
@@ -483,24 +482,26 @@ async function executeDelete() {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--bg-primary, #1a1a2e);
   color: var(--text-primary, #ffffff);
   gap: var(--space-md, 16px);
   padding: var(--space-lg, 20px);
   overflow: hidden;
 }
 
-/* 工具栏 */
+/* 工具栏 - 玻璃拟态 */
 .toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: var(--space-md, 16px);
   flex-wrap: wrap;
-  padding: 12px 16px;
-  background: var(--bg-card, #16213e);
-  border-radius: 8px;
-  border: 1px solid var(--border-light, #2a2a4a);
+  padding: 16px 20px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
 }
 
 .toolbar-left,
@@ -510,27 +511,68 @@ async function executeDelete() {
   gap: var(--space-sm, 8px);
 }
 
-/* 视图控制 */
+/* 视图控制 - 玻璃拟态 */
 .view-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 16px 20px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--glass-border);
+  gap: 16px;
 }
 
-/* 过滤面板 */
+.view-switcher {
+  flex-shrink: 0;
+}
+
+/* 高级过滤按钮样式 */
+:deep(.n-button[type="info"]) {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border: none !important;
+  font-weight: 500;
+  padding: 8px 20px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+:deep(.n-button[type="info"]:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* 过滤面板 - 玻璃拟态 */
 .filter-panel {
-  background: var(--bg-card, #16213e);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--glass-border);
 }
 
 /* 错误提示 */
 .error-alert {
   margin-bottom: var(--space-md, 16px);
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-/* 账户列表 */
+/* 账户列表 - 玻璃拟态容器 */
 .account-list {
   flex: 1;
   overflow: auto;
+  padding: 4px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--glass-border);
 }
 
 /* 响应式 */
@@ -543,7 +585,7 @@ async function executeDelete() {
   .toolbar-left,
   .toolbar-right {
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
   }
 
   .view-controls {
@@ -552,26 +594,85 @@ async function executeDelete() {
   }
 }
 
-/* 覆盖Naive UI样式 */
-:deep(.n-card) {
-  background: var(--bg-card, #16213e);
-  border: 1px solid var(--border-light, #2a2a4a);
+/* 覆盖Naive UI样式 - 玻璃效果 */
+:deep(.n-button) {
+  transition: all var(--transition-normal);
 }
 
 :deep(.n-button[type="primary"]) {
-  background: var(--primary-color, #4f46e5) !important;
-  border-color: var(--primary-color, #4f46e5) !important;
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+  box-shadow: var(--glow-primary);
 }
 
 :deep(.n-button[type="primary"]:hover) {
-  background: var(--primary-color-hover, #6366f1) !important;
-  border-color: var(--primary-color-hover, #6366f1) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(94, 114, 235, 0.4);
 }
 
 :deep(.n-input),
-:deep(.n-select) {
-  --n-color: var(--bg-secondary);
-  --n-border: 1px solid var(--border-light);
-  --n-text-color: var(--text-primary);
+:deep(.n-select),
+:deep(.n-input-number) {
+  --n-color: rgba(255, 255, 255, 0.05) !important;
+  --n-border: 1px solid var(--glass-border) !important;
+  --n-text-color: var(--text-primary) !important;
+  --n-placeholder-color: var(--text-muted) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: var(--radius-md, 12px);
+  transition: all var(--transition-normal);
+}
+
+:deep(.n-input:hover),
+:deep(.n-select:hover),
+:deep(.n-input-number:hover) {
+  border-color: var(--primary-color) !important;
+}
+
+:deep(.n-input:focus),
+:deep(.n-select:focus),
+:deep(.n-input-number:focus) {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(94, 114, 235, 0.2) !important;
+}
+
+:deep(.n-tag) {
+  background: rgba(94, 114, 235, 0.1);
+  border: 1px solid rgba(94, 114, 235, 0.3);
+  border-radius: var(--radius-sm, 6px);
+}
+
+:deep(.n-radio-button) {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  transition: all var(--transition-normal);
+}
+
+:deep(.n-radio-button:hover) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+:deep(.n-radio-button--checked) {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+}
+
+:deep(.n-card) {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg, 16px);
+}
+
+:deep(.n-collapse-transition) {
+  background: inherit !important;
+}
+
+:deep(.n-empty) {
+  padding: 60px 20px;
+}
+
+:deep(.n-empty__description) {
+  color: var(--text-secondary);
 }
 </style>

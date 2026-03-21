@@ -135,17 +135,29 @@
         </div>
       </div>
     </div>
+
+    <!-- 添加账户表单模态框 -->
+    <AccountFormModal
+      v-model:show="showFormModal"
+      :editing-account="editingAccount"
+      :existing-tags="allTags"
+      @submit="handleFormSubmit"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
+import { useMessage } from 'naive-ui';
 import { useDashboardViewModel } from '../../viewmodels/dashboard/useDashboardViewModel';
+import { useAccountManagementViewModel } from '../../viewmodels/accounts/useAccountManagementViewModel';
+import AccountFormModal from '../accounts/components/AccountFormModal.vue';
+import type { CreateAccountParams, UpdateAccountParams } from '../../models/entities/Account';
+
+const message = useMessage();
 
 const {
   state,
-  isLoading,
-  error,
   totalBalance,
   todayUsage,
   activePlatforms,
@@ -158,6 +170,16 @@ const {
   refresh,
   addActivity,
 } = useDashboardViewModel();
+
+// 账户管理 ViewModel（用于添加账户功能）
+const {
+  createAccount,
+  allTags
+} = useAccountManagementViewModel();
+
+// 表单状态
+const showFormModal = ref(false);
+const editingAccount = ref(null);
 
 const balances = computed(() => state.value.balances);
 const activities = computed(() => state.value.activities);
@@ -231,7 +253,8 @@ const refreshAllBalances = async () => {
 };
 
 const addAccount = () => {
-  // TODO: 打开添加账户对话框
+  editingAccount.value = null;
+  showFormModal.value = true;
   addActivity({
     type: 'system',
     title: '添加账户',
@@ -240,7 +263,30 @@ const addAccount = () => {
   });
 };
 
-const refreshBalance = (id: string) => {
+const handleFormSubmit = async (data: CreateAccountParams | UpdateAccountParams) => {
+  try {
+    const result = await createAccount(data as CreateAccountParams);
+    if (result) {
+      message.success('账户创建成功');
+      showFormModal.value = false;
+      editingAccount.value = null;
+      // 刷新仪表盘数据
+      await refresh();
+      addActivity({
+        type: 'success',
+        title: '账户添加成功',
+        description: `已添加账户: ${data.name}`,
+        timestamp: new Date(),
+        status: '成功',
+      });
+    }
+  } catch (error) {
+    console.error('添加账户失败:', error);
+    message.error('添加账户失败');
+  }
+};
+
+const refreshBalance = (_id: string) => {
   // TODO: 刷新单个余额
   addActivity({
     type: 'balance',
@@ -257,62 +303,105 @@ const viewAllActivities = () => {
 </script>
 
 <style scoped>
+/* 玻璃拟态仪表盘视图 */
 .dashboard-view {
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
 }
 
-/* 概览卡片 */
+/* 玻璃概览卡片网格 */
 .overview-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-lg);
 }
 
+/* 玻璃概览卡片 */
 .overview-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   padding: var(--space-xl);
   display: flex;
   align-items: center;
   gap: var(--space-lg);
   transition: all var(--transition-normal);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-glass);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 卡片内发光效果 */
+.overview-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
 }
 
 .overview-card:hover {
-  border-color: var(--border-medium);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-glass-hover);
+  transform: translateY(-4px);
 }
 
+/* 总余额卡片 - 渐变背景 */
 .overview-card.total-balance {
-  background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
-  color: white;
+  background: var(--gradient-primary);
   border: none;
+  color: white;
+  box-shadow: var(--shadow-glass), var(--glow-primary);
+}
+
+.overview-card.total-balance::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+}
+
+.overview-card.total-balance:hover {
+  box-shadow: var(--shadow-glass-hover), var(--glow-primary);
 }
 
 .overview-card.total-balance .card-icon {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.overview-card.total-balance .card-label,
-.overview-card.total-balance .card-value,
-.overview-card.total-balance .card-trend {
+.overview-card.total-balance .card-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.overview-card.total-balance .card-value {
   color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+.overview-card.total-balance .card-trend {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 图标容器 */
 .card-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: var(--bg-tertiary);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  border: 1px solid var(--glass-border);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
+  box-shadow: var(--shadow-glass);
+  flex-shrink: 0;
 }
 
 .card-content {
@@ -323,6 +412,7 @@ const viewAllActivities = () => {
   font-size: var(--text-sm);
   color: var(--text-secondary);
   margin-bottom: var(--space-xs);
+  font-weight: var(--font-medium);
 }
 
 .card-value {
@@ -346,11 +436,13 @@ const viewAllActivities = () => {
 }
 
 .card-trend.trend-up {
-  color: var(--success-500);
+  color: #52c41a;
+  text-shadow: 0 0 10px rgba(82, 196, 26, 0.3);
 }
 
 .card-trend.trend-down {
-  color: var(--error-500);
+  color: #ff4d4f;
+  text-shadow: 0 0 10px rgba(255, 77, 79, 0.3);
 }
 
 .card-trend.trend-flat {
@@ -358,19 +450,35 @@ const viewAllActivities = () => {
 }
 
 .status-ok {
-  color: var(--success-500);
+  color: #52c41a;
+  text-shadow: 0 0 10px rgba(82, 196, 26, 0.3);
 }
 
 .status-warning {
-  color: var(--warning-500);
+  color: #faad14;
+  text-shadow: 0 0 10px rgba(250, 173, 20, 0.3);
 }
 
-/* 余额卡片区域 */
+/* 玻璃余额卡片区域 */
 .balance-cards-section {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   padding: var(--space-xl);
+  box-shadow: var(--shadow-glass);
+  position: relative;
+}
+
+.balance-cards-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
 }
 
 .section-header {
@@ -385,6 +493,10 @@ const viewAllActivities = () => {
   font-weight: var(--font-semibold);
   color: var(--text-primary);
   margin: 0;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .section-actions {
@@ -392,53 +504,83 @@ const viewAllActivities = () => {
   gap: var(--space-sm);
 }
 
+/* 玻璃按钮样式 */
 .btn {
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
+  padding: 10px 20px;
+  border-radius: 20px;
   border: none;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--text-sm);
   font-weight: var(--font-medium);
-  transition: all var(--transition-fast);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary {
-  background: var(--primary-500);
+  background: var(--gradient-primary);
   color: white;
+  box-shadow: var(--shadow-glass);
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
 }
 
 .btn-primary:hover {
-  background: var(--primary-600);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-glass-hover), var(--glow-primary);
+  transform: translateY(-2px);
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-glass-active);
 }
 
 .btn-secondary {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-medium);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
 }
 
 .btn-secondary:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--border-heavy);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-glass-hover);
 }
 
 .link-btn {
   background: transparent;
-  border: none;
-  color: var(--primary-500);
+  border: 1px solid var(--glass-border);
+  color: var(--primary-start);
   cursor: pointer;
   font-size: var(--text-sm);
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  border-radius: 20px;
   transition: all var(--transition-fast);
 }
 
 .link-btn:hover {
-  background: rgba(24, 144, 255, 0.1);
-  color: var(--primary-600);
+  background: var(--gradient-primary);
+  border-color: transparent;
+  color: white;
+  box-shadow: var(--glow-primary);
 }
 
+/* 玻璃余额卡片网格 */
 .balance-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -446,22 +588,54 @@ const viewAllActivities = () => {
 }
 
 .balance-card {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   padding: var(--space-lg);
   transition: all var(--transition-normal);
+  box-shadow: var(--shadow-glass);
+  position: relative;
+  overflow: hidden;
+}
+
+.balance-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+  opacity: 0.5;
 }
 
 .balance-card:hover {
-  border-color: var(--primary-500);
-  box-shadow: var(--shadow-md);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-glass-hover);
   transform: translateY(-4px);
 }
 
+.balance-card:hover::before {
+  opacity: 1;
+}
+
 .balance-card.low-balance {
-  border-color: rgba(250, 173, 20, 0.5);
-  background: rgba(250, 173, 20, 0.05);
+  border-color: rgba(250, 173, 20, 0.4);
+  box-shadow: var(--shadow-glass), 0 0 20px rgba(250, 173, 20, 0.15);
+}
+
+.balance-card.low-balance::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(250, 173, 20, 0.05), transparent);
+  pointer-events: none;
 }
 
 .balance-header {
@@ -477,7 +651,7 @@ const viewAllActivities = () => {
 
 .platform-name {
   font-size: var(--text-base);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-semibold);
   color: var(--text-primary);
 }
 
@@ -486,6 +660,10 @@ const viewAllActivities = () => {
   font-weight: var(--font-bold);
   color: var(--text-primary);
   margin-bottom: var(--space-sm);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .balance-trend {
@@ -497,11 +675,11 @@ const viewAllActivities = () => {
 }
 
 .balance-trend.positive {
-  color: var(--success-500);
+  color: #52c41a;
 }
 
 .balance-trend.negative {
-  color: var(--error-500);
+  color: #ff4d4f;
 }
 
 .balance-actions {
@@ -510,25 +688,43 @@ const viewAllActivities = () => {
 }
 
 .icon-btn {
-  background: transparent;
-  border: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  border: 1px solid var(--glass-border);
   cursor: pointer;
-  padding: 6px;
-  border-radius: var(--radius-sm);
+  padding: 8px;
+  border-radius: var(--radius-md);
   font-size: 16px;
   transition: all var(--transition-fast);
 }
 
 .icon-btn:hover {
-  background: var(--bg-tertiary);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-glass-hover);
 }
 
-/* 最近活动 */
+/* 玻璃最近活动区域 */
 .recent-activity-section {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   padding: var(--space-xl);
+  box-shadow: var(--shadow-glass);
+  position: relative;
+}
+
+.recent-activity-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
 }
 
 .activity-list {
@@ -541,44 +737,54 @@ const viewAllActivities = () => {
   display: flex;
   gap: var(--space-md);
   padding: var(--space-md);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   border: 1px solid transparent;
+  background: transparent;
   transition: all var(--transition-fast);
 }
 
 .activity-item:hover {
-  background: var(--bg-secondary);
-  border-color: var(--border-light);
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
 }
 
 .activity-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
 }
 
 .activity-icon.type-balance {
-  background: rgba(24, 144, 255, 0.1);
-  color: var(--primary-500);
+  background: var(--gradient-primary);
+  border-color: transparent;
+  color: white;
+  box-shadow: var(--glow-primary);
 }
 
 .activity-icon.type-api {
-  background: rgba(82, 196, 26, 0.1);
-  color: var(--success-500);
+  background: var(--gradient-success);
+  border-color: transparent;
+  color: white;
 }
 
 .activity-icon.type-warning {
-  background: rgba(250, 173, 20, 0.1);
-  color: var(--warning-500);
+  background: var(--gradient-warning);
+  border-color: transparent;
+  color: white;
 }
 
 .activity-icon.type-system {
-  background: rgba(128, 90, 213, 0.1);
-  color: #805ad5;
+  background: linear-gradient(135deg, #805ad5, #9f7aea);
+  border-color: transparent;
+  color: white;
 }
 
 .activity-content {
@@ -588,7 +794,7 @@ const viewAllActivities = () => {
 
 .activity-title {
   font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-semibold);
   color: var(--text-primary);
   margin-bottom: 2px;
 }
@@ -611,32 +817,50 @@ const viewAllActivities = () => {
 }
 
 .activity-status {
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  border-radius: 20px;
   font-weight: var(--font-medium);
+  font-size: var(--text-xs);
 }
 
 .activity-status.成功 {
   background: rgba(82, 196, 26, 0.15);
-  color: var(--success-500);
+  color: #52c41a;
+  border: 1px solid rgba(82, 196, 26, 0.3);
 }
 
 .activity-status.完成 {
-  background: rgba(24, 144, 255, 0.15);
-  color: var(--primary-500);
+  background: rgba(94, 114, 235, 0.15);
+  color: var(--primary-start);
+  border: 1px solid rgba(94, 114, 235, 0.3);
 }
 
 .activity-status.警告 {
   background: rgba(250, 173, 20, 0.15);
-  color: var(--warning-500);
+  color: #faad14;
+  border: 1px solid rgba(250, 173, 20, 0.3);
 }
 
-/* 底部统计 */
+/* 玻璃底部统计区域 */
 .stats-footer {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-  padding: var(--space-lg) var(--space-xl);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-glass);
+  position: relative;
+}
+
+.stats-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
 }
 
 .stats-row {
@@ -648,6 +872,16 @@ const viewAllActivities = () => {
 .stat-item {
   text-align: center;
   flex: 1;
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  transition: all var(--transition-fast);
+}
+
+.stat-item:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
 }
 
 .stat-label {
@@ -660,6 +894,10 @@ const viewAllActivities = () => {
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
   color: var(--text-primary);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* 响应式设计 */

@@ -145,6 +145,16 @@ pub fn run_migrations(conn: &Connection) -> Result<(), rusqlite::Error> {
         [],
     )?;
 
+    // 创建应用配置表（用于存储代理配置、加密配置等）
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS app_config (
+            key TEXT PRIMARY KEY,
+            config TEXT NOT NULL DEFAULT '{}',
+            updated_at TEXT NOT NULL
+        )",
+        [],
+    )?;
+
     Ok(())
 }
 

@@ -4,7 +4,8 @@
  */
 
 import { BaseRepository, RepositoryError } from './BaseRepository';
-import { UsageRecord, UsageRecordEntity, PlatformType } from '../entities/UsageRecord';
+import { UsageRecord, UsageRecordEntity } from '../entities/UsageRecord';
+import { PlatformType } from '../entities/PlatformType';
 import { invoke } from '@tauri-apps/api/core';
 
 export class UsageRepository extends BaseRepository<UsageRecord, string> {
@@ -163,9 +164,6 @@ export class UsageRepository extends BaseRepository<UsageRecord, string> {
    */
   async isOverBudget(budget: number, platform?: PlatformType): Promise<boolean> {
     try {
-      const today = new Date();
-      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-
       const monthUsage = await this.getTotalUsage(platform);
 
       // 简化处理：使用总成本作为预算依据

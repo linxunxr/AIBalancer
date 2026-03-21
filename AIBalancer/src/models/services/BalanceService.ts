@@ -4,7 +4,8 @@
  */
 
 import { BalanceRepository } from '../repositories/BalanceRepository';
-import { Balance, BalanceEntity, PlatformType, Currency, BalanceChangeReason } from '../entities/Balance';
+import { Balance, BalanceEntity, Currency, BalanceChangeReason } from '../entities/Balance';
+import { PlatformType } from '../entities/PlatformType';
 import { AppError, ErrorCode } from '../../core/errors';
 
 export interface BalanceTrend {
@@ -45,7 +46,7 @@ export class BalanceService {
         lastUpdated: new Date()
       });
 
-      return await this.balanceRepository.create(newBalance);
+      return await this.balanceRepository.create(newBalance as Omit<Balance, 'id'>);
     } catch (error) {
       throw new AppError('获取余额失败', ErrorCode.STORAGE_ERROR, { platform }, error as Error);
     }
@@ -63,8 +64,8 @@ export class BalanceService {
       }
 
       const reason = balance < current.currentBalance
-        ? BalanceChangeReason.API_USAGE
-        : BalanceChangeReason.MANUAL_UPDATE;
+        ? BalanceChangeReason.USAGE
+        : BalanceChangeReason.RECHARGE;
 
       return await this.balanceRepository.updateBalance(current.id, balance, reason);
     } catch (error) {
@@ -75,7 +76,7 @@ export class BalanceService {
   /**
    * 调整余额
    */
-  async adjustBalance(platform: PlatformType, delta: number, reason: BalanceChangeReason): Promise<Balance> {
+  async adjustBalance(platform: PlatformType, delta: number, reason: BalanceChangeReason = BalanceChangeReason.ADJUSTMENT): Promise<Balance> {
     try {
       const current = await this.getCurrentBalance(platform);
       const newBalance = current.currentBalance + delta;
@@ -109,7 +110,7 @@ export class BalanceService {
       }
 
       const totalChange = history.reduce((sum, entry) => sum + entry.change, 0);
-      const dailyAverageChange = total -Change / days;
+      const dailyAverageChange = totalChange / days;
 
       let trend: 'increasing' | 'decreasing' | 'stable';
       if (dailyAverageChange > 10) {
@@ -121,9 +122,9 @@ export class BalanceService {
       }
 
       const formattedHistory = history.map(entry => ({
-        date: entry.timestamp.toISOString().split('T')[0],
+        date: new Date(entry.timestamp).toISOString().split('T')[0],
         balance: entry.balance,
-          change: entry.change
+        change: entry.change
       }));
 
       return {

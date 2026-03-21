@@ -52,15 +52,43 @@ function handleSelect(id: string) {
 </script>
 
 <style scoped>
+/* 玻璃拟态网格容器 */
 .account-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--space-lg);
+  padding: var(--space-md);
+}
+
+/* 网格卡片动画 */
+.account-grid > * {
+  animation: fadeSlideIn 0.3s ease-out forwards;
+  opacity: 0;
+}
+
+.account-grid > *:nth-child(1) { animation-delay: 0.05s; }
+.account-grid > *:nth-child(2) { animation-delay: 0.1s; }
+.account-grid > *:nth-child(3) { animation-delay: 0.15s; }
+.account-grid > *:nth-child(4) { animation-delay: 0.2s; }
+.account-grid > *:nth-child(5) { animation-delay: 0.25s; }
+.account-grid > *:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {
   .account-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-md);
+    padding: var(--space-sm);
   }
 }
 </style>

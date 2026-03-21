@@ -1,0 +1,271 @@
+/* src/styles/performance.css */
+/* 玻璃拟态性能优化 */
+
+/* ============================================
+   GPU 加速提示
+   ============================================ */
+
+/* 玻璃效果元素 GPU 加速 */
+.glass,
+.glass-card,
+.glass-animated,
+.glass-hover,
+.gradient-animated,
+.gradient-rainbow {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 动画元素优化 */
+.pulse-indicator,
+.float-animation,
+.float-animation-slow,
+.ripple,
+.ripple-wave,
+.bounce,
+.scale-pulse,
+.border-glow {
+  will-change: box-shadow, transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 加载动画优化 */
+.gradient-ring,
+.shimmer,
+.shimmer-slow,
+.loading-shimmer {
+  will-change: background-position;
+  transform: translateZ(0);
+}
+
+/* 进度条动画 */
+.progress-striped {
+  will-change: background-position;
+}
+
+/* ============================================
+   减少重绘
+   ============================================ */
+
+/* 固定定位元素 */
+.top-navbar,
+.sidebar,
+.app-footer {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: layout style paint;
+}
+
+/* 频繁变化的元素优化 */
+.nav-item,
+.btn,
+.icon-btn,
+.balance-card {
+  contain: layout style;
+}
+
+/* ============================================
+   动画性能优化
+   ============================================ */
+
+/* 使用 transform 而非 width/height/left/top */
+.glass-card:hover,
+.glass-hover:hover,
+.balance-card:hover {
+  transform: translateZ(0) translateY(-4px);
+}
+
+/* 使用 opacity 而非 visibility 配合动画 */
+.fade-element {
+  transition: opacity 0.3s ease;
+}
+
+.fade-element.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ============================================
+   滚动性能优化
+   ============================================ */
+
+/* 主内容区域滚动优化 */
+.page-container,
+.sidebar-nav,
+.drawer-content {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* 粘性定位元素 */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+/* ============================================
+   图片和图标优化
+   ============================================ */
+
+/* 图标容器 */
+.icon-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  contain: layout style;
+}
+
+.icon-container svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+}
+
+/* 图片懒加载占位符 */
+.image-lazy {
+  background: var(--glass-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.image-lazy::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--glass-highlight) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.image-lazy.loaded::before {
+  display: none;
+}
+
+.image-lazy.loaded {
+  background: transparent;
+}
+
+/* ============================================
+   复杂选择器优化
+   ============================================ */
+
+/* 合并相似规则 */
+.glass,
+.glass-card,
+.glass-panel {
+  border-radius: var(--radius-xl);
+}
+
+.glass-input,
+.glass-btn,
+.glass-nav-item {
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
+}
+
+/* ============================================
+   CSS 变量访问优化
+   ============================================ */
+
+/* 预定义常用值避免重复计算 */
+.glass-optimized {
+  /* 缓存变量值 */
+  --local-blur: var(--glass-blur);
+  --local-bg: var(--glass-bg);
+  --local-border: var(--glass-border);
+  --local-shadow: var(--shadow-glass);
+
+  background: var(--local-bg);
+  backdrop-filter: blur(var(--local-blur));
+  border: 1px solid var(--local-border);
+  box-shadow: var(--local-shadow);
+}
+
+/* ============================================
+   媒体查询优化
+   ============================================ */
+
+/* 合并媒体查询 */
+@media (max-width: 768px), (max-height: 600px) {
+  .glass,
+  .glass-card {
+    backdrop-filter: blur(var(--glass-blur-light));
+    -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  }
+
+  .float-animation {
+    animation: none;
+  }
+}
+
+/* ============================================
+   JavaScript 动画类优化
+   ============================================ */
+
+/* 为 JS 动画预留的类 */
+.js-animated {
+  transition: none !important;
+}
+
+.js-animated-complete {
+  transition: all var(--transition-normal) !important;
+}
+
+/* ============================================
+   大列表优化
+   ============================================ */
+
+/* 虚拟滚动容器 */
+.virtual-list {
+  contain: strict;
+  content-visibility: auto;
+}
+
+/* 虚拟列表项 */
+.virtual-list-item {
+  contain: layout style;
+  will-change: transform;
+}
+
+/* ============================================
+   防抖滚动处理
+   ============================================ */
+
+/* 使用 CSS 变量控制动画状态 */
+.animation-paused {
+  animation-play-state: paused !important;
+  transition-play-state: paused !important;
+}
+
+.animation-running {
+  animation-play-state: running !important;
+  transition-play-state: running !important;
+}
+
+/* ============================================
+   预加载提示
+   ============================================ */
+
+/* 预加载关键玻璃效果 */
+.preload-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+
+/* 预加载渐变 */
+.preload-gradient {
+  background: var(--gradient-primary);
+}

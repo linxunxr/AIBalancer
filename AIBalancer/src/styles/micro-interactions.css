@@ -1,0 +1,715 @@
+/* src/styles/micro-interactions.css */
+/* 玻璃拟态微交互效果 */
+
+/* ============================================
+   卡片3D悬浮效果
+   ============================================ */
+
+.interactive-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.interactive-card:hover {
+  transform: perspective(1000px) rotateX(2deg) translateY(-4px);
+}
+
+.interactive-card--tilt-left:hover {
+  transform: perspective(1000px) rotateY(-2deg) translateY(-4px);
+}
+
+.interactive-card--tilt-right:hover {
+  transform: perspective(1000px) rotateY(2deg) translateY(-4px);
+}
+
+/* 3D阴影效果 */
+.interactive-card--shadow-3d {
+  position: relative;
+}
+
+.interactive-card--shadow-3d::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 5%;
+  width: 90%;
+  height: 10px;
+  background: radial-gradient(
+    ellipse,
+    rgba(0, 0, 0, 0.3) 0%,
+    transparent 70%
+  );
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+.interactive-card--shadow-3d:hover::after {
+  bottom: -15px;
+  opacity: 0.5;
+  background: radial-gradient(
+    ellipse,
+    rgba(94, 114, 235, 0.4) 0%,
+    transparent 70%
+  );
+}
+
+/* ============================================
+   图标悬浮放大
+   ============================================ */
+
+.icon-hover {
+  transition: transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-hover:hover {
+  transform: scale(1.2);
+}
+
+.icon-hover--left:hover {
+  transform: translateX(-2px) scale(1.2);
+}
+
+.icon-hover--right:hover {
+  transform: translateX(2px) scale(1.2);
+}
+
+.icon-hover--up:hover {
+  transform: translateY(-2px) scale(1.2);
+}
+
+.icon-hover--down:hover {
+  transform: translateY(2px) scale(1.2);
+}
+
+/* 图标旋转 */
+.icon-spin-hover:hover {
+  animation: icon-spin 0.5s ease;
+}
+
+@keyframes icon-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   文字渐变效果
+   ============================================ */
+
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-accent {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 文字光泽扫过 */
+.text-shine {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.text-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: text-shine 2s infinite;
+}
+
+@keyframes text-shine {
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
+  }
+}
+
+/* 文字弹跳 */
+.text-bounce:hover {
+  animation: text-bounce 0.5s ease;
+}
+
+@keyframes text-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-3px);
+  }
+  75% {
+    transform: translateY(2px);
+  }
+}
+
+/* ============================================
+   链接悬浮效果
+   ============================================ */
+
+.link-hover {
+  position: relative;
+  color: var(--primary-start);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link-hover::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: width 0.3s ease;
+  border-radius: 1px;
+}
+
+.link-hover:hover {
+  color: var(--primary-end);
+}
+
+.link-hover:hover::after {
+  width: 100%;
+}
+
+/* 下划线动画 */
+.underline-animation {
+  position: relative;
+  text-decoration: none;
+}
+
+.underline-animation::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+  border-radius: 1px;
+}
+
+.underline-animation:hover::after {
+  width: 100%;
+}
+
+/* ============================================
+   按钮微交互
+   ============================================ */
+
+/* 按压缩效果 */
+.press-effect {
+  transition: transform 0.1s ease;
+}
+
+.press-effect:active {
+  transform: scale(0.95);
+}
+
+/* 涟漪效果增强 */
+.ripple-enhanced {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-enhanced .ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.4) 0%,
+    transparent 70%
+  );
+  transform: scale(0);
+  animation: ripple-enhanced 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple-enhanced {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* 按钮边框动画 */
+.border-animation {
+  position: relative;
+  background: var(--glass-bg);
+  border: none;
+}
+
+.border-animation::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  background: var(--gradient-primary);
+  border-radius: inherit;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.border-animation:hover::before {
+  opacity: 1;
+}
+
+/* 按钮光泽动画 */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+.btn-shine:hover::before {
+  left: 150%;
+}
+
+/* ============================================
+   输入框微交互
+   ============================================ */
+
+/* 聚焦时标签上浮 */
+.input-float-label {
+  position: relative;
+}
+
+.input-float-label .float-label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  transition: all 0.2s ease;
+  pointer-events: none;
+  background: var(--glass-bg);
+  padding: 0 4px;
+}
+
+.input-float-label input:focus + .float-label,
+.input-float-label input:not(:placeholder-shown) + .float-label {
+  top: 0;
+  font-size: var(--text-xs);
+  color: var(--primary-start);
+}
+
+/* 输入框清除按钮 */
+.input-clear {
+  position: relative;
+}
+
+.input-clear .clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+  color: var(--text-tertiary);
+}
+
+.input-clear:hover .clear-btn {
+  opacity: 1;
+}
+
+.input-clear .clear-btn:hover {
+  color: var(--error-color);
+}
+
+/* 输入框字符计数 */
+.char-count {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.char-count--warning {
+  color: var(--warning-color);
+}
+
+.char-count--error {
+  color: var(--error-color);
+}
+
+/* ============================================
+   复选框/单选框微交互
+   ============================================ */
+
+.checkbox-custom {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-custom input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkbox-custom .checkmark {
+  width: 20px;
+  height: 20px;
+  background: var(--glass-bg);
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-custom:hover .checkmark {
+  border-color: var(--primary-start);
+  background: var(--glass-bg-hover);
+}
+
+.checkbox-custom input:checked + .checkmark {
+  background: var(--gradient-primary);
+  border-color: transparent;
+  box-shadow: var(--glow-primary);
+}
+
+.checkbox-custom .checkmark::after {
+  content: '';
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.2s ease;
+}
+
+.checkbox-custom input:checked + .checkmark::after {
+  transform: rotate(45deg) scale(1);
+}
+
+/* 单选框 */
+.radio-custom .checkmark {
+  border-radius: 50%;
+}
+
+.radio-custom .checkmark::after {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  transform: scale(0);
+  border: none;
+}
+
+.radio-custom input:checked + .checkmark::after {
+  transform: scale(1);
+}
+
+/* ============================================
+   标签页微交互
+   ============================================ */
+
+.tab-hover {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.tab-hover::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+  border-radius: 1px;
+}
+
+.tab-hover:hover::after {
+  width: 80%;
+}
+
+/* ============================================
+   卡片交互
+   ============================================ */
+
+/* 边框发光 */
+.border-glow-hover:hover {
+  box-shadow: var(--glow-primary), var(--shadow-glass-hover);
+  border-color: var(--primary-start);
+}
+
+/* 角标动画 */
+.corner-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--gradient-danger);
+  color: white;
+  font-size: var(--text-xs);
+  padding: 4px 8px;
+  border-radius: 20px;
+  box-shadow: var(--glow-danger);
+  animation: badge-pulse 2s infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* 选中状态 */
+.selectable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selectable.selected {
+  background: linear-gradient(
+    135deg,
+    rgba(94, 114, 235, 0.15),
+    rgba(157, 80, 187, 0.15)
+  );
+  border-color: var(--primary-start);
+  box-shadow: var(--glow-primary);
+}
+
+.selectable:hover {
+  background: var(--glass-bg);
+  border-color: var(--glass-border-hover);
+}
+
+/* ============================================
+   列表项微交互
+   ============================================ */
+
+.list-item-hover {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.list-item-hover:hover {
+  background: var(--glass-bg);
+  padding-left: calc(var(--space-md) + 4px);
+  border-left: 3px solid var(--primary-start);
+}
+
+.list-item-hover:active {
+  background: var(--glass-bg-active);
+}
+
+/* 拖拽手柄 */
+.drag-handle-icon {
+  cursor: grab;
+  color: var(--text-tertiary);
+  transition: color 0.2s ease;
+}
+
+.drag-handle-icon:hover {
+  color: var(--primary-start);
+}
+
+.drag-handle-icon:active {
+  cursor: grabbing;
+}
+
+/* ============================================
+   滑块微交互
+   ============================================ */
+
+.slider-track {
+  position: relative;
+  height: 6px;
+  background: var(--glass-bg);
+  border-radius: 3px;
+  border: 1px solid var(--glass-border);
+}
+
+.slider-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: 3px;
+  transition: width 0.1s ease;
+}
+
+.slider-thumb {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  box-shadow: var(--shadow-glass), var(--glow-primary);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slider-thumb:hover {
+  transform: translate(-50%, -50%) scale(1.2);
+  box-shadow: var(--shadow-glass-hover), var(--glow-primary);
+}
+
+.slider-thumb:active {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* ============================================
+   头像微交互
+   ============================================ */
+
+.avatar-hover {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.avatar-hover::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  filter: blur(5px);
+}
+
+.avatar-hover:hover::after {
+  opacity: 0.5;
+}
+
+.avatar-hover:hover {
+  transform: scale(1.05);
+  box-shadow: var(--glow-primary);
+}
+
+/* 在线状态指示器 */
+.status-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+}
+
+.status-indicator--online {
+  background: var(--gradient-success);
+  animation: status-pulse 2s infinite;
+}
+
+.status-indicator--away {
+  background: var(--gradient-warning);
+}
+
+.status-indicator--offline {
+  background: var(--text-tertiary);
+}
+
+@keyframes status-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(82, 196, 26, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(82, 196, 26, 0);
+  }
+}
+
+/* ============================================
+   徽章微交互
+   ============================================ */
+
+.badge-hover {
+  transition: all 0.2s ease;
+}
+
+.badge-hover:hover {
+  transform: scale(1.1);
+  box-shadow: var(--glow-primary);
+}
+
+.badge-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--gradient-danger);
+  color: white;
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  border-radius: 10px;
+  animation: badge-bounce 0.3s ease;
+}
+
+@keyframes badge-bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}

@@ -1,0 +1,263 @@
+/* src/styles/glass-fallback.css */
+/* 玻璃拟态效果降级处理 */
+
+/* ============================================
+   backdrop-filter 降级处理
+   ============================================ */
+
+/* 不支持 backdrop-filter 的浏览器 */
+@supports not (backdrop-filter: blur(1px)) {
+  .glass,
+  .glass-hover,
+  .glass-card,
+  .glass-panel,
+  .glass-modal,
+  .glass-input,
+  .glass-btn,
+  .glass-btn-gradient,
+  .glass-nav-item,
+  .glass-modal-backdrop {
+    background: rgba(30, 30, 40, 0.85) !important;
+  }
+
+  .glass-modal-backdrop {
+    background: rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .glass-input:focus {
+    box-shadow: 0 0 0 2px var(--primary-start) !important;
+  }
+}
+
+/* ============================================
+   iOS Safari 特定处理
+   ============================================ */
+
+@supports (-webkit-touch-callout: none) {
+  .glass,
+  .glass-hover,
+  .glass-card {
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+  }
+
+  .glass-medium {
+    -webkit-backdrop-filter: blur(var(--glass-blur-medium));
+  }
+
+  .glass-light {
+    -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  }
+}
+
+/* ============================================
+   无障碍支持 - 减少动画
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .float-animation,
+  .pulse-indicator,
+  .gradient-animated,
+  .shimmer,
+  .shimmer-slow,
+  .bounce {
+    animation: none !important;
+  }
+
+  .ripple,
+  .ripple-wave {
+    display: none !important;
+  }
+
+  .cursor-glow {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   弱化玻璃效果（移动端）
+   ============================================ */
+
+@media (max-width: 768px) {
+  .glass {
+    backdrop-filter: blur(var(--glass-blur-light));
+    -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  }
+
+  .glass-card {
+    backdrop-filter: blur(var(--glass-blur-light));
+    -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  }
+
+  .glass-modal,
+  .glass-panel {
+    backdrop-filter: blur(var(--glass-blur-medium));
+    -webkit-backdrop-filter: blur(var(--glass-blur-medium));
+  }
+}
+
+/* ============================================
+   低性能设备降级
+   ============================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* 尝试检测低性能设备 */
+  @media (max-width: 768px) {
+    .glass {
+      backdrop-filter: blur(var(--glass-blur-light));
+      -webkit-backdrop-filter: blur(var(--glass-blur-light));
+    }
+
+    .glass-card:hover {
+      transform: none;
+    }
+
+    .glass-hover:hover {
+      transform: none;
+    }
+  }
+}
+
+/* ============================================
+   高对比度模式支持
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .glass,
+  .glass-card,
+  .glass-btn {
+    background: var(--bg-card) !important;
+    border: 2px solid var(--text-primary) !important;
+  }
+
+  .glass-input {
+    border: 2px solid var(--text-primary) !important;
+  }
+
+  .glass-input:focus {
+    border-color: var(--primary-start) !important;
+    box-shadow: 0 0 0 3px var(--primary-start) !important;
+  }
+}
+
+/* ============================================
+   深色高对比度模式
+   ============================================ */
+
+@media (prefers-color-scheme: dark) and (prefers-contrast: high) {
+  .glass,
+  .glass-card,
+  .glass-btn {
+    background: #000 !important;
+    border-color: #fff !important;
+  }
+}
+
+/* ============================================
+   焦点可见性优化
+   ============================================ */
+
+/* 确保焦点状态在所有情况下都可见 */
+.glass:focus-within,
+.glass-card:focus-within,
+.glass-input:focus {
+  outline: 2px solid var(--primary-start);
+  outline-offset: 2px;
+}
+
+/* 确保按钮焦点状态可见 */
+button:focus,
+.btn:focus,
+.glass-btn:focus {
+  outline: 2px solid var(--primary-start);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   打印样式
+   ============================================ */
+
+@media print {
+  .glass,
+  .glass-card,
+  .glass-panel,
+  .glass-modal,
+  .glass-btn,
+  .glass-nav-item {
+    background: white !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    color: black !important;
+  }
+
+  .glass-modal-backdrop {
+    background: white !important;
+  }
+
+  .gradient-animated,
+  .gradient-rainbow,
+  .float-animation,
+  .pulse-indicator {
+    display: none !important;
+  }
+
+  .glass-btn-gradient {
+    background: #333 !important;
+    color: white !important;
+    border: none !important;
+  }
+}
+
+/* ============================================
+   Firefox 特定修复
+   ============================================ */
+
+@-moz-document url-prefix() {
+  .glass,
+  .glass-card {
+    background-clip: padding-box;
+  }
+
+  .glass-input {
+    background-clip: padding-box;
+  }
+}
+
+/* ============================================
+   Edge Legacy 修复
+   ============================================ */
+
+@supports (-ms-ime-align: auto) {
+  .glass,
+  .glass-card {
+    background: rgba(30, 30, 40, 0.9) !important;
+  }
+
+  .glass-input {
+    background: rgba(30, 30, 40, 0.9) !important;
+  }
+}
+
+/* ============================================
+   旧版 Safari 修复 (< 14)
+   ============================================ */
+
+@supports not (background: linear-gradient(0deg, red, blue)) {
+  .gradient-primary,
+  .gradient-accent,
+  .gradient-success,
+  .gradient-warning,
+  .gradient-danger {
+    /* 回退到纯色 */
+    background: var(--primary-500) !important;
+  }
+}

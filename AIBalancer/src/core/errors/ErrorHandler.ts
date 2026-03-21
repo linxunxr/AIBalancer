@@ -39,9 +39,9 @@ export class AppError extends Error {
     this.timestamp = new Date();
     this.originalError = originalError;
 
-    // 保持堆栈跟踪
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, AppError);
+    // 保持堆栈跟踪 - 使用类型断言避免 TypeScript 错误
+    if (typeof Error !== 'undefined' && 'captureStackTrace' in Error) {
+      (Error as unknown as { captureStackTrace: (target: object, constructor: Function) => void }).captureStackTrace(this, AppError);
     }
   }
 
@@ -129,8 +129,10 @@ export class ErrorHandler {
    */
   async wrapAsync<T>(
     operation: () => Promise<T>,
-    errorMessage?: string,
-    errorCode?: ErrorCode
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _errorMessage?: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _errorCode?: ErrorCode
   ): Promise<T> {
     try {
       return await operation();
@@ -145,8 +147,10 @@ export class ErrorHandler {
    */
   wrapSync<T>(
     operation: () => T,
-    errorMessage?: string,
-    errorCode?: ErrorCode
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _errorMessage?: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _errorCode?: ErrorCode
   ): T {
     try {
       return operation();

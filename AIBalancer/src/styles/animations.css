@@ -1,0 +1,520 @@
+/* src/styles/animations.css */
+/* 玻璃拟态动画系统 - Glassmorphism Animation System */
+
+/* ============================================
+   脉冲动画 - 用于状态指示器
+   ============================================ */
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--primary-start);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--primary-end), 0 0 30px var(--primary-start);
+  }
+}
+
+.pulse-indicator {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-cyan {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--accent-cyan);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--accent-cyan), 0 0 30px var(--accent-cyan-dark);
+  }
+}
+
+.pulse-indicator-cyan {
+  animation: pulse-glow-cyan 2s ease-in-out infinite;
+}
+
+/* ============================================
+   渐变流动动画
+   ============================================ */
+
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-animated {
+  background: linear-gradient(
+    270deg,
+    var(--primary-start),
+    var(--primary-end),
+    var(--primary-start)
+  );
+  background-size: 200% 200%;
+  animation: gradient-flow 3s ease infinite;
+}
+
+@keyframes gradient-flow-rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-rainbow {
+  background: linear-gradient(
+    270deg,
+    var(--primary-start),
+    var(--accent-cyan),
+    var(--primary-end),
+    var(--primary-start)
+  );
+  background-size: 400% 400%;
+  animation: gradient-flow-rainbow 5s ease infinite;
+}
+
+/* ============================================
+   浮悬动画
+   ============================================ */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.float-animation-slow {
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+/* ============================================
+   光泽扫过动画
+   ============================================ */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer-slow {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-slow {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-slow 2.5s infinite;
+}
+
+/* ============================================
+   旋转加载动画
+   ============================================ */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-slow {
+  animation: spin-slow 2s linear infinite;
+}
+
+/* ============================================
+   渐变旋转圆环加载器
+   ============================================ */
+
+@keyframes gradient-ring {
+  0% {
+    transform: rotate(0deg);
+    border-top-color: var(--primary-start);
+    border-right-color: transparent;
+  }
+  25% {
+    border-top-color: var(--primary-start);
+    border-right-color: var(--primary-end);
+  }
+  50% {
+    border-top-color: var(--primary-mid);
+    border-right-color: var(--primary-end);
+  }
+  75% {
+    border-top-color: var(--primary-end);
+    border-right-color: var(--primary-mid);
+  }
+  100% {
+    transform: rotate(360deg);
+    border-top-color: var(--primary-start);
+    border-right-color: transparent;
+  }
+}
+
+.gradient-ring {
+  border: 3px solid var(--glass-border);
+  border-top-color: var(--primary-start);
+  border-radius: 50%;
+  animation: gradient-ring 1s linear infinite;
+}
+
+/* ============================================
+   缩放脉冲动画
+   ============================================ */
+
+@keyframes scale-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.scale-pulse {
+  animation: scale-pulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   边框发光动画
+   ============================================ */
+
+@keyframes border-glow {
+  0%, 100% {
+    border-color: var(--glass-border);
+    box-shadow: none;
+  }
+  50% {
+    border-color: var(--primary-start);
+    box-shadow: var(--glow-primary);
+  }
+}
+
+.border-glow {
+  animation: border-glow 2s ease-in-out infinite;
+}
+
+/* ============================================
+   淡入动画
+   ============================================ */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fade-in-scale {
+  animation: fade-in-scale 0.3s ease-out forwards;
+}
+
+/* ============================================
+   滑入动画
+   ============================================ */
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slide-in-right 0.3s ease-out forwards;
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-left {
+  animation: slide-in-left 0.3s ease-out forwards;
+}
+
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-up {
+  animation: slide-in-up 0.3s ease-out forwards;
+}
+
+/* ============================================
+   弹性动画
+   ============================================ */
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.bounce {
+  animation: bounce 0.6s ease-in-out infinite;
+}
+
+@keyframes elastic {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  70% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.elastic {
+  animation: elastic 0.5s ease-out;
+}
+
+/* ============================================
+   发光脉冲（用于通知等）
+   ============================================ */
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px var(--glow-primary);
+  }
+  50% {
+    box-shadow: 0 0 25px var(--glow-primary), 0 0 40px var(--glow-secondary);
+  }
+}
+
+.glow-pulse {
+  animation: glow-pulse 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   进度条动画
+   ============================================ */
+
+@keyframes progress-stripe {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 0;
+  }
+}
+
+.progress-striped {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.1) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 40px 40px;
+  animation: progress-stripe 1s linear infinite;
+}
+
+/* ============================================
+   数字跳动动画
+   ============================================ */
+
+@keyframes number-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-3px);
+  }
+  75% {
+    transform: translateY(3px);
+  }
+}
+
+.number-bounce {
+  animation: number-bounce 0.3s ease-in-out;
+}
+
+/* ============================================
+   组合动画类
+   ============================================ */
+
+/* 渐变按钮悬浮效果 */
+.btn-gradient-animated {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-gradient-animated::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn-gradient-animated:hover::before {
+  left: 100%;
+}
+
+/* 卡片悬浮发光效果 */
+.card-glow-hover {
+  transition: all var(--transition-normal);
+}
+
+.card-glow-hover:hover {
+  box-shadow: var(--shadow-glass-hover), var(--glow-primary);
+}
+
+/* 图标悬浮旋转 */
+.icon-spin-hover:hover {
+  animation: spin 0.5s linear;
+}
+
+/* 文字颜色渐变动画 */
+.text-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.text-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}

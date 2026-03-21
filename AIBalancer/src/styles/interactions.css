@@ -1,0 +1,584 @@
+/* src/styles/interactions.css */
+/* 玻璃拟态交互动画系统 */
+
+/* ============================================
+   鼠标跟随光效
+   ============================================ */
+
+.cursor-glow {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(94, 114, 235, 0.15) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+  mix-blend-mode: screen;
+}
+
+.cursor-glow--secondary {
+  background: radial-gradient(
+    circle,
+    rgba(157, 80, 187, 0.1) 0%,
+    transparent 70%
+  );
+}
+
+/* ============================================
+   加载骨架屏动画
+   ============================================ */
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--glass-bg) 0%,
+    var(--glass-highlight) 50%,
+    var(--glass-bg) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+.loading-shimmer-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-shimmer-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--glass-highlight) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.loading-shimmer-line {
+  height: 16px;
+  background: var(--glass-bg);
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-shimmer-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--glass-highlight) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.loading-shimmer-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-shimmer-circle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    var(--glass-highlight) 50%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ============================================
+   状态反馈动画
+   ============================================ */
+
+.success-flash {
+  animation: flash-success 0.5s ease;
+}
+
+@keyframes flash-success {
+  0%, 100% {
+    box-shadow: var(--shadow-glass);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(82, 196, 26, 0.5);
+  }
+}
+
+.error-flash {
+  animation: flash-error 0.5s ease;
+}
+
+@keyframes flash-error {
+  0%, 100% {
+    box-shadow: var(--shadow-glass);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 77, 79, 0.5);
+  }
+}
+
+.warning-flash {
+  animation: flash-warning 0.5s ease;
+}
+
+@keyframes flash-warning {
+  0%, 100% {
+    box-shadow: var(--shadow-glass);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(250, 173, 20, 0.5);
+  }
+}
+
+/* ============================================
+   通知推送动画
+   ============================================ */
+
+.notification-enter {
+  animation: notification-slide-in 0.3s ease-out forwards;
+}
+
+@keyframes notification-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.notification-leave {
+  animation: notification-slide-out 0.3s ease-in forwards;
+}
+
+@keyframes notification-slide-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* 通知进度条 */
+.notification-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  animation: notification-progress 5s linear forwards;
+}
+
+@keyframes notification-progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* ============================================
+   拖拽交互效果
+   ============================================ */
+
+.drag-handle {
+  cursor: grab;
+  transition: all var(--transition-fast);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.dragging {
+  opacity: 0.8;
+  transform: scale(1.02);
+  box-shadow: var(--shadow-glass-hover), var(--glow-primary);
+}
+
+.drop-target {
+  border: 2px dashed var(--primary-start) !important;
+  background: rgba(94, 114, 235, 0.1) !important;
+}
+
+.drop-target-active {
+  animation: pulse-border 1s infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: var(--primary-start);
+  }
+  50% {
+    border-color: var(--primary-end);
+  }
+}
+
+/* ============================================
+   滑动删除交互
+   ============================================ */
+
+.swipe-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.swipe-content {
+  transition: transform 0.3s ease;
+}
+
+.swipe-action {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.swipe-action--left {
+  left: 0;
+  background: var(--gradient-success);
+}
+
+.swipe-action--right {
+  right: 0;
+  background: var(--gradient-danger);
+}
+
+.swipe-container:hover .swipe-action {
+  opacity: 1;
+}
+
+/* ============================================
+   数字变化动画
+   ============================================ */
+
+.number-change {
+  transition: all 0.3s ease;
+}
+
+.number-change--increase {
+  animation: number-increase 0.5s ease;
+}
+
+@keyframes number-increase {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.number-change--decrease {
+  animation: number-decrease 0.5s ease;
+}
+
+@keyframes number-decrease {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   列表项进入动画
+   ============================================ */
+
+.list-enter-active {
+  animation: list-item-enter 0.3s ease-out forwards;
+}
+
+@keyframes list-item-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.list-leave-active {
+  animation: list-item-leave 0.3s ease-in forwards;
+}
+
+@keyframes list-item-leave {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+/* 交错进入动画 */
+.list-stagger-enter-active {
+  animation: list-stagger-enter 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes list-stagger-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   模态框过渡动画
+   ============================================ */
+
+.modal-enter-active {
+  animation: modal-in 0.3s ease-out;
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-leave-active {
+  animation: modal-out 0.2s ease-in;
+}
+
+@keyframes modal-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* 遮罩层动画 */
+.modal-mask-enter-active {
+  animation: modal-mask-in 0.3s ease-out;
+}
+
+@keyframes modal-mask-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-mask-leave-active {
+  animation: modal-mask-out 0.2s ease-in;
+}
+
+@keyframes modal-mask-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   折叠面板动画
+   ============================================ */
+
+.collapse-enter-active {
+  animation: collapse-in 0.3s ease-out;
+  overflow: hidden;
+}
+
+@keyframes collapse-in {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+  }
+}
+
+.collapse-leave-active {
+  animation: collapse-out 0.3s ease-in;
+  overflow: hidden;
+}
+
+@keyframes collapse-out {
+  from {
+    max-height: 500px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   工具提示动画
+   ============================================ */
+
+.tooltip-enter-active {
+  animation: tooltip-in 0.2s ease-out;
+}
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tooltip-leave-active {
+  animation: tooltip-out 0.15s ease-in;
+}
+
+@keyframes tooltip-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+}
+
+/* ============================================
+   滚动揭示动画
+   ============================================ */
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-out;
+}
+
+.scroll-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-reveal--left {
+  transform: translateX(-30px);
+}
+
+.scroll-reveal--left.scroll-reveal--visible {
+  transform: translateX(0);
+}
+
+.scroll-reveal--right {
+  transform: translateX(30px);
+}
+
+.scroll-reveal--right.scroll-reveal--visible {
+  transform: translateX(0);
+}
+
+/* ============================================
+   点击反馈效果
+   ============================================ */
+
+.click-feedback {
+  position: relative;
+  overflow: hidden;
+}
+
+.click-feedback::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.click-feedback:active::after {
+  width: 200%;
+  height: 200%;
+  transition: width 0s, height 0s;
+}

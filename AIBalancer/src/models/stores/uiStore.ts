@@ -20,6 +20,7 @@ export interface Notification {
   title: string;
   message: string;
   duration?: number;
+  read?: boolean; // 可选的已读状态
   action?: {
     label: string;
     handler: () => void;
@@ -144,9 +145,9 @@ export const useUIStore = defineStore('ui', () => {
   }
 
   function markNotificationAsRead(id: string) {
-    const notification = notifications.value.find(n => n.id.id);
+    const notification = notifications.value.find(n => n.id === id);
     if (notification) {
-      // 标记已读（暂时存储在内存中）
+      notification.read = true;
     }
   }
 

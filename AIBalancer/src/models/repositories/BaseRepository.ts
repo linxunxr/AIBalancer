@@ -3,8 +3,6 @@
  * 提供通用的CRUD操作
  */
 
-import { invoke } from '@tauri-apps/api/core';
-
 /**
  * Generic Repository Interface
  */

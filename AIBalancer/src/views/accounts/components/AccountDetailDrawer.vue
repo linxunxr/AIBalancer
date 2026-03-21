@@ -294,30 +294,191 @@ async function handleDeleteApiKey(keyId: string): Promise<void> {
 </script>
 
 <style scoped>
-:deep(.n-drawer-body-content-wrapper) {
-  padding: 20px;
+/* 玻璃拟态抽屉 */
+:deep(.n-drawer) {
+  --n-color: rgba(15, 15, 30, 0.95) !important;
 }
 
+:deep(.n-drawer-content) {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-left: 1px solid var(--glass-border);
+}
+
+:deep(.n-drawer-header) {
+  padding: 20px 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+:deep(.n-drawer-header__title) {
+  font-weight: 700;
+  font-size: 18px;
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:deep(.n-drawer-body-content-wrapper) {
+  padding: 20px 24px;
+}
+
+/* 标题样式 */
 :deep(.n-h4) {
-  margin-top: 16px;
+  margin-top: 20px;
   margin-bottom: 12px;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 1px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+:deep(.n-h4)::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 40px;
+  height: 2px;
+  background: var(--gradient-primary);
 }
 
 :deep(.n-h4:first-child) {
   margin-top: 0;
 }
 
+/* 描述列表 */
 :deep(.n-descriptions) {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
 }
 
+:deep(.n-descriptions-item) {
+  padding: 12px 16px !important;
+}
+
+:deep(.n-descriptions-item__label) {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+:deep(.n-descriptions-item__content) {
+  background: inherit !important;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+/* 统计卡片 */
+:deep(.n-grid) {
+  margin-bottom: 16px;
+}
+
+:deep(.n-statistic) {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+:deep(.n-statistic .n-statistic-value) {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'SF Mono', 'Monaco', monospace;
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:deep(.n-statistic .n-statistic-label) {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* 备注 */
 .notes {
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.8;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 14px;
+}
+
+/* 标签 */
+:deep(.n-space) {
+  flex-wrap: wrap;
+}
+
+:deep(.n-tag) {
+  background: rgba(94, 114, 235, 0.1);
+  border: 1px solid rgba(94, 114, 235, 0.3);
+  border-radius: var(--radius-sm, 6px);
+  transition: all var(--transition-normal);
+}
+
+:deep(.n-tag:hover) {
+  background: rgba(94, 114, 235, 0.2);
+  transform: scale(1.05);
+}
+
+/* 列表 */
+:deep(.n-list) {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+:deep(.n-list-item) {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+:deep(.n-list-item:last-child) {
+  border-bottom: none;
+}
+
+:deep(.n-thing) {
+  --n-title-text-color: var(--text-primary);
+  --n-description-text-color: var(--text-secondary);
+}
+
+/* 抽屉底部 */
+:deep(.n-drawer-footer) {
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 按钮 */
+:deep(.n-button) {
+  transition: all var(--transition-normal);
+  border-radius: var(--radius-md, 12px);
+}
+
+:deep(.n-button:hover) {
+  transform: translateY(-2px);
+}
+
+:deep(.n-button[type="primary"]) {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+  box-shadow: var(--glow-primary);
+}
+
+:deep(.n-button[type="primary"]:hover) {
+  box-shadow: 0 6px 20px rgba(94, 114, 235, 0.4);
 }
 </style>

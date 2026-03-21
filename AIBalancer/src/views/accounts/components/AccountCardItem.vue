@@ -147,29 +147,64 @@ function getAvatarColor(type: AccountType): string {
 </script>
 
 <style scoped>
+/* 玻璃拟态卡片 */
 .account-card-item {
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
+  transition: all var(--transition-normal);
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg, 16px) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.account-card-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
 }
 
 .account-card-item:hover {
-  border-color: var(--primary-color, #e94560);
+  transform: translateY(-4px);
+  border-color: var(--primary-color) !important;
+  box-shadow: var(--shadow-lg), var(--glow-primary);
+}
+
+.account-card-item:hover::before {
+  opacity: 1;
 }
 
 .account-card-item.selected {
-  border-color: var(--primary-color, #e94560);
-  background: var(--bg-elevated);
+  border-color: var(--primary-color) !important;
+  background: rgba(94, 114, 235, 0.1) !important;
+  box-shadow: var(--shadow-lg), var(--glow-primary);
+}
+
+.account-card-item.selected::before {
+  opacity: 1;
 }
 
 .account-card-item.disabled {
-  opacity: 0.6;
+  opacity: 0.5;
+  filter: grayscale(0.5);
 }
 
 .card-header {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .account-info {
@@ -177,46 +212,69 @@ function getAvatarColor(type: AccountType): string {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .account-info .name {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .card-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  padding: 16px;
 }
 
 .info-row {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  align-items: center;
+  font-size: 13px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm, 8px);
+  transition: all var(--transition-fast);
+}
+
+.info-row:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .info-row .label {
   color: var(--text-secondary);
+  font-size: 12px;
 }
 
 .info-row .value {
-  font-family: monospace;
+  font-family: 'SF Mono', 'Monaco', monospace;
+  font-weight: 500;
 }
 
 .info-row .value.balance {
-  color: var(--warning-color, #ffc107);
-  font-weight: 600;
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 .card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .toggle-wrapper {
@@ -230,20 +288,69 @@ function getAvatarColor(type: AccountType): string {
   color: var(--text-secondary);
 }
 
+/* 覆盖Naive UI组件样式 - 保持玻璃拟态背景 */
 :deep(.n-card) {
-  background: var(--bg-card);
+  background: var(--glass-bg) !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 :deep(.n-card-header) {
-  padding: 12px 16px;
+  padding: 0;
 }
 
 :deep(.n-card__content) {
-  padding: 12px 16px;
+  padding: 0;
 }
 
 :deep(.n-card__action) {
-  padding: 12px 16px;
-  border-top: 1px solid var(--border-light);
+  padding: 0;
+  border-top: none;
+  background: transparent;
+}
+
+:deep(.n-checkbox) {
+  --n-border: 1px solid var(--glass-border);
+  --n-border-checked: var(--primary-color);
+}
+
+:deep(.n-checkbox--checked) {
+  background: var(--gradient-primary);
+  border-color: transparent;
+}
+
+:deep(.n-avatar) {
+  background: var(--gradient-primary) !important;
+  box-shadow: var(--glow-primary);
+}
+
+:deep(.n-tag) {
+  background: rgba(94, 114, 235, 0.1);
+  border: 1px solid rgba(94, 114, 235, 0.3);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 11px;
+}
+
+:deep(.n-switch) {
+  --n-rail-color: rgba(255, 255, 255, 0.1);
+  --n-rail-color-active: var(--gradient-primary);
+}
+
+:deep(.n-button) {
+  transition: all var(--transition-normal);
+}
+
+:deep(.n-button:hover) {
+  transform: scale(1.05);
+}
+
+:deep(.n-button--error-type) {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+:deep(.n-button--error-type:hover) {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
 }
 </style>

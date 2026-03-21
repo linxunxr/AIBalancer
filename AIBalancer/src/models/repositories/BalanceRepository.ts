@@ -3,8 +3,9 @@
  * 余额数据仓库
  */
 
-import { BaseRepository, IRepository, RepositoryError, QueryResult } from './BaseRepository';
-import { Balance, BalanceEntity, BalanceHistory, PlatformType, Currency, BalanceChangeReason } from '../entities/Balance';
+import { BaseRepository, RepositoryError } from './BaseRepository';
+import { Balance, BalanceEntity, BalanceHistory, Currency, BalanceChangeReason } from '../entities/Balance';
+import { PlatformType } from '../entities/PlatformType';
 import { invoke } from '@tauri-apps/api/core';
 
 export class BalanceRepository extends BaseRepository<Balance, string> {
@@ -77,7 +78,8 @@ export class BalanceRepository extends BaseRepository<Balance, string> {
 
     const change = newBalance - balance.currentBalance;
 
-    const historyEntry: Omit<BalanceHistory, 'id' | 'balanceId'> = {
+    const historyEntry: Omit<BalanceHistory, 'id'> = {
+      balanceId: id,
       timestamp: new Date(),
       balance: newBalance,
       change,
@@ -119,7 +121,7 @@ export class BalanceRepository extends BaseRepository<Balance, string> {
     try {
       const balances = await this.findAll();
       return balances
-        .filter(b => !currency || b.balancer === currency)
+        .filter(b => !currency || b.currency === currency)
         .reduce((sum, b) => sum + b.currentBalance, 0);
     } catch (error) {
       throw new RepositoryError('Failed to calculate total balance', 'CALCULATE_ERROR', error);

@@ -1,0 +1,408 @@
+/**
+ * 响应式设计混入（Mixins）
+ * 提供常用的响应式样式模式
+ */
+
+/* 响应式容器 */
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg, 16px);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 var(--space-xl, 24px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 var(--space-2xl, 32px);
+  }
+}
+
+/* 响应式栅格 */
+.grid {
+  display: grid;
+  gap: var(--space-lg, 16px);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .grid--cols-2,
+  .grid--cols-3,
+  .grid--cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .grid--cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid--cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    gap: var(--space-xl, 24px);
+  }
+
+  .grid--cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid--cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid--cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 响应式flex布局 */
+.flex {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .flex--row {
+    flex-direction: row;
+  }
+}
+
+.flex--gap-sm {
+  gap: var(--space-sm, 8px);
+}
+
+.flex--gap-md {
+  gap: var(--space-md, 12px);
+}
+
+.flex--gap-lg {
+  gap: var(--space-lg, 16px);
+}
+
+@media (min-width: 768px) {
+  .flex--gap-lg {
+    gap: var(--space-xl, 24px);
+  }
+}
+
+/* 响应式间距 */
+.spacing--mobile {
+  padding: var(--space-lg, 16px);
+}
+
+.spacing--tablet {
+  padding: var(--space-xl, 24px);
+}
+
+.spacing--desktop {
+  padding: var(--space-2xl, 32px);
+}
+
+/* 隐藏/显示断点 */
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .hide--tablet {
+    display: none;
+  }
+
+  .show--tablet {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hide--desktop {
+    display: none;
+  }
+
+  .show--desktop {
+    display: block;
+  }
+}
+
+/* 响应式文本 */
+.text--mobile-center {
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .text--tablet-left {
+    text-align: left;
+  }
+
+  .text--tablet-center {
+    text-align: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text--desktop-left {
+    text-align: left;
+  }
+
+  .text--desktop-center {
+    text-align: center;
+  }
+}
+
+/* 响应式字号 */
+.text--size-xs {
+  font-size: 12px;
+}
+
+.text--size-sm {
+  font-size: 14px;
+}
+
+.text--size-base {
+  font-size: 16px;
+}
+
+.text--size-lg {
+  font-size: 18px;
+}
+
+@media (min-width: 768px) {
+  .text--size-md-lg {
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text--size-md-lg {
+    font-size: 20px;
+  }
+}
+
+/* 响应式卡片 */
+.card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur, 30px));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl, 16px);
+  padding: var(--space-lg, 16px);
+  transition: all var(--transition-normal, 250ms);
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: var(--space-xl, 24px);
+  }
+}
+
+.card--compact {
+  padding: var(--space-md, 12px);
+}
+
+@media (min-width: 768px) {
+  .card--compact {
+    padding: var(--space-lg, 16px);
+  }
+}
+
+/* 响应式按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: var(--radius-lg, 12px);
+  cursor: pointer;
+  transition: all var(--transition-normal, 250ms);
+  white-space: nowrap;
+}
+
+.btn--sm {
+  padding: 8px 16px;
+  font-size: 12px;
+}
+
+.btn--lg {
+  padding: 14px 28px;
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  .btn--responsive {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+}
+
+/* 响应式表单 */
+.form-group {
+  margin-bottom: var(--space-lg, 16px);
+}
+
+@media (min-width: 768px) {
+  .form-group {
+    margin-bottom: var(--space-xl, 24px);
+  }
+}
+
+.form-control {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg, 12px);
+  color: var(--text-primary);
+  transition: all var(--transition-normal, 250ms);
+}
+
+@media (min-width: 768px) {
+  .form-control {
+    height: 48px;
+    padding: 0 20px;
+    font-size: 15px;
+  }
+}
+
+/* 响应式导航 */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 8px);
+}
+
+@media (min-width: 768px) {
+  .nav {
+    flex-direction: row;
+    gap: var(--space-lg, 16px);
+  }
+}
+
+.nav-item {
+  padding: var(--space-sm, 8px) var(--space-md, 12px);
+  border-radius: var(--radius-md, 8px);
+  transition: all var(--transition-normal, 250ms);
+}
+
+@media (min-width: 768px) {
+  .nav-item {
+    padding: var(--space-md, 12px) var(--space-lg, 16px);
+  }
+}
+
+/* 响应式边距 */
+.mt--mobile {
+  margin-top: var(--space-lg, 16px);
+}
+
+.mb--mobile {
+  margin-bottom: var(--space-lg, 16px);
+}
+
+@media (min-width: 768px) {
+  .mt--tablet {
+    margin-top: var(--space-xl, 24px);
+  }
+
+  .mb--tablet {
+    margin-bottom: var(--space-xl, 24px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mt--desktop {
+    margin-top: var(--space-2xl, 32px);
+  }
+
+  .mb--desktop {
+    margin-bottom: var(--space-2xl, 32px);
+  }
+}
+
+/* 响应式显示 */
+.visible--mobile {
+  display: block;
+}
+
+.visible--tablet {
+  display: none;
+}
+
+.visible--desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .visible--mobile {
+    display: none;
+  }
+
+  .visible--tablet {
+    display: block;
+  }
+
+  .visible--desktop {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .visible--mobile {
+    display: none;
+  }
+
+  .visible--tablet {
+    display: none;
+  }
+
+  .visible--desktop {
+    display: block;
+  }
+}
+
+/* 移动优先的响应式工具类 */
+@media (max-width: 767px) {
+  .hide--mobile-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hide--tablet-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hide--desktop-only {
+    display: none !important;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .hide--print {
+    display: none !important;
+  }
+
+  .show--print {
+    display: block !important;
+  }
+}

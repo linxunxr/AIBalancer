@@ -4,10 +4,9 @@
  */
 
 import { BaseViewModel } from '../BaseViewModel';
-import { ref, computed, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useUIStore } from '../../models/stores/uiStore';
-import { AlertService } from '../../models/services/AlertService';
-import { AlertService as AlertServiceInterface, Alert } from '../../models/services/AlertService';
+import { AlertService, Alert } from '../../models/services/AlertService';
 
 interface NotificationState {
   notifications: Alert[];
@@ -28,7 +27,7 @@ export class NotificationViewModel extends BaseViewModel<NotificationState> {
     this.state.notifications.filter(n => !n.read).length
   );
   readonly hasUnread = computed(() => this.unreadCount.value > 0);
-  readonly readonly filteredNotifications = computed(() => {
+  readonly filteredNotifications = computed(() => {
     return this.state.filter === 'unread'
       ? this.state.notifications.filter(n => !n.read)
       : this.state.notifications;
@@ -214,7 +213,7 @@ export class NotificationViewModel extends BaseViewModel<NotificationState> {
   /**
    * 映射通知类型
    */
-  private mapNotificationType(type: any): string {
+  private mapNotificationType(_type: any): string {
     // TODO: 实现类型映射
     return 'info';
   }
@@ -222,7 +221,7 @@ export class NotificationViewModel extends BaseViewModel<NotificationState> {
   /**
    * 映射严重级别
    */
-  private mapSeverity(type: any): 'info' | 'warning' | 'error' {
+  private mapSeverity(_type: any): 'info' | 'warning' | 'error' {
     // TODO: 实现严重级别映射
     return 'info';
   }

@@ -3,6 +3,8 @@
  * 告警规则定义
  */
 
+import { PlatformType } from './PlatformType';
+
 export interface AlertRule {
   id: string;
   name: string;
@@ -21,13 +23,6 @@ export enum AlertType {
   HIGH_USAGE = 'high_usage',
   DAILY_BUDGET = 'daily_budget',
   MONTHLY_BUDGET = 'monthly_budget'
-}
-
-export enum PlatformType {
-  DEEPSEEK = 'deepseek',
-  OPENAI = 'openai',
-  ANTHROPIC = 'anthropic',
-  CUSTOM = 'custom'
 }
 
 export enum NotificationMethod {

@@ -1,8 +1,7 @@
 <template>
   <MainLayout @select="(key: string) => currentPage = key">
     <Dashboard v-if="currentPage === 'dashboard'" />
-    <AccountManagement v-else-if="currentPage === 'accounts' || currentPage === 'accounts-list'" />
-    <AccountStatistics v-else-if="currentPage === 'accounts-stats'" />
+    <AccountManagement v-else-if="currentPage === 'accounts'" />
     <Settings v-else-if="currentPage === 'settings'" />
     <div v-else class="welcome-page">欢迎页面</div>
   </MainLayout>
@@ -13,7 +12,6 @@ import { ref } from 'vue';
 import MainLayout from './views/layout/MainLayout.vue';
 import Dashboard from './views/dashboard/Dashboard.vue';
 import AccountManagement from './views/accounts/AccountManagement.vue';
-import AccountStatistics from './views/accounts/AccountStatistics.vue';
 import Settings from './views/settings/Settings.vue';
 
 const currentPage = ref('dashboard');

@@ -4,9 +4,8 @@
  */
 
 import { BaseViewModel } from '../BaseViewModel';
-import { ref, computed } from 'vue';
-import { updateService, UpdateCheckResult, UpdateInfo, DownloadProgress } from '../../models/services/UpdateService';
-import { AppError } from '../../core/errors';
+import { computed } from 'vue';
+import { updateService, UpdateCheckResult, DownloadProgress } from '../../models/services/UpdateService';
 
 interface UpdateState {
   isChecking: boolean;
@@ -69,8 +68,8 @@ export class UpdateViewModel extends BaseViewModel<UpdateState> {
 
       return result;
     } catch (error) {
-      const message = error instanceof AppError ? error.message : '检查更新失败';
-      this.setError(message, 'CHECK_ERROR', error);
+      const message = error instanceof Error ? error.message : '检查更新失败';
+      this.setError(message);
       return null;
     } finally {
       this.state.isChecking = false;
@@ -82,7 +81,7 @@ export class UpdateViewModel extends BaseViewModel<UpdateState> {
    */
   async downloadUpdate(): Promise<boolean> {
     if (!this.state.checkResult?.updateInfo) {
-      this.setError('没有可用的更新信息', 'NO_UPDATE_INFO');
+      this.setError('没有可用的更新信息');
       return false;
     }
 
@@ -103,9 +102,9 @@ export class UpdateViewModel extends BaseViewModel<UpdateState> {
 
       return true;
     } catch (error) {
-      const message = error instanceof AppError ? error.message : '下载更新失败';
+      const message = error instanceof Error ? error.message : '下载更新失败';
       this.state.downloadError = message;
-      this.setError(message, 'DOWNLOAD_ERROR', error);
+      this.setError(message);
       return false;
     } finally {
       this.state.isDownloading = false;
@@ -126,9 +125,9 @@ export class UpdateViewModel extends BaseViewModel<UpdateState> {
 
       return true;
     } catch (error) {
-      const message = error instanceof AppError ? error.message : '安装更新失败';
+      const message = error instanceof Error ? error.message : '安装更新失败';
       this.state.installError = message;
-      this.setError(message, 'INSTALL_ERROR', error);
+      this.setError(message);
       return false;
     } finally {
       this.state.isInstalling = false;
@@ -142,7 +141,7 @@ export class UpdateViewModel extends BaseViewModel<UpdateState> {
     try {
       await updateService.restart();
     } catch (error) {
-      this.setError('重启失败', 'RESTART_ERROR', error);
+      this.setError('重启失败');
       throw error;
     }
   }

@@ -15,7 +15,12 @@ export class SettingsRepository extends BaseRepository<AppSettings, string> {
   }
 
   protected fromEntity(entity: AppSettings): Record<string, any> {
-    return entity.toJSON();
+    // 如果是 AppSettingsEntity 实例，调用其 toJSON 方法
+    if ('toJSON' in entity && typeof entity.toJSON === 'function') {
+      return entity.toJSON();
+    }
+    // 否则直接返回
+    return entity as Record<string, any>;
   }
 
   protected async executeQuery(sql: string, params?: any[]): Promise<any[]> {
@@ -105,6 +110,11 @@ export class SettingsRepository extends BaseRepository<AppSettings, string> {
    * 验证设置
    */
   async validateSettings(settings: AppSettings): Promise<{ valid: boolean; errors: string[] }> {
-    return settings.validate();
+    // 如果是 AppSettingsEntity 实例，调用其 validate 方法
+    if ('validate' in settings && typeof settings.validate === 'function') {
+      return (settings as AppSettingsEntity).validate();
+    }
+    // 默认验证
+    return { valid: true, errors: [] };
   }
 }

@@ -5,3 +5,5 @@ export * from './AlertService';
 export * from './UpdateService';
 export * from './LogService';
 export * from './MockDataService';
+export * from './ProxyConfigService';
+export * from './EncryptedStorageService';

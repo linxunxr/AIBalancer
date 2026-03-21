@@ -138,9 +138,6 @@ export class MonitoringService {
 
       // 检查所有平台的余额
       const platforms = Object.values(PlatformType);
-      const balances = await Promise.all(
-        platforms.map(platform => this.balanceService.getCurrentBalance(platform))
-      );
 
       // 检查低余额
       if (config.alertEnabled) {
@@ -153,7 +150,6 @@ export class MonitoringService {
       // 检查预算
       if (config.alertEnabled) {
         const today = new Date();
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
 
         for (const platform of platforms) {
           const monthUsage = await this.usageRepository.getMonthUsage(

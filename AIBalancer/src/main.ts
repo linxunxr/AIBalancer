@@ -4,6 +4,17 @@ import naive from 'naive-ui';
 import App from './App.vue';
 import './styles.css';
 import './styles/design-system.css';
+
+// 玻璃拟态样式文件
+import './styles/glass-mixins.css';
+import './styles/animations.css';
+import './styles/naive-ui-glass.css';
+import './styles/interactions.css';
+import './styles/micro-interactions.css';
+import './styles/glass-fallback.css';
+import './styles/performance.css';
+import './styles/responsive-mixins.css';
+
 import themeStore from './models/stores/themeStore';
 
 // 导入全局错误处理
@@ -20,7 +31,7 @@ app.use(naive);
 app.component('ErrorBoundary', ErrorBoundary);
 
 // 设置 Vue 全局错误处理器
-app.config.errorHandler = (error, instance, info) => {
+app.config.errorHandler = (error, _instance, info) => {
   // 错误会被 GlobalErrorHandler 自动捕获
   console.error('[Vue Error]', error, info);
 };

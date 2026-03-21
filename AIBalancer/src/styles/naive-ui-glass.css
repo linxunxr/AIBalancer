@@ -1,0 +1,553 @@
+/* src/styles/naive-ui-glass.css */
+/* Naive UI 玻璃拟态风格覆盖样式 */
+/* 注意：:deep() 在普通 CSS 文件中无效，已移除 */
+
+/* ============================================
+   玻璃卡片 (NCard)
+   ============================================ */
+
+.n-card,
+div.n-card {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-glass) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.n-card:hover,
+div.n-card:hover {
+  background: var(--glass-bg-hover) !important;
+  border-color: var(--glass-border-hover) !important;
+  box-shadow: var(--shadow-glass-hover) !important;
+}
+
+.n-card .n-card-header,
+div.n-card .n-card-header {
+  border-bottom: 1px solid var(--glass-border) !important;
+  padding: 16px 24px !important;
+}
+
+.n-card .n-card__content,
+div.n-card .n-card__content {
+  padding: 24px !important;
+}
+
+.n-card .n-card__footer,
+div.n-card .n-card__footer {
+  border-top: 1px solid var(--glass-border) !important;
+  padding: 16px 24px !important;
+}
+
+/* ============================================
+   玻璃按钮 (NButton)
+   ============================================ */
+
+.n-button,
+button.n-button {
+  border-radius: 20px !important;
+  transition: all var(--transition-normal) !important;
+  font-weight: var(--font-medium) !important;
+}
+
+/* 主要按钮 */
+.n-button--primary-type,
+.n-button[type="primary"] {
+  background: var(--gradient-primary) !important;
+  border: none !important;
+  box-shadow: var(--shadow-glass) !important;
+}
+
+.n-button--primary-type:hover,
+.n-button[type="primary"]:hover {
+  box-shadow: var(--shadow-glass-hover), var(--glow-primary) !important;
+  transform: translateY(-2px);
+}
+
+.n-button--primary-type:active,
+.n-button[type="primary"]:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-glass-active) !important;
+}
+
+/* 次要按钮 */
+.n-button--default,
+.n-button:not([type]) {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur-light)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur-light)) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.n-button--default:hover,
+.n-button:not([type]):hover {
+  background: var(--glass-bg-hover) !important;
+  border-color: var(--glass-border-hover) !important;
+  box-shadow: var(--shadow-glass-hover) !important;
+}
+
+/* 文字按钮 */
+.n-button--text {
+  background: transparent !important;
+  border: none !important;
+  color: var(--primary-start) !important;
+}
+
+.n-button--text:hover {
+  background: var(--glass-bg) !important;
+}
+
+/* 成功按钮 */
+.n-button--success,
+.n-button[type="success"] {
+  background: var(--gradient-success) !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3) !important;
+}
+
+.n-button--success:hover {
+  box-shadow: var(--shadow-glass-hover), var(--glow-success) !important;
+}
+
+/* 警告按钮 */
+.n-button--warning,
+.n-button[type="warning"] {
+  background: var(--gradient-warning) !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(250, 173, 20, 0.3) !important;
+}
+
+/* 错误/危险按钮 */
+.n-button--error,
+.n-button[type="error"] {
+  background: var(--gradient-danger) !important;
+  border: none !important;
+  box-shadow: var(--shadow-glass) !important;
+}
+
+.n-button--error:hover {
+  box-shadow: var(--shadow-glass-hover), var(--glow-danger) !important;
+}
+
+/* ============================================
+   玻璃输入框 (NInput)
+   ============================================ */
+
+.n-input,
+.n-input .n-input-wrapper {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur-light)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur-light)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.n-input:hover:not(:focus-within),
+.n-input .n-input-wrapper:hover {
+  border-color: var(--glass-border-hover) !important;
+}
+
+.n-input:focus-within,
+.n-input .n-input-wrapper:focus-within {
+  border-color: var(--primary-start) !important;
+  box-shadow: var(--glow-primary), inset 0 0 20px rgba(94, 114, 235, 0.1) !important;
+}
+
+.n-input .n-input__input-el,
+.n-input .n-input__textarea-el {
+  color: var(--text-primary) !important;
+}
+
+.n-input .n-input__placeholder {
+  color: var(--text-tertiary) !important;
+}
+
+.n-input .n-input__border,
+.n-input .n-input__state-border {
+  border: none !important;
+}
+
+/* ============================================
+   玻璃数据表格 (NDataTable)
+   ============================================ */
+
+.n-data-table {
+  background: transparent !important;
+  border-radius: var(--radius-xl) !important;
+  overflow: hidden;
+}
+
+.n-data-table-th {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur-light)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur-light)) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+  font-weight: var(--font-semibold) !important;
+}
+
+.n-data-table-td {
+  background: transparent !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.n-data-table-tr:hover td,
+.n-data-table-tr:hover .n-data-table-td {
+  background: var(--glass-bg) !important;
+}
+
+.n-data-table-tr--striped td,
+.n-data-table--striped .n-data-table-td {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* ============================================
+   玻璃模态框 (NModal)
+   ============================================ */
+
+.n-modal {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-glass) !important;
+}
+
+.n-modal-mask {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* ============================================
+   玻璃抽屉 (NDrawer)
+   ============================================ */
+
+.n-drawer {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border-left: 1px solid var(--glass-border) !important;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+.n-drawer-mask {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* ============================================
+   玻璃标签页 (NTabs)
+   ============================================ */
+
+.n-tabs-nav {
+  background: transparent !important;
+}
+
+.n-tabs-tab {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.n-tabs-tab:hover {
+  color: var(--text-primary) !important;
+  background: var(--glass-bg) !important;
+}
+
+.n-tabs-tab--active {
+  color: var(--primary-start) !important;
+  border-bottom-color: var(--primary-start) !important;
+  background: transparent !important;
+}
+
+.n-tabs-tab-bar {
+  background: var(--gradient-primary) !important;
+}
+
+/* ============================================
+   玻璃下拉菜单 (NDropdown)
+   ============================================ */
+
+.n-dropdown-menu {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-glass) !important;
+  padding: 8px !important;
+}
+
+.n-dropdown-menu .n-dropdown-item {
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.n-dropdown-menu .n-dropdown-item:hover {
+  background: var(--glass-bg-hover) !important;
+}
+
+.n-dropdown-menu .n-dropdown-item--selected {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+}
+
+/* ============================================
+   玻璃开关 (NSwitch)
+   ============================================ */
+
+.n-switch {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+.n-switch--active {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+  box-shadow: var(--glow-primary) !important;
+}
+
+.n-switch__rail {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+.n-switch--active .n-switch__rail {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+}
+
+/* ============================================
+   玻璃选择器 (NSelect)
+   ============================================ */
+
+.n-base-selection,
+.n-select .n-base-selection {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur-light)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur-light)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.n-base-selection:hover,
+.n-select .n-base-selection:hover {
+  border-color: var(--glass-border-hover) !important;
+}
+
+.n-base-selection--focus,
+.n-select .n-base-selection--focus {
+  border-color: var(--primary-start) !important;
+  box-shadow: var(--glow-primary) !important;
+}
+
+.n-base-selection-label {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+.n-base-selection-placeholder {
+  color: var(--text-tertiary) !important;
+}
+
+/* 下拉面板 */
+.n-base-select-menu {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-glass) !important;
+}
+
+.n-base-select-menu .n-base-select-option {
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.n-base-select-menu .n-base-select-option:hover {
+  background: var(--glass-bg-hover) !important;
+}
+
+.n-base-select-menu .n-base-select-option--selected {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+}
+
+/* ============================================
+   玻璃标签 (NTag)
+   ============================================ */
+
+.n-tag {
+  border-radius: 20px !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.n-tag--success {
+  background: var(--gradient-success) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.n-tag--warning {
+  background: var(--gradient-warning) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.n-tag--error {
+  background: var(--gradient-danger) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.n-tag--info {
+  background: var(--gradient-primary) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.n-tag--default {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur-light)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur-light)) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   玻璃弹出提示 (NPopover)
+   ============================================ */
+
+.n-popover {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-glass) !important;
+}
+
+.n-popover-arrow {
+  background: var(--glass-bg) !important;
+  border-color: var(--glass-border) !important;
+}
+
+/* ============================================
+   玻璃进度条 (NProgress)
+   ============================================ */
+
+.n-progress {
+  background: var(--glass-bg) !important;
+  border-radius: var(--radius-xxl) !important;
+  overflow: hidden;
+}
+
+.n-progress-graphline__fill {
+  background: var(--gradient-primary) !important;
+  box-shadow: var(--glow-primary) !important;
+}
+
+.n-progress-circle__fill {
+  stroke: url(#gradient) !important;
+}
+
+/* ============================================
+   玻璃消息通知 (NMessage)
+   ============================================ */
+
+.n-message {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-glass) !important;
+}
+
+.n-message--success {
+  border-color: rgba(82, 196, 26, 0.3) !important;
+  box-shadow: var(--shadow-glass), 0 0 20px rgba(82, 196, 26, 0.2) !important;
+}
+
+.n-message--warning {
+  border-color: rgba(250, 173, 20, 0.3) !important;
+  box-shadow: var(--shadow-glass), 0 0 20px rgba(250, 173, 20, 0.2) !important;
+}
+
+.n-message--error {
+  border-color: rgba(255, 77, 79, 0.3) !important;
+  box-shadow: var(--shadow-glass), 0 0 20px rgba(255, 77, 79, 0.2) !important;
+}
+
+/* ============================================
+   玻璃分割线 (NDivider)
+   ============================================ */
+
+.n-divider {
+  border-color: var(--glass-border) !important;
+}
+
+/* ============================================
+   玻璃头像 (NAvatar)
+   ============================================ */
+
+.n-avatar {
+  background: var(--gradient-primary) !important;
+  border: 2px solid var(--glass-border) !important;
+  box-shadow: var(--shadow-glass) !important;
+}
+
+/* ============================================
+   玻璃对话框 (NDialog)
+   ============================================ */
+
+.n-dialog {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-glass) !important;
+}
+
+.n-dialog .n-dialog__title {
+  color: var(--text-primary) !important;
+}
+
+.n-dialog .n-dialog__content {
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   玻璃空状态 (NEmpty)
+   ============================================ */
+
+.n-empty {
+  color: var(--text-tertiary) !important;
+}
+
+/* ============================================
+   玻璃加载状态 (NSpin)
+   ============================================ */
+
+.n-spin {
+  color: var(--primary-start) !important;
+}
+
+.n-spin-dot {
+  background: var(--gradient-primary) !important;
+}

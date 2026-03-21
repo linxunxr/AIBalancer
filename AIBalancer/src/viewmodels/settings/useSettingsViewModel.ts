@@ -4,11 +4,9 @@
  */
 
 import { BaseViewModel } from '../BaseViewModel';
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { useSettingsStore } from '../../models/stores/settingsStore';
-import { useThemeStore } from '../../models/stores/themeStore';
-import { AppSettings, Theme } from '../../models/entities/AppSettings';
-import { AppError } from '../../core/errors';
+import { AppSettings, Theme, AppSettingsEntity } from '../../models/entities/AppSettings';
 
 interface SettingsState {
   settings: AppSettings | null;
@@ -18,7 +16,6 @@ interface SettingsState {
 
 export class SettingsViewModel extends BaseViewModel<SettingsState> {
   private settingsStore = useSettingsStore();
-  private themeStore = useThemeStore();
 
   // Computed properties
   readonly isDark = computed(() => this.settingsStore.isDarkTheme);
@@ -51,7 +48,7 @@ export class SettingsViewModel extends BaseViewModel<SettingsState> {
       const settings = await this.settingsStore.fetchSettings();
       this.state.settings = settings;
     } catch (error) {
-      this.setError('加载设置失败', 'LOAD_ERROR', error);
+      this.setError('加载设置失败');
       throw error;
     }
   }
@@ -65,7 +62,7 @@ export class SettingsViewModel extends BaseViewModel<SettingsState> {
         await this.settingsStore.saveSettings(this.state.settings);
       }
     } catch (error) {
-      this.setError('保存设置失败', 'SAVE_ERROR', error);
+      this.setError('保存设置失败');
       throw error;
     }
   }
@@ -76,13 +73,12 @@ export class SettingsViewModel extends BaseViewModel<SettingsState> {
   async updateTheme(theme: Theme): Promise<void> {
     try {
       await this.settingsStore.setTheme(theme);
-      await this.themeStore.setTheme(theme);
 
       if (this.state.settings) {
         this.state.settings.theme = theme;
       }
     } catch (error) {
-      this.setError('更新主题失败', 'UPDATE_ERROR', error);
+      this.setError('更新主题失败');
       throw error;
     }
   }
@@ -98,7 +94,7 @@ export class SettingsViewModel extends BaseViewModel<SettingsState> {
         this.state.settings.language = language;
       }
     } catch (error) {
-      this.setError('更新语言失败', 'UPDATE_ERROR', error);
+      this.setError('更新语言失败');
       throw error;
     }
   }
@@ -115,7 +111,7 @@ export class SettingsViewModel extends BaseViewModel<SettingsState> {
         this.state.settings.autoCheckUpdates = newValue;
       }
     } catch (error) {
-      this.setError('更新失败', 'UPDATE_ERROR', error);
+      this.setError('更新失败');
       throw error;
     }
   }
@@ -132,7 +128,7 @@ export class SettingsViewModel extends BaseViewModel<SettingsState> {
         this.state.settings.minimizeToTray = newValue;
       }
     } catch (error) {
-      this.setError('更新失败', 'UPDATE_ERROR', error);
+      this.setError('更新失败');
       throw error;
     }
   }
@@ -149,7 +145,7 @@ export class SettingsViewModel extends BaseViewModel<SettingsState> {
         this.state.settings.notificationEnabled = newValue;
       }
     } catch (error) {
-      this.setError('更新失败', 'UPDATE_ERROR', error);
+      this.setError('更新失败');
       throw error;
     }
   }
@@ -165,7 +161,7 @@ export class SettingsViewModel extends BaseViewModel<SettingsState> {
         this.state.settings.lowBalanceThreshold = value;
       }
     } catch (error) {
-      this.setError('更新失败', 'UPDATE_ERROR', error);
+      this.setError('更新失败');
       throw error;
     }
   }
@@ -178,7 +174,7 @@ export class SettingsViewModel extends BaseViewModel<SettingsState> {
       const defaultSettings = await this.settingsStore.resetSettings();
       this.state.settings = defaultSettings;
     } catch (error) {
-      this.setError('重置设置失败', 'RESET_ERROR', error);
+      this.setError('重置设置失败');
       throw error;
     }
   }
@@ -205,6 +201,10 @@ export class SettingsViewModel extends BaseViewModel<SettingsState> {
       return { valid: false, errors: ['设置未加载'] };
     }
 
-    return this.state.settings.validate();
+    // 使用AppSettingsEntity的validate方法
+    const entity = this.state.settings instanceof AppSettingsEntity
+      ? this.state.settings
+      : AppSettingsEntity.create(this.state.settings);
+    return entity.validate();
   }
 }

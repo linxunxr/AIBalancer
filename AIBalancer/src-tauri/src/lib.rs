@@ -4,6 +4,7 @@ mod logging;
 mod database;
 mod crypto;
 mod api_client;
+mod proxy;
 
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -13,6 +14,7 @@ use logging::commands::*;
 use database::commands::*;
 use crypto::commands::*;
 use api_client::commands::*;
+use proxy::commands::*;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -91,6 +93,13 @@ pub fn run() {
             rotate_api_key,
             // 数据导出命令
             export_accounts,
+            // 代理配置命令
+            get_proxy_config,
+            save_proxy_config,
+            test_proxy_connection,
+            get_proxy_status,
+            clear_proxy_config,
+            should_use_proxy,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

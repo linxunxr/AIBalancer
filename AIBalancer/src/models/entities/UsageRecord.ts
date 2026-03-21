@@ -13,12 +13,7 @@ export interface UsageRecord {
   metadata: Record<string, any>;
 }
 
-export enum PlatformType {
-  DEEPSEEK = 'deepseek',
-  OPENAI = 'openai',
-  ANTHROPIC = 'anthropic',
-  CUSTOM = 'custom'
-}
+import { PlatformType } from './PlatformType';
 
 /**
  * Usage Record Entity Class

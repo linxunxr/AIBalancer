@@ -172,8 +172,9 @@ export class UpdateService {
   async installUpdate(updateFile: Blob): Promise<void> {
     try {
       // 在Tauri中调用安装更新命令
+      const arrayBuffer = await updateFile.arrayBuffer();
       await invoke('app_install_update', {
-        file: Array.from(await updateFile.arrayBuffer())
+        file: Array.from(new Uint8Array(arrayBuffer))
       });
     } catch (error) {
       throw new AppError('安装更新失败', ErrorCode.API_ERROR, undefined, error as Error);

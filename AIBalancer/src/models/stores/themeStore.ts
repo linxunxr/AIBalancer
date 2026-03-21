@@ -4,9 +4,10 @@ import { ref, computed, watch } from 'vue';
 export type ThemeMode = 'light' | 'dark' | 'auto';
 
 export default defineStore('theme', () => {
+  // 默认使用深色主题，因为应用使用玻璃拟态设计
   const storedTheme = localStorage.getItem('theme-mode') as ThemeMode;
-  const theme = ref<ThemeMode>(storedTheme || 'auto');
-  const systemTheme = ref<'light' | 'dark'>('light');
+  const theme = ref<ThemeMode>(storedTheme || 'dark');
+  const systemTheme = ref<'light' | 'dark'>('dark');
 
   // 计算实际应用的主题
   const actualTheme = computed(() => {

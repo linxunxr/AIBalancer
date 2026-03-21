@@ -1,140 +1,162 @@
-import { css } from '@vue/reactivity';
+// src/styles/component-styles.ts
+// 玻璃拟态组件样式模板
 
 export const componentStyles = {
-  // 卡片组件
-  card: css`
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-light);
+  // 玻璃卡片组件样式
+  card: `
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
     transition: all var(--transition-normal);
-    box-shadow: var(--shadow-sm);
-
-    &:hover {
-      border-color: var(--border-medium);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
-    }
   `,
 
-  // 按钮变体
-  button: {
-    primary: css`
-      background: var(--primary-500);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
+  cardHover: `
+    background: var(--glass-bg-hover);
+    border-color: var(--glass-border-hover);
+    box-shadow: var(--shadow-glass-hover);
+    transform: translateY(-4px);
+  `,
 
-      &:hover {
-        background: var(--primary-600);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-md);
-      }
+  // 玻璃按钮变体样式
+  buttonPrimary: `
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    box-shadow: var(--shadow-glass);
+    position: relative;
+    overflow: hidden;
+  `,
 
-      &:active {
-        background: var(--primary-700);
-        transform: translateY(0);
-      }
-    `,
+  buttonPrimaryHover: `
+    box-shadow: var(--shadow-glass-hover), var(--glow-primary);
+    transform: translateY(-2px);
+  `,
 
-    secondary: css`
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px solid var(--border-medium);
-      border-radius: var(--radius-md);
+  buttonPrimaryActive: `
+    transform: translateY(0);
+    box-shadow: var(--shadow-glass-active);
+  `,
 
-      &:hover {
-        background: var(--bg-tertiary);
-        border-color: var(--border-heavy);
-      }
-    `,
-
-    ghost: css`
-      background: transparent;
-      color: var(--text-secondary);
-      border: none;
-
-      &:hover {
-        background: var(--bg-tertiary);
-      }
-    `,
-
-    danger: css`
-      background: var(--error-500);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-
-      &:hover {
-        background: #ff7875;
-        box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
-      }
-    `
-  },
-
-  // 输入框
-  input: css`
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
+  buttonSecondary: `
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur-light));
+    -webkit-backdrop-filter: blur(var(--glass-blur-light));
     color: var(--text-primary);
-    transition: all var(--transition-fast);
-
-    &:focus {
-      border-color: var(--primary-500);
-      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-      outline: none;
-    }
-
-    &:hover {
-      border-color: var(--border-medium);
-    }
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
   `,
 
-  // 标签
-  badge: {
-    success: css`
-      background: rgba(82, 196, 26, 0.15);
-      color: var(--success-500);
-      border-radius: var(--radius-sm);
-      font-size: var(--text-xs);
-      font-weight: var(--font-medium);
-    `,
+  buttonSecondaryHover: `
+    background: var(--glass-bg-hover);
+    border-color: var(--glass-border-hover);
+    box-shadow: var(--shadow-glass-hover);
+  `,
 
-    warning: css`
-      background: rgba(250, 173, 20, 0.15);
-      color: var(--warning-500);
-      border-radius: var(--radius-sm);
-      font-size: var(--text-xs);
-      font-weight: var(--font-medium);
-    `,
+  buttonGhost: `
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    border-radius: 20px;
+  `,
 
-    error: css`
-      background: rgba(255, 77, 79, 0.15);
-      color: var(--error-500);
-      border-radius: var(--radius-sm);
-      font-size: var(--text-xs);
-      font-weight: var(--font-medium);
-    `,
+  buttonGhostHover: `
+    background: var(--glass-bg);
+    border-color: var(--glass-border);
+    color: var(--text-primary);
+  `,
 
-    info: css`
-      background: rgba(24, 144, 255, 0.15);
-      color: var(--info-500);
-      border-radius: var(--radius-sm);
-      font-size: var(--text-xs);
-      font-weight: var(--font-medium);
-    `
-  },
+  buttonDanger: `
+    background: var(--gradient-danger);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    box-shadow: var(--shadow-glass);
+  `,
 
-  // 表格行
-  tableRow: css`
-    transition: background-color var(--transition-fast);
+  buttonDangerHover: `
+    box-shadow: var(--shadow-glass-hover), var(--glow-danger);
+    transform: translateY(-2px);
+  `,
 
-    &:hover {
-      background: var(--bg-tertiary);
-    }
+  // 玻璃输入框样式
+  input: `
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur-light));
+    -webkit-backdrop-filter: blur(var(--glass-blur-light));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    transition: all var(--transition-normal);
+  `,
 
-    &.selected {
-      background: rgba(24, 144, 255, 0.1);
-    }
+  inputFocus: `
+    background: var(--glass-bg-hover);
+    border-color: var(--primary-start);
+    box-shadow: var(--glow-primary), inset 0 0 20px rgba(94, 114, 235, 0.1);
+    outline: none;
+  `,
+
+  inputPlaceholder: `
+    color: var(--text-tertiary);
+  `,
+
+  // 玻璃标签样式
+  badgeSuccess: `
+    background: var(--gradient-success);
+    color: white;
+    border-radius: 20px;
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    padding: 4px 12px;
+    box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3);
+  `,
+
+  badgeWarning: `
+    background: var(--gradient-warning);
+    color: white;
+    border-radius: 20px;
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    padding: 4px 12px;
+    box-shadow: 0 2px 8px rgba(250, 173, 20, 0.3);
+  `,
+
+  badgeError: `
+    background: var(--gradient-danger);
+    color: white;
+    border-radius: 20px;
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    padding: 4px 12px;
+    box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
+  `,
+
+  badgeInfo: `
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: 20px;
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    padding: 4px 12px;
+    box-shadow: var(--glow-primary);
+  `,
+
+  // 玻璃表格行样式
+  tableRow: `
+    transition: all var(--transition-fast);
+    background: transparent;
+  `,
+
+  tableRowHover: `
+    background: var(--glass-bg);
+  `,
+
+  tableRowSelected: `
+    background: linear-gradient(135deg, rgba(94, 114, 235, 0.15), rgba(157, 80, 187, 0.15));
+    border-left: 3px solid var(--primary-start);
   `
 };

@@ -124,11 +124,13 @@
 
       <!-- 页面内容 -->
       <div class="page-container">
-        <n-message-provider>
-          <div class="page-content">
-            <slot></slot>
-          </div>
-        </n-message-provider>
+        <n-config-provider :theme-overrides="glassThemeOverrides">
+          <n-message-provider>
+            <div class="page-content">
+              <slot></slot>
+            </div>
+          </n-message-provider>
+        </n-config-provider>
       </div>
 
       <!-- 页脚 -->
@@ -161,9 +163,192 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { NMessageProvider } from 'naive-ui';
+import { NMessageProvider, NConfigProvider } from 'naive-ui';
+import type { GlobalThemeOverrides } from 'naive-ui';
 import appStore from '../../models/stores/appStore';
 import themeStore from '../../models/stores/themeStore';
+
+// 玻璃拟态主题覆盖配置
+const glassThemeOverrides: GlobalThemeOverrides = {
+  common: {
+    borderRadius: '12px',
+    borderRadiusSmall: '8px',
+  },
+  Card: {
+    color: 'rgba(255, 255, 255, 0.08)',
+    colorEmbedded: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    titleTextColor: 'rgba(255, 255, 255, 0.95)',
+    textColor: 'rgba(255, 255, 255, 0.85)',
+  },
+  Button: {
+    borderRadiusMedium: '20px',
+    borderRadiusSmall: '16px',
+    borderRadiusTiny: '12px',
+    colorPrimary: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+    colorHoverPrimary: 'linear-gradient(135deg, #6c7ae4 0%, #a85fc4 100%)',
+    colorPressedPrimary: 'linear-gradient(135deg, #4e62d4 0%, #8d40ab 100%)',
+    textColorPrimary: '#ffffff',
+    colorError: 'rgba(239, 68, 68, 0.15)',
+    colorHoverError: 'rgba(239, 68, 68, 0.25)',
+    textColorError: '#ff4d4f',
+    color: 'rgba(255, 255, 255, 0.08)',
+    colorHover: 'rgba(255, 255, 255, 0.12)',
+    textColor: 'rgba(255, 255, 255, 0.85)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColorHover: 'rgba(255, 255, 255, 0.2)',
+  },
+  Input: {
+    color: 'rgba(255, 255, 255, 0.05)',
+    colorFocus: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColorFocus: '#5e72e4',
+    borderRadius: '12px',
+    textColor: 'rgba(255, 255, 255, 0.95)',
+    placeholderColor: 'rgba(255, 255, 255, 0.35)',
+  },
+  Select: {
+    peers: {
+      InternalSelection: {
+        color: 'rgba(255, 255, 255, 0.05)',
+        colorActive: 'rgba(255, 255, 255, 0.08)',
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderColorFocus: '#5e72e4',
+        borderRadius: '12px',
+        textColor: 'rgba(255, 255, 255, 0.95)',
+        placeholderColor: 'rgba(255, 255, 255, 0.35)',
+      },
+      InternalSelectMenu: {
+        color: 'rgba(30, 30, 45, 0.95)',
+        optionColorPending: 'rgba(94, 114, 235, 0.1)',
+        optionColorActive: 'rgba(94, 114, 235, 0.2)',
+        optionTextColor: 'rgba(255, 255, 255, 0.85)',
+        optionTextColorActive: '#ffffff',
+      },
+    },
+  },
+  DataTable: {
+    thColor: 'rgba(255, 255, 255, 0.03)',
+    tdColor: 'transparent',
+    tdColorHover: 'rgba(94, 114, 235, 0.05)',
+    thColorHover: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+    thTextColor: 'rgba(255, 255, 255, 0.6)',
+    tdTextColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: '12px',
+  },
+  Tag: {
+    borderRadius: '6px',
+    colorBordered: 'rgba(94, 114, 235, 0.1)',
+    borderColor: 'rgba(94, 114, 235, 0.3)',
+    textColor: 'rgba(94, 114, 235, 1)',
+  },
+  Dialog: {
+    color: 'rgba(30, 30, 45, 0.95)',
+    textColor: 'rgba(255, 255, 255, 0.95)',
+    titleTextColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '16px',
+  },
+  Modal: {
+    color: 'rgba(30, 30, 45, 0.95)',
+    textColor: 'rgba(255, 255, 255, 0.95)',
+    titleTextColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '16px',
+  },
+  Drawer: {
+    color: 'rgba(30, 30, 45, 0.95)',
+    textColor: 'rgba(255, 255, 255, 0.95)',
+    headerBorderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+    footerBorderTop: '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '16px 0 0 16px',
+  },
+  Message: {
+    color: 'rgba(30, 30, 45, 0.95)',
+    textColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '12px',
+  },
+  Notification: {
+    color: 'rgba(30, 30, 45, 0.95)',
+    textColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '12px',
+  },
+  Pagination: {
+    buttonColor: 'rgba(255, 255, 255, 0.05)',
+    buttonColorHover: 'rgba(255, 255, 255, 0.1)',
+    buttonColorActive: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+    buttonTextColor: 'rgba(255, 255, 255, 0.85)',
+    buttonTextColorActive: '#ffffff',
+    borderRadius: '8px',
+  },
+  Tabs: {
+    tabTextColorCard: 'rgba(255, 255, 255, 0.6)',
+    tabTextColorActiveCard: 'rgba(255, 255, 255, 0.95)',
+    tabTextColorHoverCard: 'rgba(255, 255, 255, 0.8)',
+    barColor: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+  },
+  Switch: {
+    railColorActive: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+  },
+  Checkbox: {
+    colorChecked: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+    borderChecked: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+  },
+  Radio: {
+    buttonColorActive: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+    buttonTextColorActive: '#ffffff',
+    dotColorActive: '#ffffff',
+  },
+  Popover: {
+    color: 'rgba(30, 30, 45, 0.95)',
+    textColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '12px',
+  },
+  Tooltip: {
+    color: 'rgba(30, 30, 45, 0.95)',
+    textColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '8px',
+  },
+  Dropdown: {
+    color: 'rgba(30, 30, 45, 0.95)',
+    textColor: 'rgba(255, 255, 255, 0.85)',
+    optionColorHover: 'rgba(94, 114, 235, 0.1)',
+    optionTextColorHover: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '12px',
+  },
+  Empty: {
+    textColor: 'rgba(255, 255, 255, 0.4)',
+  },
+  Spin: {
+    color: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+  },
+  Skeleton: {
+    color: 'rgba(255, 255, 255, 0.05)',
+    colorEnd: 'rgba(255, 255, 255, 0.1)',
+  },
+  Alert: {
+    colorError: 'rgba(239, 68, 68, 0.1)',
+    colorWarning: 'rgba(250, 173, 20, 0.1)',
+    colorSuccess: 'rgba(82, 196, 26, 0.1)',
+    colorInfo: 'rgba(94, 114, 235, 0.1)',
+    textColorError: 'rgba(255, 77, 79, 0.95)',
+    textColorWarning: 'rgba(250, 173, 20, 0.95)',
+    textColorSuccess: 'rgba(82, 196, 26, 0.95)',
+    textColorInfo: 'rgba(94, 114, 235, 0.95)',
+    borderRadius: '12px',
+  },
+  Progress: {
+    fillGradient: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+    railColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  Avatar: {
+    color: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+    textColor: '#ffffff',
+  },
+  Badge: {
+    color: 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)',
+    textColor: '#ffffff',
+  },
+};
 
 const emit = defineEmits<{
   select: [key: string];
@@ -180,7 +365,7 @@ const searchQuery = ref('');
 const showSettingsDrawer = ref(false);
 const activeKey = ref('dashboard');
 const unreadCount = ref(3);
-const expandedMenus = ref(new Set(['accounts'])); // 默认展开账户管理
+const expandedMenus = ref(new Set()); // 默认无展开菜单
 
 // 计算属性
 const themeClass = computed(() => theme.value === 'dark' ? '' : 'light-theme');
@@ -199,8 +384,6 @@ const breadcrumbs = computed(() => {
   const routeMap: Record<string, { label: string; parent?: string }> = {
     'dashboard': { label: '仪表盘' },
     'accounts': { label: '账户管理' },
-    'accounts-list': { label: '账户列表', parent: 'accounts' },
-    'accounts-stats': { label: '使用统计', parent: 'accounts' },
     'settings': { label: '系统设置' }
   };
 
@@ -221,16 +404,7 @@ const breadcrumbs = computed(() => {
 // 菜单选项
 const menuItems = [
   { key: 'dashboard', label: '仪表盘', icon: '📊', path: '/dashboard' },
-  {
-    key: 'accounts',
-    label: '账户管理',
-    icon: '💳',
-    path: '/accounts',
-    children: [
-      { key: 'accounts-list', label: '账户列表', icon: '📋' },
-      { key: 'accounts-stats', label: '使用统计', icon: '📈' },
-    ]
-  },
+  { key: 'accounts', label: '账户管理', icon: '💳', path: '/accounts' },
   { key: 'settings', label: '系统设置', icon: '⚙', path: '/settings' },
 ];
 
@@ -283,6 +457,7 @@ const checkForUpdates = () => {
 </script>
 
 <style scoped>
+/* 玻璃拟态主布局 */
 .main-layout {
   display: flex;
   height: 100vh;
@@ -290,18 +465,25 @@ const checkForUpdates = () => {
   color: var(--text-primary);
   font-family: var(--font-family);
   overflow: hidden;
+  /* 添加背景渐变装饰 */
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(94, 114, 235, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(157, 80, 187, 0.06) 0%, transparent 50%);
 }
 
-/* 侧边栏样式 */
+/* 玻璃侧边栏样式 */
 .sidebar {
   width: 256px;
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border-light);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-medium));
+  -webkit-backdrop-filter: blur(var(--glass-blur-medium));
+  border-right: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
-  transition: width var(--transition-normal);
+  transition: all var(--transition-normal);
   z-index: 100;
   flex-shrink: 0;
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar.collapsed {
@@ -313,7 +495,19 @@ const checkForUpdates = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--glass-border);
+  position: relative;
+}
+
+/* 头部渐变分隔线 */
+.sidebar-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16px;
+  right: 16px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
 }
 
 .app-logo {
@@ -325,12 +519,13 @@ const checkForUpdates = () => {
 .logo-icon {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+  background: var(--gradient-primary);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  box-shadow: var(--glow-primary);
 }
 
 .logo-text {
@@ -343,6 +538,10 @@ const checkForUpdates = () => {
   font-size: var(--text-lg);
   font-weight: var(--font-bold);
   color: var(--text-primary);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .app-subtitle {
@@ -352,18 +551,25 @@ const checkForUpdates = () => {
 }
 
 .collapse-btn {
-  background: transparent;
-  border: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  border: 1px solid var(--glass-border);
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 4px;
-  border-radius: var(--radius-sm);
+  padding: 6px;
+  border-radius: var(--radius-md);
   transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .collapse-btn:hover {
-  background: var(--bg-tertiary);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
   color: var(--text-primary);
+  box-shadow: var(--shadow-glass-hover);
 }
 
 .sidebar-nav {
@@ -372,6 +578,7 @@ const checkForUpdates = () => {
   overflow-y: auto;
 }
 
+/* 玻璃导航项 */
 .nav-item {
   display: flex;
   align-items: center;
@@ -379,28 +586,80 @@ const checkForUpdates = () => {
   padding: 12px 24px;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-normal);
   text-decoration: none;
-  border-radius: var(--radius-md);
-  margin: 0 4px;
+  border-radius: var(--radius-lg);
+  margin: 2px 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 导航项悬浮效果 */
+.nav-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  filter: blur(10px);
+  z-index: -1;
 }
 
 .nav-item:hover {
-  background: var(--bg-tertiary);
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
   color: var(--text-primary);
 }
 
+.nav-item:hover::before {
+  opacity: 0.1;
+}
+
+/* 激活状态 - 渐变背景 + 发光 */
 .nav-item.active {
-  background: rgba(24, 144, 255, 0.15);
-  color: var(--primary-500);
+  background: linear-gradient(
+    135deg,
+    rgba(94, 114, 235, 0.2),
+    rgba(157, 80, 187, 0.2)
+  );
+  border: 1px solid rgba(94, 114, 235, 0.3);
+  color: var(--primary-start);
+  box-shadow: var(--glow-primary), inset 0 0 20px rgba(94, 114, 235, 0.1);
+}
+
+.nav-item.active::before {
+  opacity: 0.2;
+}
+
+/* 激活指示条 */
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--gradient-primary);
+  border-radius: 0 2px 2px 0;
+  box-shadow: var(--glow-primary);
 }
 
 .nav-icon {
   font-size: 18px;
+  transition: transform var(--transition-fast);
+}
+
+.nav-item:hover .nav-icon {
+  transform: scale(1.1);
 }
 
 .nav-text {
   font-size: var(--text-sm);
+  font-weight: var(--font-medium);
 }
 
 .expand-icon {
@@ -412,6 +671,18 @@ const checkForUpdates = () => {
 .sub-menu {
   padding-left: 16px;
   overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .nav-item.sub-item {
@@ -423,9 +694,22 @@ const checkForUpdates = () => {
   transform: rotate(90deg);
 }
 
+/* 玻璃页脚 */
 .sidebar-footer {
   padding: var(--space-lg);
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid var(--glass-border);
+  position: relative;
+}
+
+/* 页脚渐变分隔线 */
+.sidebar-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 16px;
+  right: 16px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
 }
 
 .user-profile {
@@ -436,15 +720,17 @@ const checkForUpdates = () => {
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary-400), var(--primary-600));
+  background: var(--gradient-primary);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: var(--font-medium);
+  font-weight: var(--font-semibold);
+  box-shadow: var(--glow-primary);
+  border: 2px solid var(--glass-border);
 }
 
 .user-info {
@@ -472,33 +758,46 @@ const checkForUpdates = () => {
 }
 
 .action-btn {
-  background: transparent;
-  border: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  border: 1px solid var(--glass-border);
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 6px;
+  padding: 8px;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 14px;
+  justify-content: center;
+  font-size: 16px;
 }
 
 .action-btn:hover {
-  background: var(--bg-tertiary);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
   color: var(--text-primary);
+  box-shadow: var(--shadow-glass-hover);
 }
 
+/* 主要操作按钮 - 渐变效果 */
 .action-btn.primary {
-  background: var(--primary-500);
+  background: var(--gradient-primary);
+  border: none;
   color: white;
-  border-radius: var(--radius-md);
-  padding: 6px 12px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-glass);
 }
 
 .action-btn.primary:hover {
-  background: var(--primary-600);
+  box-shadow: var(--shadow-glass-hover), var(--glow-primary);
+  transform: translateY(-2px);
+}
+
+.action-btn.primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-glass-active);
 }
 
 /* 主内容区域 */
@@ -510,15 +809,30 @@ const checkForUpdates = () => {
   background: var(--bg-primary);
 }
 
+/* 玻璃顶部导航栏 */
 .top-navbar {
   height: 64px;
   padding: 0 var(--space-xl);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--border-light);
-  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-medium));
+  -webkit-backdrop-filter: blur(var(--glass-blur-medium));
   flex-shrink: 0;
+  position: relative;
+}
+
+/* 导航栏底部发光线 */
+.top-navbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
 }
 
 .navbar-left {
@@ -543,86 +857,136 @@ const checkForUpdates = () => {
   display: none;
 }
 
+.breadcrumb-item:last-child {
+  color: var(--text-primary);
+  font-weight: var(--font-medium);
+}
+
 .navbar-right {
   display: flex;
   align-items: center;
   gap: var(--space-md);
 }
 
+/* 玻璃搜索框 */
 .global-search {
-  padding: 6px 12px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
-  background: var(--bg-secondary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
   color: var(--text-primary);
   font-size: var(--text-sm);
-  width: 200px;
-  transition: all var(--transition-fast);
+  width: 220px;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-glass);
 }
 
 .global-search:focus {
-  border-color: var(--primary-500);
+  border-color: var(--primary-start);
+  background: var(--glass-bg-hover);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  box-shadow: var(--glow-primary), inset 0 0 20px rgba(94, 114, 235, 0.1);
 }
 
+.global-search::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* 玻璃图标按钮 */
 .icon-btn {
   position: relative;
-  background: transparent;
-  border: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  border: 1px solid var(--glass-border);
   cursor: pointer;
-  padding: 8px;
-  border-radius: var(--radius-md);
+  padding: 10px;
+  border-radius: 50%;
   font-size: 18px;
   transition: all var(--transition-fast);
+  color: var(--text-secondary);
 }
 
 .icon-btn:hover {
-  background: var(--bg-tertiary);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-glass-hover);
 }
 
+/* 通知徽章 */
 .icon-btn.has-badge::after {
   content: '';
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 6px;
+  right: 6px;
   width: 8px;
   height: 8px;
-  background: var(--error-500);
+  background: var(--gradient-danger);
   border-radius: 50%;
+  box-shadow: var(--glow-danger);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
 }
 
 .badge {
   position: absolute;
   top: 0;
   right: 0;
-  background: var(--error-500);
+  background: var(--gradient-danger);
   color: white;
   font-size: 10px;
   padding: 2px 5px;
   border-radius: 10px;
   font-weight: var(--font-bold);
+  box-shadow: var(--glow-danger);
 }
 
 .page-container {
   flex: 1;
   overflow-y: auto;
+  padding: var(--space-xl);
 }
 
 .page-content {
   height: 100%;
-  padding: var(--space-xl);
   max-width: 1400px;
   margin: 0 auto;
 }
 
-/* 页脚 */
+/* 玻璃页脚 */
 .app-footer {
   padding: var(--space-md) var(--space-xl);
-  border-top: 1px solid var(--border-light);
-  background: var(--bg-secondary);
+  border-top: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-medium));
+  -webkit-backdrop-filter: blur(var(--glass-blur-medium));
   display: flex;
   justify-content: center;
+  position: relative;
+}
+
+/* 页脚顶部发光线 */
+.app-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
 }
 
 .footer-content {
@@ -637,46 +1001,65 @@ const checkForUpdates = () => {
   opacity: 0.5;
 }
 
+/* 玻璃链接按钮 */
 .link-btn {
   background: transparent;
-  border: none;
-  color: var(--primary-500);
+  border: 1px solid var(--glass-border);
+  color: var(--primary-start);
   cursor: pointer;
   font-size: var(--text-xs);
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  border-radius: 20px;
   transition: all var(--transition-fast);
 }
 
 .link-btn:hover {
-  background: rgba(24, 144, 255, 0.1);
-  color: var(--primary-600);
+  background: var(--gradient-primary);
+  border-color: transparent;
+  color: white;
+  box-shadow: var(--glow-primary);
 }
 
-/* 设置抽屉 */
+/* 玻璃设置抽屉遮罩 */
 .drawer-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   display: flex;
   justify-content: flex-end;
+  animation: fadeIn 0.2s ease;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 玻璃抽屉 */
 .drawer {
   height: 100%;
   width: 400px;
-  background: var(--bg-card);
-  border-left: 1px solid var(--border-light);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-left: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
-  animation: slideIn 0.3s ease;
+  animation: slideInRight 0.3s ease;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes slideIn {
+@keyframes slideInRight {
   from {
     transform: translateX(100%);
   }
@@ -689,8 +1072,19 @@ const checkForUpdates = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-lg);
-  border-bottom: 1px solid var(--border-light);
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--glass-border);
+  position: relative;
+}
+
+.drawer-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16px;
+  right: 16px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
 }
 
 .drawer-header h3 {
@@ -698,22 +1092,29 @@ const checkForUpdates = () => {
   font-size: var(--text-xl);
   font-weight: var(--font-semibold);
   color: var(--text-primary);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .close-btn {
-  background: transparent;
-  border: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  border: 1px solid var(--glass-border);
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1;
-  padding: 4px;
-  border-radius: var(--radius-sm);
+  padding: 8px;
+  border-radius: var(--radius-md);
   transition: all var(--transition-fast);
 }
 
 .close-btn:hover {
-  background: var(--bg-tertiary);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
   color: var(--text-primary);
 }
 
@@ -731,6 +1132,8 @@ const checkForUpdates = () => {
     top: 0;
     bottom: 0;
     transform: translateX(-100%);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
   }
 
   .sidebar.show {

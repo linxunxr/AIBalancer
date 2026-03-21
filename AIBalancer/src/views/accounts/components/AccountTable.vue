@@ -275,29 +275,34 @@ function handlePageSizeChange(size: number) {
 </script>
 
 <style scoped>
+/* 玻璃拟态表格容器 */
 .account-table {
-  background: var(--bg-card, #16213e);
-  border-radius: 8px;
-  border: 1px solid var(--border-light, #2a2a4a);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--glass-border);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--shadow-md);
 }
 
+/* 表格工具栏 */
 .table-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-light, #2a2a4a);
-  background: var(--bg-secondary, #0f0f23);
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .toolbar-left,
 .toolbar-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .account-name-cell {
@@ -306,30 +311,122 @@ function handlePageSizeChange(size: number) {
 }
 
 .account-name-cell .name {
-  font-weight: 500;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .balance-value {
-  color: var(--warning-color, #ffc107);
-  font-weight: 600;
-  font-family: monospace;
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  font-family: 'SF Mono', 'Monaco', monospace;
 }
 
+/* 覆盖Naive UI表格样式 */
 :deep(.n-data-table) {
-  --n-th-color: var(--bg-secondary, #0f0f23);
-  --n-td-color: var(--bg-card, #16213e);
+  --n-th-color: rgba(255, 255, 255, 0.03) !important;
+  --n-td-color: rgba(255, 255, 255, 0.01) !important;
+  --n-th-text-color: var(--text-secondary) !important;
+  --n-td-text-color: var(--text-primary) !important;
+  --n-border-color: rgba(255, 255, 255, 0.05) !important;
+  --n-th-color-hover: rgba(255, 255, 255, 0.05) !important;
+  --n-td-color-hover: rgba(255, 255, 255, 0.03) !important;
 }
 
 :deep(.n-data-table-th) {
   font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px !important;
 }
 
 :deep(.n-data-table-td) {
-  padding: 12px 16px;
+  padding: 14px 16px !important;
+  font-size: 14px;
+}
+
+:deep(.n-data-table-tr--striped .n-data-table-td) {
+  background: rgba(255, 255, 255, 0.01) !important;
+}
+
+:deep(.n-data-table-tr:hover .n-data-table-td) {
+  background: rgba(94, 114, 235, 0.05) !important;
+}
+
+:deep(.n-checkbox) {
+  --n-border: 1px solid var(--glass-border);
+  --n-border-checked: var(--primary-color);
+}
+
+:deep(.n-checkbox--checked) {
+  background: var(--gradient-primary);
+  border-color: transparent;
+}
+
+:deep(.n-button) {
+  transition: all var(--transition-normal);
+}
+
+:deep(.n-button:hover) {
+  transform: translateY(-1px);
 }
 
 :deep(.n-button[type="primary"]) {
-  background: var(--primary-color, #4f46e5) !important;
-  border-color: var(--primary-color, #4f46e5) !important;
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+  box-shadow: var(--glow-primary);
+}
+
+:deep(.n-button[type="primary"]:hover) {
+  box-shadow: 0 4px 15px rgba(94, 114, 235, 0.4);
+}
+
+:deep(.n-button--error-type) {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+:deep(.n-button--error-type:hover) {
+  background: rgba(239, 68, 68, 0.2) !important;
+}
+
+:deep(.n-switch) {
+  --n-rail-color: rgba(255, 255, 255, 0.1);
+  --n-rail-color-active: var(--gradient-primary);
+}
+
+:deep(.n-tag) {
+  background: rgba(94, 114, 235, 0.1);
+  border: 1px solid rgba(94, 114, 235, 0.3);
+  border-radius: var(--radius-sm, 6px);
+}
+
+:deep(.n-pagination) {
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+:deep(.n-pagination-item) {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm, 8px);
+}
+
+:deep(.n-pagination-item--active) {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+  box-shadow: var(--glow-primary);
+}
+
+:deep(.n-select) {
+  --n-color: rgba(255, 255, 255, 0.05) !important;
+  --n-border: 1px solid var(--glass-border) !important;
 }
 </style>

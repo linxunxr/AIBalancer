@@ -7,7 +7,7 @@ use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use tracing::Level;
 use tracing_subscriber::{
-    fmt,
+    fmt::{self, format::Writer, time::FormatTime},
     layer::SubscriberExt,
     registry,
     util::SubscriberInitExt,
@@ -27,6 +27,19 @@ use crate::logging::error_report::{ErrorReportManager, setup_panic_hook, collect
 
 /// Configuration file name
 const CONFIG_FILE_NAME: &str = "config.yaml";
+
+/// 本地时间格式化器，用于 tracing-subscriber
+/// 确保日志时间戳使用本地时区而非 UTC
+#[derive(Clone)]
+struct LocalTimer;
+
+impl FormatTime for LocalTimer {
+    fn format_time(&self, w: &mut Writer<'_>) -> std::fmt::Result {
+        // 获取本地时间并格式化为 ISO 8601 格式
+        let local_time = chrono::Local::now();
+        write!(w, "{}", local_time.format("%Y-%m-%dT%H:%M:%S%.3f"))
+    }
+}
 
 /// Default cleanup interval in seconds (24 hours)
 const DEFAULT_CLEANUP_INTERVAL_SECS: u64 = 24 * 60 * 60;
@@ -147,12 +160,16 @@ impl LogManager {
         // Build the subscriber
         let mut layers = Vec::new();
 
+        // 创建本地时间格式化器
+        let local_timer = LocalTimer;
+
         // Console output layer
         if self.config.console_output {
             let console_layer = fmt::layer()
                 .with_target(true)
                 .with_thread_ids(true)
                 .with_level(true)
+                .with_timer(local_timer.clone())
                 .boxed();
             layers.push(console_layer);
         }
@@ -166,6 +183,7 @@ impl LogManager {
                     .with_level(true)
                     .with_ansi(false)
                     .with_writer(non_blocking)
+                    .with_timer(local_timer)
                     .json()  // Use JSON format
                     .boxed();
                 layers.push(file_layer);

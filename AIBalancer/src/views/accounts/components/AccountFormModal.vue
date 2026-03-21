@@ -29,6 +29,7 @@
           :value="formData.type"
           :options="typeOptions"
           :render-label="renderLabel"
+          :menu-props="{ class: 'glass-select-menu' }"
           placeholder="选择平台类型"
           @update:value="(v) => updateField('type', v)"
         />
@@ -61,6 +62,7 @@
           multiple
           filterable
           tag
+          :menu-props="{ class: 'glass-select-menu' }"
           placeholder="选择或输入标签"
           @update:value="(v) => updateField('tags', v)"
         />

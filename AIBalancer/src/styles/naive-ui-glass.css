@@ -423,6 +423,117 @@ button.n-button {
    玻璃选择器 (NSelect)
    ============================================ */
 
+/* 自定义玻璃下拉菜单类 - 用于 menu-props */
+.glass-select-menu {
+  --n-option-text-color: var(--text-primary) !important;
+  --n-option-text-color-active: var(--text-primary) !important;
+  --n-option-text-color-pressed: var(--text-primary) !important;
+  --n-option-color: transparent !important;
+  --n-option-color-hover: rgba(255, 255, 255, 0.12) !important;
+  --n-option-color-active: rgba(94, 114, 235, 0.2) !important;
+  --n-option-color-pressed: rgba(94, 114, 235, 0.25) !important;
+  --n-option-check-color: var(--primary-start) !important;
+  background: rgba(30, 30, 30, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  padding: 6px !important;
+}
+
+.glass-select-menu .n-base-select-option,
+.glass-select-menu .n-select-option {
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+  padding: 10px 14px !important;
+  margin: 2px 4px !important;
+  background: transparent !important;
+}
+
+.glass-select-menu .n-base-select-option *,
+.glass-select-menu .n-select-option * {
+  color: var(--text-primary) !important;
+}
+
+.glass-select-menu .n-base-select-option:hover,
+.glass-select-menu .n-select-option:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.glass-select-menu .n-base-select-option:hover *,
+.glass-select-menu .n-select-option:hover * {
+  color: #ffffff !important;
+}
+
+/* 选中状态 */
+.glass-select-menu .n-base-select-option--selected,
+.glass-select-menu .n-select-option--selected {
+  background: rgba(94, 114, 235, 0.2) !important;
+  color: var(--text-primary) !important;
+}
+
+.glass-select-menu .n-base-select-option--selected *,
+.glass-select-menu .n-select-option--selected * {
+  color: var(--text-primary) !important;
+}
+
+.glass-select-menu .n-base-select-option--selected .n-base-select-option__check,
+.glass-select-menu .n-select-option--selected .n-select-option__check {
+  color: var(--primary-start) !important;
+}
+
+/* 待选中状态 */
+.glass-select-menu .n-base-select-option--pending,
+.glass-select-menu .n-select-option--pending {
+  background: rgba(94, 114, 235, 0.15) !important;
+}
+
+/* 浅色主题下的玻璃下拉菜单 */
+.light-theme .glass-select-menu {
+  --n-option-text-color: rgba(0, 0, 0, 0.85) !important;
+  --n-option-text-color-active: rgba(0, 0, 0, 0.95) !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+}
+
+.light-theme .glass-select-menu .n-base-select-option,
+.light-theme .glass-select-menu .n-select-option {
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .glass-select-menu .n-base-select-option *,
+.light-theme .glass-select-menu .n-select-option * {
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .glass-select-menu .n-base-select-option:hover,
+.light-theme .glass-select-menu .n-select-option:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
+.light-theme .glass-select-menu .n-base-select-option:hover *,
+.light-theme .glass-select-menu .n-select-option:hover * {
+  color: rgba(0, 0, 0, 0.95) !important;
+}
+
+.light-theme .glass-select-menu .n-base-select-option--selected,
+.light-theme .glass-select-menu .n-select-option--selected {
+  background: rgba(94, 114, 235, 0.15) !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .glass-select-menu .n-base-select-option--selected *,
+.light-theme .glass-select-menu .n-select-option--selected * {
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .glass-select-menu .n-base-select-option--selected .n-base-select-option__check,
+.light-theme .glass-select-menu .n-select-option--selected .n-select-option__check {
+  color: var(--primary-start) !important;
+}
+
 /* 强制覆盖所有下拉菜单相关元素 */
 .n-base-selection,
 .n-select .n-base-selection,

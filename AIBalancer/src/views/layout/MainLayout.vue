@@ -23,15 +23,43 @@
       </div>
 
       <div class="sidebar-nav">
-        <a
-          v-for="item in menuItems"
-          :key="item.key"
-          :class="['nav-item', { active: activeKey === item.key }]"
-          @click="handleMenuSelect(item)"
-        >
-          <span class="nav-icon">{{ item.icon }}</span>
-          <span v-if="!isSidebarCollapsed" class="nav-text">{{ item.label }}</span>
-        </a>
+        <template v-for="item in menuItems" :key="item.key">
+          <!-- 有子菜单的项 -->
+          <template v-if="item.children">
+            <a
+              :class="['nav-item', { active: activeKey.startsWith(item.key), expanded: expandedMenus.has(item.key) }]"
+              @click="toggleSubMenu(item)"
+            >
+              <span class="nav-icon">{{ item.icon }}</span>
+              <span v-if="!isSidebarCollapsed" class="nav-text">{{ item.label }}</span>
+              <span v-if="!isSidebarCollapsed" class="expand-icon">
+                {{ expandedMenus.has(item.key) ? '▼' : '▶' }}
+              </span>
+            </a>
+            <!-- 子菜单 -->
+            <div v-if="expandedMenus.has(item.key) && !isSidebarCollapsed" class="sub-menu">
+              <a
+                v-for="child in item.children"
+                :key="child.key"
+                :class="['nav-item sub-item', { active: activeKey === child.key }]"
+                @click="handleMenuSelect(child)"
+              >
+                <span class="nav-icon">{{ child.icon }}</span>
+                <span class="nav-text">{{ child.label }}</span>
+              </a>
+            </div>
+          </template>
+          <!-- 无子菜单的项 -->
+          <template v-else>
+            <a
+              :class="['nav-item', { active: activeKey === item.key }]"
+              @click="handleMenuSelect(item)"
+            >
+              <span class="nav-icon">{{ item.icon }}</span>
+              <span v-if="!isSidebarCollapsed" class="nav-text">{{ item.label }}</span>
+            </a>
+          </template>
+        </template>
       </div>
 
       <div class="sidebar-footer">
@@ -96,9 +124,11 @@
 
       <!-- 页面内容 -->
       <div class="page-container">
-        <div class="page-content">
-          <slot></slot>
-        </div>
+        <n-message-provider>
+          <div class="page-content">
+            <slot></slot>
+          </div>
+        </n-message-provider>
       </div>
 
       <!-- 页脚 -->
@@ -131,6 +161,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { NMessageProvider } from 'naive-ui';
 import appStore from '../../models/stores/appStore';
 import themeStore from '../../models/stores/themeStore';
 
@@ -147,8 +178,9 @@ const { theme } = storeToRefs(themeS);
 const isSidebarCollapsed = ref(false);
 const searchQuery = ref('');
 const showSettingsDrawer = ref(false);
-const activeKey = ref('logs');
+const activeKey = ref('dashboard');
 const unreadCount = ref(3);
+const expandedMenus = ref(new Set(['accounts'])); // 默认展开账户管理
 
 // 计算属性
 const themeClass = computed(() => theme.value === 'dark' ? '' : 'light-theme');
@@ -164,21 +196,41 @@ const lastUpdateTime = computed(() => {
 });
 
 const breadcrumbs = computed(() => {
-  const routeMap: Record<string, string> = {
-    'logs': '日志查看',
-    'log-settings': '日志设置',
-    'settings': '系统设置',
-    'dashboard': '仪表盘'
+  const routeMap: Record<string, { label: string; parent?: string }> = {
+    'dashboard': { label: '仪表盘' },
+    'accounts': { label: '账户管理' },
+    'accounts-list': { label: '账户列表', parent: 'accounts' },
+    'accounts-stats': { label: '使用统计', parent: 'accounts' },
+    'settings': { label: '系统设置' }
   };
-  const activeLabel = routeMap[activeKey.value] || activeKey.value;
-  return [{ key: activeKey.value, label: activeLabel, href: `/${activeKey.value}` }];
+
+  const item = routeMap[activeKey.value] || { label: activeKey.value };
+  const result = [];
+
+  if (item.parent) {
+    const parentItem = routeMap[item.parent];
+    if (parentItem) {
+      result.push({ key: item.parent, label: parentItem.label });
+    }
+  }
+
+  result.push({ key: activeKey.value, label: item.label });
+  return result;
 });
 
 // 菜单选项
 const menuItems = [
   { key: 'dashboard', label: '仪表盘', icon: '📊', path: '/dashboard' },
-  { key: 'logs', label: '日志查看', icon: '📝', path: '/logs' },
-  { key: 'log-settings', label: '日志设置', icon: '⚙', path: '/log-settings' },
+  {
+    key: 'accounts',
+    label: '账户管理',
+    icon: '💳',
+    path: '/accounts',
+    children: [
+      { key: 'accounts-list', label: '账户列表', icon: '📋' },
+      { key: 'accounts-stats', label: '使用统计', icon: '📈' },
+    ]
+  },
   { key: 'settings', label: '系统设置', icon: '⚙', path: '/settings' },
 ];
 
@@ -202,6 +254,19 @@ const closeSettings = () => {
 const handleMenuSelect = (item: any) => {
   activeKey.value = item.key;
   emit('select', item.key);
+};
+
+const toggleSubMenu = (item: any) => {
+  if (isSidebarCollapsed.value) {
+    // 如果侧边栏折叠，先展开侧边栏
+    isSidebarCollapsed.value = false;
+  }
+
+  if (expandedMenus.value.has(item.key)) {
+    expandedMenus.value.delete(item.key);
+  } else {
+    expandedMenus.value.add(item.key);
+  }
 };
 
 const showNotifications = () => {
@@ -336,6 +401,26 @@ const checkForUpdates = () => {
 
 .nav-text {
   font-size: var(--text-sm);
+}
+
+.expand-icon {
+  margin-left: auto;
+  font-size: 10px;
+  transition: transform var(--transition-fast);
+}
+
+.sub-menu {
+  padding-left: 16px;
+  overflow: hidden;
+}
+
+.nav-item.sub-item {
+  padding: 10px 24px 10px 40px;
+  font-size: var(--text-xs);
+}
+
+.nav-item.expanded .expand-icon {
+  transform: rotate(90deg);
 }
 
 .sidebar-footer {
@@ -525,6 +610,7 @@ const checkForUpdates = () => {
 }
 
 .page-content {
+  height: 100%;
   padding: var(--space-xl);
   max-width: 1400px;
   margin: 0 auto;

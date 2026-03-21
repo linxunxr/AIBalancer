@@ -1,10 +1,10 @@
 <template>
   <MainLayout @select="(key: string) => currentPage = key">
     <Dashboard v-if="currentPage === 'dashboard'" />
-    <LogViewer v-else-if="currentPage === 'logs'" />
-    <LogSettings v-else-if="currentPage === 'log-settings'" />
+    <AccountManagement v-else-if="currentPage === 'accounts' || currentPage === 'accounts-list'" />
+    <AccountStatistics v-else-if="currentPage === 'accounts-stats'" />
     <Settings v-else-if="currentPage === 'settings'" />
-    <div v-else>欢迎页面</div>
+    <div v-else class="welcome-page">欢迎页面</div>
   </MainLayout>
 </template>
 
@@ -12,9 +12,20 @@
 import { ref } from 'vue';
 import MainLayout from './views/layout/MainLayout.vue';
 import Dashboard from './views/dashboard/Dashboard.vue';
-import LogViewer from './views/logs/LogViewer.vue';
-import LogSettings from './views/logs/LogSettings.vue';
+import AccountManagement from './views/accounts/AccountManagement.vue';
+import AccountStatistics from './views/accounts/AccountStatistics.vue';
 import Settings from './views/settings/Settings.vue';
 
 const currentPage = ref('dashboard');
 </script>
+
+<style scoped>
+.welcome-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  font-size: var(--text-xl);
+}
+</style>

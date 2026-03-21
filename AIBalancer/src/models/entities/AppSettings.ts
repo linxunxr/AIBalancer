@@ -15,7 +15,9 @@ export interface AppSettings {
   dailyBudgetWarning: number;
   monthlyBudgetWarning: number;
   notificationEnabled: boolean;
-{
+}
+
+export enum Theme {
   LIGHT = 'light',
   DARK = 'dark',
   AUTO = 'auto'

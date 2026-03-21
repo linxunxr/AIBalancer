@@ -32,12 +32,11 @@ const emit = defineEmits<{
   select: [key: string];
 }>();
 
-const activeKey = ref<string>('logs');
+const activeKey = ref<string>('dashboard');
 
 const menuItems: MenuItem[] = [
   { key: 'dashboard', label: '仪表盘', path: '/dashboard' },
-  { key: 'logs', label: '日志查看', path: '/logs' },
-  { key: 'log-settings', label: '日志设置', path: '/log-settings' },
+  { key: 'accounts', label: '账户管理', path: '/accounts' },
   { key: 'settings', label: '系统设置', path: '/settings' },
 ];
 

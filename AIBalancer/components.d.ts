@@ -12,6 +12,15 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ChartView: typeof import('./src/components/charts/ChartView.vue')['default']
+    ErrorBoundary: typeof import('./src/components/common/ErrorBoundary.vue')['default']
+    NAvatar: typeof import('naive-ui')['NAvatar']
+    NButton: typeof import('naive-ui')['NButton']
+    NCard: typeof import('naive-ui')['NCard']
+    NCheckbox: typeof import('naive-ui')['NCheckbox']
+    NMessageProvider: typeof import('naive-ui')['NMessageProvider']
+    NSpace: typeof import('naive-ui')['NSpace']
+    NSwitch: typeof import('naive-ui')['NSwitch']
+    NTag: typeof import('naive-ui')['NTag']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     UsageTable: typeof import('./src/components/dashboard/UsageTable.vue')['default']

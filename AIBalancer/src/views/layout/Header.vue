@@ -21,13 +21,12 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  currentPage: 'logs',
+  currentPage: 'dashboard',
 });
 
 const pageTitles: Record<string, string> = {
   dashboard: '仪表盘',
-  logs: '日志查看',
-  'log-settings': '日志设置',
+  accounts: '账户管理',
   settings: '系统设置',
 };
 

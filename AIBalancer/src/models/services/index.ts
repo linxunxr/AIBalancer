@@ -1,3 +1,4 @@
+export * from './AccountService';
 export * from './BalanceService';
 export * from './MonitoringService';
 export * from './AlertService';

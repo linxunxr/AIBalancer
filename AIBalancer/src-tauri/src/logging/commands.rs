@@ -4,6 +4,7 @@ use serde::Serialize;
 use std::time::SystemTime;
 
 use crate::logging::{LogConfig, LogManager, LogEntry, LogFileInfo, LogQueryFilter, LogPeriod};
+use crate::logging::error_report::{collect_performance_data, PerformanceData};
 
 // App state for log manager
 pub struct LogManagerState(pub Mutex<LogManager>);
@@ -23,7 +24,61 @@ pub async fn save_log_config(
 ) -> Result<(), String> {
     let mut manager = state.0.lock().map_err(|e| e.to_string())?;
     manager.set_config(config);
-    // TODO: Save config to file
+    manager.save_config().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+/// Log an error from the frontend
+#[tauri::command]
+pub async fn log_error(
+    error_type: String,
+    message: String,
+    stack_trace: Option<String>,
+    context: Option<serde_json::Value>,
+    state: State<'_, LogManagerState>,
+) -> Result<String, String> {
+    let manager = state.0.lock().map_err(|e| e.to_string())?;
+    manager.log_error(
+        &error_type,
+        &message,
+        stack_trace.as_deref(),
+        context,
+    ).map_err(|e| e.to_string())
+}
+
+/// Log an info event from the frontend
+#[tauri::command]
+pub async fn log_info(
+    source: String,
+    message: String,
+    state: State<'_, LogManagerState>,
+) -> Result<(), String> {
+    let manager = state.0.lock().map_err(|e| e.to_string())?;
+    manager.log_info(&source, &message);
+    Ok(())
+}
+
+/// Log a warning event from the frontend
+#[tauri::command]
+pub async fn log_warning(
+    source: String,
+    message: String,
+    state: State<'_, LogManagerState>,
+) -> Result<(), String> {
+    let manager = state.0.lock().map_err(|e| e.to_string())?;
+    manager.log_warning(&source, &message);
+    Ok(())
+}
+
+/// Track an analytics event
+#[tauri::command]
+pub async fn track_event(
+    event_name: String,
+    properties: Option<serde_json::Value>,
+    state: State<'_, LogManagerState>,
+) -> Result<(), String> {
+    let manager = state.0.lock().map_err(|e| e.to_string())?;
+    manager.track_event(&event_name, properties);
     Ok(())
 }
 
@@ -220,6 +275,12 @@ pub async fn clean_old_logs(
         deleted: deleted_count,
         freed_bytes,
     })
+}
+
+/// Get current performance data
+#[tauri::command]
+pub async fn get_performance_data() -> Result<PerformanceData, String> {
+    Ok(collect_performance_data())
 }
 
 #[derive(Debug, Clone, Serialize)]

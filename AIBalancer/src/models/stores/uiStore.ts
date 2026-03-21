@@ -59,29 +59,17 @@ const defaultSidebarItems: SidebarItem[] = [
     id: 'dashboard',
     label: '仪表盘',
     icon: 'dashboard',
-    path: '/'
+    path: '/dashboard'
   },
   {
-    id: 'balance',
-    label: '余额管理',
+    id: 'accounts',
+    label: '账户管理',
     icon: 'wallet',
-    path: '/balance'
-  },
-  {
-    id: 'usage',
-    label: '使用记录',
-    icon: 'chart',
-    path: '/usage'
-  },
-  {
-    id: 'logs',
-    label: '日志查看',
-    icon: 'document-text',
-    path: '/logs'
+    path: '/accounts'
   },
   {
     id: 'settings',
-    label: '设置',
+    label: '系统设置',
     icon: 'settings',
     path: '/settings'
   }

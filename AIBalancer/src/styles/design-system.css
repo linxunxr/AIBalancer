@@ -12,11 +12,22 @@
   --primary-800: #0c3a66;
   --primary-900: #081d33;
 
+  /* 常用别名 */
+  --primary-color: var(--primary-500);
+  --primary-color-hover: var(--primary-400);
+  --primary-color-active: var(--primary-600);
+
   /* 语义色 */
   --success-500: #52c41a;
   --warning-500: #faad14;
   --error-500: #ff4d4f;
   --info-500: #1890ff;
+
+  /* 语义色别名 */
+  --success-color: var(--success-500);
+  --warning-color: var(--warning-500);
+  --error-color: var(--error-500);
+  --info-color: var(--info-500);
 
   /* 中性色 */
   --gray-50: #fafafa;

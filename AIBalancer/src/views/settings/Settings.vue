@@ -173,6 +173,15 @@
             </button>
           </div>
         </div>
+
+        <div class="setting-item">
+          <label class="setting-label">日志管理</label>
+          <div class="setting-control">
+            <button class="btn btn-secondary" @click="exportLogs">
+              📋 导出日志
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -256,6 +265,11 @@ const exportAllData = () => {
 const importData = () => {
   // TODO: 导入数据
   alert('导入功能开发中...');
+};
+
+const exportLogs = () => {
+  // TODO: 调用 Rust 命令导出日志
+  alert('导出日志功能开发中...\n日志将导出到应用目录的 logs 文件夹');
 };
 
 // 加载保存的设置

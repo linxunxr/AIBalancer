@@ -209,9 +209,9 @@ async fn get_deepseek_balance(client: &Client, api_key: &str) -> Result<BalanceI
     let key_prefix = if api_key.len() >= 10 { &api_key[..10] } else { api_key };
     tracing::debug!("调用 DeepSeek 余额接口，API Key 前缀: '{}'", key_prefix);
 
-    // DeepSeek 官方余额查询 API (POST)
+    // DeepSeek 官方余额查询 API - GET /user/balance
     let resp = client
-        .post("https://api.deepseek.com/balance")
+        .get("https://api.deepseek.com/user/balance")
         .header("Authorization", format!("Bearer {}", api_key))
         .send()
         .await

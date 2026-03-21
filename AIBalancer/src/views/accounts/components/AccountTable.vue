@@ -221,25 +221,25 @@ const columns: DataTableColumns<Account> = [
   {
     title: '操作',
     key: 'actions',
-    width: 180,
+    width: 200,
     fixed: 'right',
     render(row) {
       return h(NSpace, { size: 'small' }, {
         default: () => [
           h(NButton, {
-            size: 'tiny',
+            size: 'small',
             onClick: () => emit('detail', row)
           }, { default: () => '详情' }),
           h(NButton, {
-            size: 'tiny',
+            size: 'small',
             onClick: () => emit('edit', row)
           }, { default: () => '编辑' }),
           h(NButton, {
-            size: 'tiny',
+            size: 'small',
             onClick: () => emit('refreshBalance', row.id)
           }, { default: () => '刷新' }),
           h(NButton, {
-            size: 'tiny',
+            size: 'small',
             type: 'error',
             onClick: () => emit('delete', row)
           }, { default: () => '删除' })

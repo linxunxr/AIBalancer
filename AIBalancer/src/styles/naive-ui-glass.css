@@ -52,12 +52,60 @@ button.n-button {
   font-weight: var(--font-medium) !important;
 }
 
+/* 确保按钮文字清晰可见 */
+.n-button .n-button__content,
+.n-button .n-button__icon {
+  color: inherit !important;
+}
+
+.n-button .n-button__content {
+  font-size: inherit !important;
+  line-height: 1.4 !important;
+}
+
+/* Tiny 按钮特殊处理 - 确保文字清晰 */
+.n-button--tiny {
+  font-size: 13px !important;
+  padding: 0 10px !important;
+  height: 26px !important;
+  min-width: 48px !important;
+}
+
+.n-button--tiny .n-button__content {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* Small 按钮处理 */
+.n-button--small {
+  font-size: 13px !important;
+  padding: 0 14px !important;
+  height: 30px !important;
+}
+
+.n-button--small .n-button__content {
+  font-size: 13px !important;
+}
+
+/* Medium 按钮处理 */
+.n-button--medium {
+  font-size: 14px !important;
+  padding: 0 18px !important;
+  height: 34px !important;
+}
+
 /* 主要按钮 */
 .n-button--primary-type,
 .n-button[type="primary"] {
   background: var(--gradient-primary) !important;
   border: none !important;
   box-shadow: var(--shadow-glass) !important;
+  color: #ffffff !important;
+}
+
+.n-button--primary-type .n-button__content,
+.n-button[type="primary"] .n-button__content {
+  color: #ffffff !important;
 }
 
 .n-button--primary-type:hover,
@@ -82,11 +130,22 @@ button.n-button {
   color: var(--text-primary) !important;
 }
 
+.n-button--default .n-button__content,
+.n-button:not([type]) .n-button__content {
+  color: var(--text-primary) !important;
+}
+
 .n-button--default:hover,
 .n-button:not([type]):hover {
   background: var(--glass-bg-hover) !important;
   border-color: var(--glass-border-hover) !important;
   box-shadow: var(--shadow-glass-hover) !important;
+  color: #ffffff !important;
+}
+
+.n-button--default:hover .n-button__content,
+.n-button:not([type]):hover .n-button__content {
+  color: #ffffff !important;
 }
 
 /* 文字按钮 */
@@ -106,6 +165,12 @@ button.n-button {
   background: var(--gradient-success) !important;
   border: none !important;
   box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.n-button--success .n-button__content,
+.n-button[type="success"] .n-button__content {
+  color: #ffffff !important;
 }
 
 .n-button--success:hover {
@@ -118,6 +183,12 @@ button.n-button {
   background: var(--gradient-warning) !important;
   border: none !important;
   box-shadow: 0 2px 8px rgba(250, 173, 20, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.n-button--warning .n-button__content,
+.n-button[type="warning"] .n-button__content {
+  color: #ffffff !important;
 }
 
 /* 错误/危险按钮 */
@@ -126,6 +197,16 @@ button.n-button {
   background: var(--gradient-danger) !important;
   border: none !important;
   box-shadow: var(--shadow-glass) !important;
+  color: #ffffff !important;
+}
+
+.n-button--error .n-button__content,
+.n-button[type="error"] .n-button__content {
+  color: #ffffff !important;
+}
+
+.n-button--error:hover {
+  box-shadow: var(--shadow-glass-hover), var(--glow-danger) !important;
 }
 
 .n-button--error:hover {

@@ -595,26 +595,145 @@ pub fn update_account(
     Ok(result)
 }
 
-/// 删除账户
+/// 删除账户（包含级联删除子表数据）
 #[tauri::command]
 pub fn delete_account(db: State<'_, Mutex<Connection>>, id: String) -> Result<bool, String> {
     tracing::info!("删除账户: {}", id);
     let conn = db.lock().unwrap();
 
-    let rows_affected = conn
-        .execute("DELETE FROM accounts_v2 WHERE id = ?1", params![&id])
+    // 首先检查账户是否存在
+    let exists: bool = conn
+        .query_row(
+            "SELECT EXISTS(SELECT 1 FROM accounts_v2 WHERE id = ?1)",
+            params![&id],
+            |row| Ok(row.get::<_, i32>(0)? > 0),
+        )
         .map_err(|e| {
-            tracing::error!("删除账户失败: {} - {}", id, e);
-            format!("删除账户失败: {}", e)
+            tracing::error!("检查账户存在性失败: {} - {}", id, e);
+            format!("检查账户存在性失败: {}", e)
         })?;
 
-    if rows_affected > 0 {
-        tracing::info!("账户删除成功: {}", id);
-    } else {
-        tracing::warn!("账户不存在或已删除: {}", id);
+    if !exists {
+        tracing::warn!("账户不存在: {}", id);
+        return Ok(false);
     }
 
-    Ok(rows_affected > 0)
+    // 开启事务以确保数据一致性
+    conn.execute("BEGIN TRANSACTION", [])
+        .map_err(|e| format!("开启事务失败: {}", e))?;
+
+    let result = (|| -> Result<(), String> {
+        // 1. 获取该账户下的所有策略组
+        let mut stmt = conn
+            .prepare("SELECT id FROM quota_strategy_groups WHERE account_id = ?1")
+            .map_err(|e| format!("准备查询语句失败: {}", e))?;
+        let group_ids: Vec<String> = stmt
+            .query_map(params![&id], |row| row.get(0))
+            .map_err(|e| format!("查询策略组失败: {}", e))?
+            .filter_map(|r| r.ok())
+            .collect();
+        drop(stmt);
+
+        // 2. 删除维度关联表中的记录（引用 quota_dimensions）
+        for group_id in &group_ids {
+            // 获取该策略组下的所有维度
+            let mut stmt = conn
+                .prepare("SELECT id FROM quota_dimensions WHERE group_id = ?1")
+                .map_err(|e| format!("准备查询语句失败: {}", e))?;
+            let dimension_ids: Vec<String> = stmt
+                .query_map(params![group_id], |row| row.get(0))
+                .map_err(|e| format!("查询维度失败: {}", e))?
+                .filter_map(|r| r.ok())
+                .collect();
+            drop(stmt);
+
+            // 删除维度关联记录
+            for dim_id in &dimension_ids {
+                conn.execute(
+                    "DELETE FROM dimension_relations WHERE parent_dimension_id = ?1 OR child_dimension_id = ?1",
+                    params![dim_id],
+                )
+                .map_err(|e| format!("删除维度关联失败: {}", e))?;
+            }
+
+            // 删除维度扣减记录（引用 quota_dimensions）
+            for dim_id in &dimension_ids {
+                conn.execute(
+                    "DELETE FROM dimension_deductions WHERE dimension_id = ?1",
+                    params![dim_id],
+                )
+                .map_err(|e| format!("删除维度扣减记录失败: {}", e))?;
+            }
+
+            // 删除维度记录
+            conn.execute(
+                "DELETE FROM quota_dimensions WHERE group_id = ?1",
+                params![group_id],
+            )
+            .map_err(|e| format!("删除维度失败: {}", e))?;
+        }
+
+        // 3. 删除策略组
+        conn.execute(
+            "DELETE FROM quota_strategy_groups WHERE account_id = ?1",
+            params![&id],
+        )
+        .map_err(|e| format!("删除策略组失败: {}", e))?;
+
+        // 4. 获取该账户的所有事务ID
+        let mut stmt = conn
+            .prepare("SELECT transaction_id FROM deduction_transactions WHERE account_id = ?1")
+            .map_err(|e| format!("准备查询语句失败: {}", e))?;
+        let transaction_ids: Vec<String> = stmt
+            .query_map(params![&id], |row| row.get(0))
+            .map_err(|e| format!("查询扣减事务失败: {}", e))?
+            .filter_map(|r| r.ok())
+            .collect();
+        drop(stmt);
+
+        // 5. 删除维度扣减记录（引用 deduction_transactions）
+        for txn_id in &transaction_ids {
+            conn.execute(
+                "DELETE FROM dimension_deductions WHERE transaction_id = ?1",
+                params![txn_id],
+            )
+            .map_err(|e| format!("删除扣减记录失败: {}", e))?;
+        }
+
+        // 6. 删除扣减事务
+        conn.execute(
+            "DELETE FROM deduction_transactions WHERE account_id = ?1",
+            params![&id],
+        )
+        .map_err(|e| format!("删除扣减事务失败: {}", e))?;
+
+        // 7. 最后删除账户本身
+        let rows_affected = conn
+            .execute("DELETE FROM accounts_v2 WHERE id = ?1", params![&id])
+            .map_err(|e| format!("删除账户失败: {}", e))?;
+
+        if rows_affected > 0 {
+            tracing::info!("账户及其关联数据删除成功: {}", id);
+        }
+
+        Ok(())
+    })();
+
+    // 根据结果提交或回滚事务
+    match result {
+        Ok(()) => {
+            conn.execute("COMMIT", []).map_err(|e| {
+                tracing::error!("提交事务失败: {}", e);
+                format!("提交事务失败: {}", e)
+            })?;
+            Ok(true)
+        }
+        Err(e) => {
+            tracing::error!("删除账户失败，回滚事务: {} - {}", id, e);
+            conn.execute("ROLLBACK", []).ok();
+            Err(e)
+        }
+    }
 }
 
 /// 切换账户启用状态

@@ -467,15 +467,54 @@ button.n-button {
   border-radius: var(--radius-md) !important;
   color: var(--text-primary) !important;
   transition: all var(--transition-fast) !important;
+  padding: 8px 12px !important;
+  margin: 2px 4px !important;
+}
+
+/* 确保选项内容文本清晰可见 */
+.n-base-select-menu .n-base-select-option .n-base-select-option__content {
+  color: var(--text-primary) !important;
 }
 
 .n-base-select-menu .n-base-select-option:hover {
   background: var(--glass-bg-hover) !important;
 }
 
+.n-base-select-menu .n-base-select-option:hover .n-base-select-option__content {
+  color: #ffffff !important;
+}
+
 .n-base-select-menu .n-base-select-option--selected {
   background: var(--gradient-primary) !important;
   color: white !important;
+}
+
+.n-base-select-menu .n-base-select-option--selected .n-base-select-option__content {
+  color: white !important;
+}
+
+/* 选中的勾选图标 */
+.n-base-select-menu .n-base-select-option--selected .n-base-select-option__check {
+  color: white !important;
+}
+
+/* 待选中状态（当前高亮但未选中的选项） */
+.n-base-select-menu .n-base-select-option--pending {
+  background: rgba(94, 114, 235, 0.15) !important;
+}
+
+.n-base-select-menu .n-base-select-option--pending .n-base-select-option__content {
+  color: var(--text-primary) !important;
+}
+
+/* 禁用状态 */
+.n-base-select-menu .n-base-select-option--disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+.n-base-select-menu .n-base-select-option--disabled .n-base-select-option__content {
+  color: var(--text-tertiary) !important;
 }
 
 /* ============================================

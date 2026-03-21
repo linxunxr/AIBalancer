@@ -423,8 +423,10 @@ button.n-button {
    玻璃选择器 (NSelect)
    ============================================ */
 
+/* 强制覆盖所有下拉菜单相关元素 */
 .n-base-selection,
-.n-select .n-base-selection {
+.n-select .n-base-selection,
+.n-select-selection {
   background: var(--glass-bg) !important;
   backdrop-filter: blur(var(--glass-blur-light)) !important;
   -webkit-backdrop-filter: blur(var(--glass-blur-light)) !important;
@@ -434,86 +436,143 @@ button.n-button {
 }
 
 .n-base-selection:hover,
-.n-select .n-base-selection:hover {
+.n-select .n-base-selection:hover,
+.n-select-selection:hover {
   border-color: var(--glass-border-hover) !important;
 }
 
 .n-base-selection--focus,
-.n-select .n-base-selection--focus {
+.n-select .n-base-selection--focus,
+.n-select-selection--focus {
   border-color: var(--primary-start) !important;
   box-shadow: var(--glow-primary) !important;
 }
 
-.n-base-selection-label {
+.n-base-selection-label,
+.n-base-selection .n-base-selection__label,
+.n-base-selection-input__content {
   background: transparent !important;
   color: var(--text-primary) !important;
 }
 
-.n-base-selection-placeholder {
+.n-base-selection-placeholder,
+.n-base-selection .n-base-selection__placeholder {
   color: var(--text-tertiary) !important;
 }
 
 /* 下拉面板 */
-.n-base-select-menu {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(var(--glass-blur)) !important;
-  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
-  border: 1px solid var(--glass-border) !important;
+.n-base-select-menu,
+.n-select-menu,
+.n-select-dropdown,
+.n-popover-menu {
+  background: rgba(30, 30, 30, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
   border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-glass) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  padding: 6px !important;
 }
 
-.n-base-select-menu .n-base-select-option {
+/* 强制覆盖所有选项元素 */
+.n-base-select-option,
+.n-select-option,
+.n-base-select-menu .n-base-select-option,
+.n-select-menu .n-select-option {
   border-radius: var(--radius-md) !important;
   color: var(--text-primary) !important;
   transition: all var(--transition-fast) !important;
-  padding: 8px 12px !important;
+  padding: 10px 14px !important;
   margin: 2px 4px !important;
+  background: transparent !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
 }
 
-/* 确保选项内容文本清晰可见 */
-.n-base-select-menu .n-base-select-option .n-base-select-option__content {
+/* 选项内部结构 - 强制覆盖文本颜色 */
+.n-base-select-option *,
+.n-select-option *,
+.n-base-select-menu .n-base-select-option * {
   color: var(--text-primary) !important;
 }
 
-.n-base-select-menu .n-base-select-option:hover {
-  background: var(--glass-bg-hover) !important;
+/* 选项内容 */
+.n-base-select-option .n-base-select-option__content,
+.n-select-option .n-select-option__content,
+.n-base-select-option__content {
+  color: var(--text-primary) !important;
+  font-size: 14px !important;
 }
 
-.n-base-select-menu .n-base-select-option:hover .n-base-select-option__content {
+/* 选项标签 */
+.n-base-select-option .n-base-select-option__label,
+.n-select-option .n-select-option__label {
+  color: var(--text-primary) !important;
+}
+
+/* 选项勾选图标 */
+.n-base-select-option .n-base-select-option__check,
+.n-select-option .n-select-option__check {
+  color: var(--primary-start) !important;
+}
+
+/* 悬停状态 */
+.n-base-select-option:hover,
+.n-select-option:hover,
+.n-base-select-menu .n-base-select-option:hover,
+.n-select-menu .n-select-option:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.n-base-select-option:hover *,
+.n-select-option:hover * {
   color: #ffffff !important;
 }
 
-.n-base-select-menu .n-base-select-option--selected {
+/* 待选中状态（键盘导航高亮） */
+.n-base-select-option--pending,
+.n-select-option--pending {
+  background: rgba(94, 114, 235, 0.25) !important;
+}
+
+/* 选中状态 */
+.n-base-select-option--selected,
+.n-select-option--selected {
   background: var(--gradient-primary) !important;
   color: white !important;
 }
 
-.n-base-select-menu .n-base-select-option--selected .n-base-select-option__content {
+.n-base-select-option--selected *,
+.n-select-option--selected * {
   color: white !important;
 }
 
-/* 选中的勾选图标 */
-.n-base-select-menu .n-base-select-option--selected .n-base-select-option__check {
+/* 选中状态勾选图标 */
+.n-base-select-option--selected .n-base-select-option__check,
+.n-select-option--selected .n-select-option__check,
+.n-base-select-option--selected .n-base-select-option__check,
+.n-select-option--selected .n-select-option__check {
   color: white !important;
-}
-
-/* 待选中状态（当前高亮但未选中的选项） */
-.n-base-select-menu .n-base-select-option--pending {
-  background: rgba(94, 114, 235, 0.15) !important;
-}
-
-.n-base-select-menu .n-base-select-option--pending .n-base-select-option__content {
-  color: var(--text-primary) !important;
 }
 
 /* 禁用状态 */
-.n-base-select-menu .n-base-select-option--disabled {
-  opacity: 0.5 !important;
+.n-base-select-option--disabled,
+.n-select-option--disabled {
+  opacity: 0.4 !important;
   cursor: not-allowed !important;
+  background: transparent !important;
 }
 
-.n-base-select-menu .n-base-select-option--disabled .n-base-select-option__content {
+.n-base-select-option--disabled *,
+.n-select-option--disabled * {
+  color: var(--text-tertiary) !important;
+}
+
+/* 空状态 */
+.n-base-select-menu .n-select-empty,
+.n-select-menu .n-select-empty,
+.n-base-select-menu .n-empty,
+.n-select-menu .n-empty {
   color: var(--text-tertiary) !important;
 }
 
@@ -851,21 +910,53 @@ button.n-button {
   border-left: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
-/* 浅色主题下拉菜单 */
+/* 浅色主题下拉菜单 - 增强覆盖 */
 .light-theme .n-dropdown-menu,
-.light-theme .n-base-select-menu {
+.light-theme .n-base-select-menu,
+.light-theme .n-select-menu,
+.light-theme .n-select-dropdown {
   background: rgba(255, 255, 255, 0.98) !important;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
 }
 
 .light-theme .n-dropdown-menu .n-dropdown-item,
-.light-theme .n-base-select-menu .n-base-select-option {
+.light-theme .n-base-select-menu .n-base-select-option,
+.light-theme .n-select-menu .n-select-option {
+  color: rgba(0, 0, 0, 0.85) !important;
+  padding: 10px 14px !important;
+  margin: 2px 4px !important;
+}
+
+.light-theme .n-dropdown-menu .n-dropdown-item *,
+.light-theme .n-base-select-menu .n-base-select-option *,
+.light-theme .n-select-menu .n-select-option * {
   color: rgba(0, 0, 0, 0.85) !important;
 }
 
 .light-theme .n-dropdown-menu .n-dropdown-item:hover,
-.light-theme .n-base-select-menu .n-base-select-option:hover {
-  background: rgba(94, 114, 235, 0.1) !important;
+.light-theme .n-base-select-menu .n-base-select-option:hover,
+.light-theme .n-select-menu .n-select-option:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
+.light-theme .n-dropdown-menu .n-dropdown-item:hover *,
+.light-theme .n-base-select-menu .n-base-select-option:hover *,
+.light-theme .n-select-menu .n-select-option:hover * {
+  color: rgba(0, 0, 0, 0.95) !important;
+}
+
+.light-theme .n-dropdown-menu .n-dropdown-item--selected,
+.light-theme .n-base-select-menu .n-base-select-option--selected,
+.light-theme .n-select-menu .n-select-option--selected {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+}
+
+.light-theme .n-dropdown-menu .n-dropdown-item--selected *,
+.light-theme .n-base-select-menu .n-base-select-option--selected *,
+.light-theme .n-select-menu .n-select-option--selected * {
+  color: white !important;
 }
 
 /* 浅色主题消息 */

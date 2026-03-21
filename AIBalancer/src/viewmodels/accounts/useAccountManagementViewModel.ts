@@ -125,7 +125,19 @@ export class AccountManagementViewModel extends BaseViewModel<AccountManagementS
     try {
       this.state.summary = await accountService.getAccountsSummary();
     } catch (error) {
+      // 捕获错误但不向外抛出，避免影响其他操作
       console.error('加载统计失败:', error);
+      // 设置一个默认的 summary 避免后续访问出错
+      this.state.summary = {
+        total: this.state.accounts.length,
+        active: this.state.accounts.filter(a => a.status === 'active').length,
+        inactive: this.state.accounts.filter(a => a.status === 'inactive').length,
+        withErrors: this.state.accounts.filter(a => a.status === 'error').length,
+        totalBalance: this.state.accounts.reduce((sum, a) => sum + a.currentBalance, 0),
+        totalUsage: this.state.accounts.reduce((sum, a) => sum + (a.usage?.totalTokens || 0), 0),
+        byType: {} as Record<string, number>,
+        byStatus: {} as Record<string, number>
+      };
     }
   }
 
@@ -133,7 +145,10 @@ export class AccountManagementViewModel extends BaseViewModel<AccountManagementS
    * 刷新数据
    */
   public async refresh(): Promise<void> {
-    await Promise.all([this.loadAccounts(), this.loadSummary()]);
+    // 先加载账户列表（这是主要数据）
+    await this.loadAccounts();
+    // 然后加载汇总（这是次要数据，失败不影响主流程）
+    await this.loadSummary();
   }
 
   // ==================== 过滤和搜索 ====================
@@ -451,7 +466,7 @@ export class AccountManagementViewModel extends BaseViewModel<AccountManagementS
         result = result.filter(a =>
           a.name.toLowerCase().includes(query) ||
           getTypeLabel(a.type).toLowerCase().includes(query) ||
-          a.metadata.tags.some(t => t.toLowerCase().includes(query))
+          (a.metadata?.tags?.some(t => t.toLowerCase().includes(query)) ?? false)
         );
       }
 
@@ -467,10 +482,10 @@ export class AccountManagementViewModel extends BaseViewModel<AccountManagementS
 
       // 余额范围过滤
       if (this.state.filterMinBalance !== null) {
-        result = result.filter(a => a.currentBalance >= this.state.filterMinBalance!);
+        result = result.filter(a => (a.currentBalance || 0) >= this.state.filterMinBalance!);
       }
       if (this.state.filterMaxBalance !== null) {
-        result = result.filter(a => a.currentBalance <= this.state.filterMaxBalance!);
+        result = result.filter(a => (a.currentBalance || 0) <= this.state.filterMaxBalance!);
       }
 
       // 排序
@@ -483,16 +498,16 @@ export class AccountManagementViewModel extends BaseViewModel<AccountManagementS
             valueB = b.name.toLowerCase();
             break;
           case 'balance':
-            valueA = a.currentBalance;
-            valueB = b.currentBalance;
+            valueA = a.currentBalance || 0;
+            valueB = b.currentBalance || 0;
             break;
           case 'status':
             valueA = a.status;
             valueB = b.status;
             break;
           case 'lastUsed':
-            valueA = new Date(a.usage.lastUsed).getTime();
-            valueB = new Date(b.usage.lastUsed).getTime();
+            valueA = new Date(a.usage?.lastUsed || 0).getTime();
+            valueB = new Date(b.usage?.lastUsed || 0).getTime();
             break;
           case 'updatedAt':
           default:
@@ -532,8 +547,8 @@ export class AccountManagementViewModel extends BaseViewModel<AccountManagementS
         active: data.filter(a => a.status === AS.ACTIVE).length,
         inactive: data.filter(a => a.status === AS.INACTIVE).length,
         error: data.filter(a => a.status === AS.ERROR).length,
-        totalBalance: data.reduce((sum, a) => sum + a.currentBalance, 0),
-        totalUsage: data.reduce((sum, a) => sum + a.usage.totalTokens, 0)
+        totalBalance: data.reduce((sum, a) => sum + (a.currentBalance || 0), 0),
+        totalUsage: data.reduce((sum, a) => sum + (a.usage?.totalTokens || 0), 0)
       };
     });
   }

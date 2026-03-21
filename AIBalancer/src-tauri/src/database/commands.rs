@@ -848,12 +848,35 @@ pub fn get_accounts_summary(db: State<'_, Mutex<Connection>>) -> Result<serde_js
         .query_row("SELECT COALESCE(SUM(current_balance), 0) FROM accounts_v2", [], |row| row.get(0))
         .map_err(|e| format!("查询失败: {}", e))?;
 
+    // 按类型统计
+    let mut stmt = conn
+        .prepare("SELECT type, COUNT(*) FROM accounts_v2 GROUP BY type")
+        .map_err(|e| format!("查询失败: {}", e))?;
+    let by_type: std::collections::HashMap<String, i32> = stmt
+        .query_map([], |row| Ok((row.get::<_, String>(0)?, row.get::<_, i32>(1)?)))
+        .map_err(|e| format!("查询失败: {}", e))?
+        .filter_map(|r| r.ok())
+        .collect();
+
+    // 按状态统计
+    let mut stmt = conn
+        .prepare("SELECT status, COUNT(*) FROM accounts_v2 GROUP BY status")
+        .map_err(|e| format!("查询失败: {}", e))?;
+    let by_status: std::collections::HashMap<String, i32> = stmt
+        .query_map([], |row| Ok((row.get::<_, String>(0)?, row.get::<_, i32>(1)?)))
+        .map_err(|e| format!("查询失败: {}", e))?
+        .filter_map(|r| r.ok())
+        .collect();
+
     Ok(serde_json::json!({
         "total": total,
         "active": active,
         "inactive": inactive,
         "withErrors": error,
-        "totalBalance": total_balance
+        "totalBalance": total_balance,
+        "totalUsage": 0,
+        "byType": by_type,
+        "byStatus": by_status
     }))
 }
 

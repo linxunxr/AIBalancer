@@ -134,6 +134,9 @@ async fn test_deepseek_api(
     api_key: &str,
     start: std::time::Instant,
 ) -> ApiTestResult {
+    let key_prefix = if api_key.len() >= 10 { &api_key[..10] } else { api_key };
+    tracing::debug!("DeepSeek API 测试，API Key 前缀: '{}'", key_prefix);
+
     // 先尝试获取余额（这是最直接的验证方式）
     match get_deepseek_balance(client, api_key).await {
         Ok(balance) => ApiTestResult {
@@ -148,7 +151,8 @@ async fn test_deepseek_api(
                 "used": balance.used,
             })),
         },
-        Err(_e) => {
+        Err(e) => {
+            tracing::warn!("DeepSeek 余额查询失败: {}，尝试 models 接口", e);
             // 如果余额接口失败，尝试模型列表接口验证 API Key
             let models_result = client
                 .get("https://api.deepseek.com/v1/models")
@@ -165,13 +169,19 @@ async fn test_deepseek_api(
                     currency: Some("CNY".to_string()),
                     details: None,
                 },
-                Ok(resp) => ApiTestResult {
-                    success: false,
-                    message: format!("DeepSeek API 认证失败: HTTP {}", resp.status()),
-                    latency: Some(start.elapsed().as_millis() as u64),
-                    balance: None,
-                    currency: None,
-                    details: None,
+                Ok(resp) => {
+                    let status = resp.status();
+                    // 获取响应体以便调试
+                    let resp_body = resp.text().await.unwrap_or_default();
+                    tracing::error!("DeepSeek API 认证失败: HTTP {}，响应体: {}", status, resp_body);
+                    ApiTestResult {
+                        success: false,
+                        message: format!("DeepSeek API 认证失败: HTTP {}", status),
+                        latency: Some(start.elapsed().as_millis() as u64),
+                        balance: None,
+                        currency: None,
+                        details: None,
+                    }
                 },
                 Err(e) => ApiTestResult {
                     success: false,
@@ -187,6 +197,9 @@ async fn test_deepseek_api(
 }
 
 async fn get_deepseek_balance(client: &Client, api_key: &str) -> Result<BalanceInfo, String> {
+    let key_prefix = if api_key.len() >= 10 { &api_key[..10] } else { api_key };
+    tracing::debug!("调用 DeepSeek 余额接口，API Key 前缀: '{}'", key_prefix);
+
     let resp = client
         .get("https://api.deepseek.com/v1/user/balance")
         .header("Authorization", format!("Bearer {}", api_key))
@@ -194,8 +207,12 @@ async fn get_deepseek_balance(client: &Client, api_key: &str) -> Result<BalanceI
         .await
         .map_err(|e| format!("请求失败: {}", e))?;
 
-    if !resp.status().is_success() {
-        return Err(format!("API 返回错误: HTTP {}", resp.status()));
+    let status = resp.status();
+    if !status.is_success() {
+        // 获取响应体以便调试
+        let resp_body = resp.text().await.unwrap_or_default();
+        tracing::warn!("DeepSeek 余额接口返回非 200，状态码: {}，响应: {}", status, resp_body);
+        return Err(format!("API 返回错误: HTTP {}", status));
     }
 
     let data: DeepSeekBalanceResponse = resp

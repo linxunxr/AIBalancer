@@ -1212,6 +1212,8 @@ pub async fn test_account_connection_by_id(
         })?
     };
 
+    tracing::debug!("账户类型: {}, 原始 API Keys JSON: {}", account_type, encrypted_keys);
+
     // 解析 API Keys
     let api_keys: Vec<ApiKeyInfo> = serde_json::from_str(&encrypted_keys)
         .map_err(|e| {
@@ -1219,10 +1221,16 @@ pub async fn test_account_connection_by_id(
             format!("解析 API Keys 失败: {}", e)
         })?;
 
+    tracing::debug!("解析到 {} 个 API Keys", api_keys.len());
+
     // 获取活跃的 API Key 并解密（使用智能解密，处理已加密和未加密的情况）
     let decrypted_key = api_keys.iter()
         .find(|k| k.is_active)
-        .map(|k| decrypt_api_key_smart(&k.key))
+        .map(|k| {
+            let key_prefix = if k.key.len() >= 10 { &k.key[..10] } else { &k.key };
+            tracing::debug!("找到活跃 API Key，存储长度: {}, 前缀: '{}'", k.key.len(), key_prefix);
+            decrypt_api_key_smart(&k.key)
+        })
         .transpose()
         .map_err(|e| {
             tracing::error!("解密 API Key 失败: {}", e);
@@ -1230,6 +1238,10 @@ pub async fn test_account_connection_by_id(
         })?;
 
     let api_key = decrypted_key.ok_or("没有可用的 API 密钥")?;
+
+    // 记录 API Key 的前缀用于调试（不记录完整 key）
+    let api_key_prefix = if api_key.len() >= 10 { &api_key[..10] } else { &api_key };
+    tracing::info!("准备测试 {} API 连接，API Key 前缀: '{}'", account_type, api_key_prefix);
 
     // 测试连接
     let result = test_api_connection(&account_type, &api_key).await;

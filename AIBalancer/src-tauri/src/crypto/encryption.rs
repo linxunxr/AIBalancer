@@ -166,26 +166,38 @@ pub fn is_encrypted(value: &str) -> bool {
 /// 如果 API Key 已经是明文（未加密），直接返回
 /// 如果 API Key 已加密，解密后返回
 pub fn decrypt_api_key_smart(encrypted_or_plain: &str) -> Result<String, CryptoError> {
+    let key_prefix = if encrypted_or_plain.len() >= 10 {
+        &encrypted_or_plain[..10]
+    } else {
+        encrypted_or_plain
+    };
+    tracing::debug!("智能解密 API Key，长度: {}, 前缀: '{}'", encrypted_or_plain.len(), key_prefix);
+
     // 检查是否是明文 API Key（常见的 API Key 前缀）
     let plain_prefixes = ["sk-", "sk-proj-", "sk-ant-", "sk-svcacct-", "AIza", "Bearer "];
     for prefix in plain_prefixes {
         if encrypted_or_plain.starts_with(prefix) {
-            tracing::debug!("检测到明文 API Key，无需解密");
+            tracing::info!("检测到明文 API Key (前缀: {})，无需解密", prefix);
             return Ok(encrypted_or_plain.to_string());
         }
     }
 
     // 尝试解密
+    tracing::debug!("尝试解密 API Key...");
     match decrypt_api_key(encrypted_or_plain) {
-        Ok(decrypted) => Ok(decrypted),
+        Ok(decrypted) => {
+            tracing::info!("API Key 解密成功，长度: {}", decrypted.len());
+            Ok(decrypted)
+        }
         Err(e) => {
             // 如果解密失败，可能是未加密的旧数据，直接返回
             tracing::warn!("API Key 解密失败，尝试作为明文处理: {}", e);
             // 检查是否看起来像有效的 API Key（长度合理且不含特殊字符）
             if encrypted_or_plain.len() >= 20 && encrypted_or_plain.chars().all(|c| c.is_alphanumeric() || c == '-' || c == '_' || c == '.') {
-                tracing::info!("API Key 可能是未加密的旧数据，直接使用");
+                tracing::info!("API Key 可能是未加密的旧数据 (长度: {})，直接使用", encrypted_or_plain.len());
                 return Ok(encrypted_or_plain.to_string());
             }
+            tracing::error!("API Key 既不是有效的明文也不是有效的加密数据");
             Err(e)
         }
     }

@@ -28,6 +28,7 @@
         <n-select
           :value="formData.type"
           :options="typeOptions"
+          :render-label="renderLabel"
           placeholder="选择平台类型"
           @update:value="(v) => updateField('type', v)"
         />
@@ -189,6 +190,11 @@ watch(
 );
 
 // ==================== 方法 ====================
+
+// 渲染选项标签（确保文本可见）
+function renderLabel(option: { label: string; value: string }): string {
+  return option.label;
+}
 
 // 更新字段
 function updateField<K extends keyof AccountFormData>(
@@ -360,6 +366,16 @@ async function handleSubmit(): Promise<void> {
 
 :deep(.n-base-selection) {
   border-radius: var(--radius-md, 12px);
+}
+
+/* 确保选择器选中值文本可见 */
+:deep(.n-base-selection-label),
+:deep(.n-base-selection-input__content) {
+  color: var(--text-primary) !important;
+}
+
+:deep(.n-base-selection-placeholder) {
+  color: var(--text-tertiary) !important;
 }
 
 /* 文本域 */

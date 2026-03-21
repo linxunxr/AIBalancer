@@ -632,3 +632,190 @@ button.n-button {
 .n-spin-dot {
   background: var(--gradient-primary) !important;
 }
+
+/* ============================================
+   浅色主题特殊样式
+   ============================================ */
+
+.light-theme .n-button--default,
+.light-theme .n-button:not([type]) {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .n-button--default .n-button__content,
+.light-theme .n-button:not([type]) .n-button__content {
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .n-button--default:hover,
+.light-theme .n-button:not([type]):hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(0, 0, 0, 0.25) !important;
+  color: rgba(0, 0, 0, 0.95) !important;
+}
+
+.light-theme .n-button--default:hover .n-button__content,
+.light-theme .n-button:not([type]):hover .n-button__content {
+  color: rgba(0, 0, 0, 0.95) !important;
+}
+
+/* 浅色主题 Primary 按钮 */
+.light-theme .n-button--primary-type,
+.light-theme .n-button[type="primary"] {
+  background: var(--gradient-primary) !important;
+  color: #ffffff !important;
+}
+
+.light-theme .n-button--primary-type .n-button__content,
+.light-theme .n-button[type="primary"] .n-button__content {
+  color: #ffffff !important;
+}
+
+/* 浅色主题 Error 按钮 */
+.light-theme .n-button--error,
+.light-theme .n-button[type="error"] {
+  background: var(--gradient-danger) !important;
+  color: #ffffff !important;
+}
+
+.light-theme .n-button--error .n-button__content,
+.light-theme .n-button[type="error"] .n-button__content {
+  color: #ffffff !important;
+}
+
+/* 浅色主题卡片 */
+.light-theme .n-card,
+.light-theme div.n-card {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 浅色主题输入框 */
+.light-theme .n-input,
+.light-theme .n-input .n-input-wrapper {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .n-input .n-input__input-el,
+.light-theme .n-input .n-input__textarea-el {
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .n-input .n-input__placeholder {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 浅色主题选择器 */
+.light-theme .n-base-selection,
+.light-theme .n-select .n-base-selection {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+.light-theme .n-base-selection-label {
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .n-base-selection-placeholder {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 浅色主题数据表格 */
+.light-theme .n-data-table-th {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.light-theme .n-data-table-td {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .n-data-table-tr:hover td,
+.light-theme .n-data-table-tr:hover .n-data-table-td {
+  background: rgba(94, 114, 235, 0.08) !important;
+}
+
+/* 浅色主题标签 */
+.light-theme .n-tag--default {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* 浅色主题开关 */
+.light-theme .n-switch {
+  background: rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+.light-theme .n-switch__rail {
+  background: rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+/* 浅色主题模态框 */
+.light-theme .n-modal,
+.light-theme .n-dialog {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-theme .n-dialog .n-dialog__title {
+  color: rgba(0, 0, 0, 0.9) !important;
+}
+
+.light-theme .n-dialog .n-dialog__content {
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* 浅色主题抽屉 */
+.light-theme .n-drawer {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 浅色主题下拉菜单 */
+.light-theme .n-dropdown-menu,
+.light-theme .n-base-select-menu {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-theme .n-dropdown-menu .n-dropdown-item,
+.light-theme .n-base-select-menu .n-base-select-option {
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .n-dropdown-menu .n-dropdown-item:hover,
+.light-theme .n-base-select-menu .n-base-select-option:hover {
+  background: rgba(94, 114, 235, 0.1) !important;
+}
+
+/* 浅色主题消息 */
+.light-theme .n-message {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 浅色主题弹出框 */
+.light-theme .n-popover {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 浅色主题分页 */
+.light-theme .n-pagination-item {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-theme .n-pagination-item--active {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+}

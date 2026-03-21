@@ -124,7 +124,7 @@
 
       <!-- 页面内容 -->
       <div class="page-container">
-        <n-config-provider :theme-overrides="glassThemeOverrides">
+        <n-config-provider :theme-overrides="currentThemeOverrides">
           <n-message-provider>
             <div class="page-content">
               <slot></slot>
@@ -379,6 +379,196 @@ const glassThemeOverrides: GlobalThemeOverrides = {
   },
 };
 
+// 浅色主题配置
+const lightThemeOverrides: GlobalThemeOverrides = {
+  common: {
+    borderRadius: '12px',
+    borderRadiusSmall: '8px',
+  },
+  Card: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    colorEmbedded: 'rgba(255, 255, 255, 0.9)',
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    titleTextColor: 'rgba(0, 0, 0, 0.9)',
+    textColor: 'rgba(0, 0, 0, 0.75)',
+  },
+  Button: {
+    borderRadiusMedium: '20px',
+    borderRadiusSmall: '16px',
+    borderRadiusTiny: '12px',
+    // Primary 按钮配置
+    colorPrimary: '#5e72e4',
+    colorHoverPrimary: '#6c7ae4',
+    colorPressedPrimary: '#4e62d4',
+    textColorPrimary: '#ffffff',
+    textColorHoverPrimary: '#ffffff',
+    textColorPressedPrimary: '#ffffff',
+    // Error 按钮配置
+    colorError: 'rgba(239, 68, 68, 0.1)',
+    colorHoverError: 'rgba(239, 68, 68, 0.2)',
+    colorPressedError: 'rgba(239, 68, 68, 0.3)',
+    textColorError: '#ff4d4f',
+    textColorHoverError: '#ff4d4f',
+    textColorPressedError: '#ff4d4f',
+    // Default 按钮配置
+    color: 'rgba(0, 0, 0, 0.05)',
+    colorHover: 'rgba(0, 0, 0, 0.1)',
+    colorPressed: 'rgba(0, 0, 0, 0.15)',
+    textColor: 'rgba(0, 0, 0, 0.85)',
+    textColorHover: 'rgba(0, 0, 0, 0.95)',
+    textColorPressed: 'rgba(0, 0, 0, 0.9)',
+    textColorFocus: 'rgba(0, 0, 0, 0.85)',
+    borderColor: 'rgba(0, 0, 0, 0.12)',
+    borderColorHover: 'rgba(0, 0, 0, 0.2)',
+    borderColorPressed: 'rgba(0, 0, 0, 0.25)',
+    borderColorFocus: 'rgba(94, 114, 235, 0.5)',
+    // Tiny 按钮字体大小
+    fontSizeTiny: '13px',
+    fontSizeSmall: '13px',
+    fontSizeMedium: '14px',
+    fontSizeLarge: '15px',
+    // 按钮内边距
+    paddingTiny: '0 10px',
+    paddingSmall: '0 14px',
+    paddingMedium: '0 18px',
+    paddingLarge: '0 22px',
+    // 按钮高度
+    heightTiny: '26px',
+    heightSmall: '30px',
+    heightMedium: '34px',
+    heightLarge: '40px',
+  },
+  Input: {
+    color: 'rgba(0, 0, 0, 0.03)',
+    colorFocus: 'rgba(0, 0, 0, 0.05)',
+    borderColor: 'rgba(0, 0, 0, 0.12)',
+    borderColorFocus: '#5e72e4',
+    borderRadius: '12px',
+    textColor: 'rgba(0, 0, 0, 0.9)',
+    placeholderColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  Select: {
+    peers: {
+      InternalSelection: {
+        color: 'rgba(0, 0, 0, 0.03)',
+        colorActive: 'rgba(0, 0, 0, 0.05)',
+        borderColor: 'rgba(0, 0, 0, 0.12)',
+        borderColorFocus: '#5e72e4',
+        borderRadius: '12px',
+        textColor: 'rgba(0, 0, 0, 0.9)',
+        placeholderColor: 'rgba(0, 0, 0, 0.4)',
+      },
+      InternalSelectMenu: {
+        color: 'rgba(255, 255, 255, 0.98)',
+        optionColorPending: 'rgba(94, 114, 235, 0.08)',
+        optionColorActive: 'rgba(94, 114, 235, 0.15)',
+        optionTextColor: 'rgba(0, 0, 0, 0.85)',
+        optionTextColorActive: 'rgba(0, 0, 0, 0.95)',
+      },
+    },
+  },
+  DataTable: {
+    thColor: 'rgba(0, 0, 0, 0.03)',
+    tdColor: 'transparent',
+    tdColorHover: 'rgba(94, 114, 235, 0.08)',
+    thColorHover: 'rgba(0, 0, 0, 0.05)',
+    borderColor: 'rgba(0, 0, 0, 0.08)',
+    thTextColor: 'rgba(0, 0, 0, 0.6)',
+    tdTextColor: 'rgba(0, 0, 0, 0.85)',
+    borderRadius: '12px',
+  },
+  Tag: {
+    borderRadius: '6px',
+    colorBordered: 'rgba(94, 114, 235, 0.1)',
+    borderColor: 'rgba(94, 114, 235, 0.3)',
+    textColor: 'rgba(94, 114, 235, 1)',
+  },
+  Dialog: {
+    color: 'rgba(255, 255, 255, 0.98)',
+    textColor: 'rgba(0, 0, 0, 0.9)',
+    titleTextColor: 'rgba(0, 0, 0, 0.9)',
+    borderRadius: '16px',
+  },
+  Modal: {
+    color: 'rgba(255, 255, 255, 0.98)',
+    textColor: 'rgba(0, 0, 0, 0.9)',
+    titleTextColor: 'rgba(0, 0, 0, 0.9)',
+    borderRadius: '16px',
+  },
+  Drawer: {
+    color: 'rgba(255, 255, 255, 0.98)',
+    textColor: 'rgba(0, 0, 0, 0.9)',
+    headerBorderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+    footerBorderTop: '1px solid rgba(0, 0, 0, 0.1)',
+    borderRadius: '16px 0 0 16px',
+  },
+  Message: {
+    color: 'rgba(255, 255, 255, 0.98)',
+    textColor: 'rgba(0, 0, 0, 0.9)',
+    borderRadius: '12px',
+  },
+  Pagination: {
+    buttonColor: 'rgba(0, 0, 0, 0.03)',
+    buttonColorHover: 'rgba(0, 0, 0, 0.08)',
+    buttonColorActive: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+    buttonTextColor: 'rgba(0, 0, 0, 0.85)',
+    buttonTextColorActive: '#ffffff',
+    borderRadius: '8px',
+  },
+  Tabs: {
+    tabTextColorCard: 'rgba(0, 0, 0, 0.6)',
+    tabTextColorActiveCard: 'rgba(0, 0, 0, 0.9)',
+    tabTextColorHoverCard: 'rgba(0, 0, 0, 0.75)',
+    barColor: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+  },
+  Switch: {
+    railColorActive: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+  },
+  Checkbox: {
+    colorChecked: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+    borderChecked: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+  },
+  Radio: {
+    buttonColorActive: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+    buttonTextColorActive: '#ffffff',
+    dotColorActive: '#ffffff',
+  },
+  Popover: {
+    color: 'rgba(255, 255, 255, 0.98)',
+    textColor: 'rgba(0, 0, 0, 0.9)',
+    borderRadius: '12px',
+  },
+  Tooltip: {
+    color: 'rgba(30, 30, 45, 0.95)',
+    textColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '8px',
+  },
+  Dropdown: {
+    color: 'rgba(255, 255, 255, 0.98)',
+    textColor: 'rgba(0, 0, 0, 0.85)',
+    optionColorHover: 'rgba(94, 114, 235, 0.1)',
+    optionTextColorHover: 'rgba(0, 0, 0, 0.95)',
+    borderRadius: '12px',
+  },
+  Empty: {
+    textColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  Spin: {
+    color: 'linear-gradient(135deg, #5e72e4 0%, #9d50bb 100%)',
+  },
+  Alert: {
+    colorError: 'rgba(239, 68, 68, 0.1)',
+    colorWarning: 'rgba(250, 173, 20, 0.1)',
+    colorSuccess: 'rgba(82, 196, 26, 0.1)',
+    colorInfo: 'rgba(94, 114, 235, 0.1)',
+    textColorError: 'rgba(239, 68, 68, 1)',
+    textColorWarning: 'rgba(250, 173, 20, 1)',
+    textColorSuccess: 'rgba(82, 196, 26, 1)',
+    textColorInfo: 'rgba(94, 114, 235, 1)',
+    borderRadius: '12px',
+  },
+};
+
 const emit = defineEmits<{
   select: [key: string];
 }>();
@@ -398,6 +588,7 @@ const expandedMenus = ref(new Set()); // 默认无展开菜单
 
 // 计算属性
 const themeClass = computed(() => theme.value === 'dark' ? '' : 'light-theme');
+const currentThemeOverrides = computed(() => theme.value === 'dark' ? glassThemeOverrides : lightThemeOverrides);
 const userName = computed(() => appS.user?.name || '用户');
 const userStatus = computed(() => appS.user?.status || '在线');
 const appVersion = computed(() => '1.0.0');

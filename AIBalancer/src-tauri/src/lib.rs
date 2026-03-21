@@ -138,23 +138,12 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
-fn get_project_root() -> PathBuf {
-    // 获取项目根目录（src-tauri 的父目录）
-    std::env::current_dir()
-        .ok()
-        .and_then(|p| p.parent().map(|p| p.to_path_buf()))
-        .unwrap_or_else(|| PathBuf::from("."))
-}
-
 fn get_db_path() -> PathBuf {
-    // 使用 src-tauri 的父目录（项目根目录）存放数据库
-    // 这样可以避免 Tauri 开发模式监视数据库文件导致重启
-    get_project_root()
-        .join("aibalancer.db")
+    // 使用当前工作目录存放数据库
+    std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")).join("aibalancer.db")
 }
 
 fn get_log_directory() -> PathBuf {
-    // 使用 src-tauri 的父目录（项目根目录）存放日志
-    get_project_root()
-        .join("logs")
+    // 使用当前工作目录存放日志（Tauri 应用的工作目录就是其根目录）
+    std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")).join("logs")
 }

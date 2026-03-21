@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_json;
 use std::sync::Mutex;
 use tauri::State;
-use crate::crypto::encryption::{encrypt_api_key, decrypt_api_key};
+use crate::crypto::encryption::{encrypt_api_key, decrypt_api_key, decrypt_api_key_smart};
 
 // ==================== 辅助函数 ====================
 
@@ -1219,10 +1219,10 @@ pub async fn test_account_connection_by_id(
             format!("解析 API Keys 失败: {}", e)
         })?;
 
-    // 获取活跃的 API Key 并解密
+    // 获取活跃的 API Key 并解密（使用智能解密，处理已加密和未加密的情况）
     let decrypted_key = api_keys.iter()
         .find(|k| k.is_active)
-        .map(|k| decrypt_api_key(&k.key))
+        .map(|k| decrypt_api_key_smart(&k.key))
         .transpose()
         .map_err(|e| {
             tracing::error!("解密 API Key 失败: {}", e);

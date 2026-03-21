@@ -1,4 +1,5 @@
 use rusqlite::Connection;
+use crate::crypto::encryption::encrypt_api_key;
 
 pub fn run_migrations(conn: &Connection) -> Result<(), rusqlite::Error> {
     // 创建余额表
@@ -359,6 +360,9 @@ pub fn run_migrations(conn: &Connection) -> Result<(), rusqlite::Error> {
     // 迁移现有账户到配额系统
     migrate_accounts_to_quota_system(conn)?;
 
+    // 加密现有未加密的 API Key
+    encrypt_existing_api_keys(conn)?;
+
     Ok(())
 }
 
@@ -419,10 +423,22 @@ fn migrate_accounts_to_v2(conn: &Connection) -> Result<(), rusqlite::Error> {
         // 映射 enabled 到 status
         let status = if enabled == 1 { "active" } else { "inactive" };
 
-        // 构建 api_keys JSON
+        // 加密 API Key（如果加密失败，记录警告但仍使用原始值）
+        let encrypted_key = match encrypt_api_key(&api_key) {
+            Ok(enc) => {
+                println!("API Key 加密成功");
+                enc
+            }
+            Err(e) => {
+                eprintln!("警告: API Key 加密失败，使用原始值: {}", e);
+                api_key.clone()
+            }
+        };
+
+        // 构建 api_keys JSON（使用加密后的 key）
         let api_keys = serde_json::json!([{
             "id": uuid::Uuid::new_v4().to_string(),
-            "key": api_key,
+            "key": encrypted_key,
             "lastUsed": now,
             "usageCount": 0,
             "isActive": true,
@@ -564,5 +580,77 @@ fn migrate_accounts_to_quota_system(conn: &Connection) -> Result<(), rusqlite::E
     }
 
     println!("配额系统数据迁移完成");
+    Ok(())
+}
+
+/// 加密现有未加密的 API Key
+/// 检查所有账户的 API Key，如果发现未加密的明文 API Key，则加密存储
+fn encrypt_existing_api_keys(conn: &Connection) -> Result<(), rusqlite::Error> {
+    // 获取所有账户的 API Keys
+    let mut stmt = conn.prepare(
+        "SELECT id, api_keys FROM accounts_v2"
+    )?;
+
+    let accounts = stmt.query_map([], |row| {
+        Ok((
+            row.get::<_, String>(0)?,
+            row.get::<_, String>(1)?,
+        ))
+    })?;
+
+    let now = chrono::Utc::now().to_rfc3339();
+    let mut updated_count = 0;
+
+    for account in accounts {
+        let (account_id, api_keys_json) = account?;
+
+        // 解析 API Keys
+        let mut api_keys: Vec<serde_json::Value> = match serde_json::from_str(&api_keys_json) {
+            Ok(keys) => keys,
+            Err(_) => continue, // 跳过解析失败的账户
+        };
+
+        let mut needs_update = false;
+
+        // 检查每个 API Key 是否需要加密
+        for key_obj in &mut api_keys {
+            if let Some(key) = key_obj.get("key").and_then(|k| k.as_str()) {
+                // 检查是否是明文 API Key（常见的 API Key 前缀）
+                let plain_prefixes = ["sk-", "sk-proj-", "sk-ant-", "sk-svcacct-", "AIza"];
+                let is_plain = plain_prefixes.iter().any(|prefix| key.starts_with(prefix));
+
+                if is_plain {
+                    // 加密 API Key
+                    match encrypt_api_key(key) {
+                        Ok(encrypted) => {
+                            if let Some(obj) = key_obj.as_object_mut() {
+                                obj.insert("key".to_string(), serde_json::json!(encrypted));
+                                needs_update = true;
+                                updated_count += 1;
+                                println!("账户 {} 的 API Key 已加密", account_id);
+                            }
+                        }
+                        Err(e) => {
+                            eprintln!("警告: 加密账户 {} 的 API Key 失败: {}", account_id, e);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 如果有更新，保存到数据库
+        if needs_update {
+            let updated_json = serde_json::to_string(&api_keys).unwrap_or(api_keys_json);
+            conn.execute(
+                "UPDATE accounts_v2 SET api_keys = ?1, updated_at = ?2 WHERE id = ?3",
+                rusqlite::params![&updated_json, &now, &account_id],
+            )?;
+        }
+    }
+
+    if updated_count > 0 {
+        println!("已加密 {} 个 API Key", updated_count);
+    }
+
     Ok(())
 }

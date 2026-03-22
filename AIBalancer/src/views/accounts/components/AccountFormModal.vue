@@ -24,13 +24,31 @@
         />
       </n-form-item>
 
-      <n-form-item label="平台类型" path="type">
+      <n-form-item label="基础类型" path="category">
+        <n-radio-group
+          :value="formData.category"
+          @update:value="handleCategoryChange"
+        >
+          <n-space vertical>
+            <n-radio
+              v-for="opt in categoryOptions"
+              :key="opt.value"
+              :value="opt.value"
+            >
+              <span class="category-label">{{ opt.label }}</span>
+              <span class="category-desc">{{ opt.description }}</span>
+            </n-radio>
+          </n-space>
+        </n-radio-group>
+      </n-form-item>
+
+      <n-form-item label="服务商类型" path="type">
         <n-select
           :value="formData.type"
-          :options="typeOptions"
+          :options="filteredTypeOptions"
           :render-label="renderLabel"
           :menu-props="{ class: 'glass-select-menu' }"
-          placeholder="选择平台类型"
+          placeholder="选择服务商类型"
           @update:value="(v) => updateField('type', v)"
         />
       </n-form-item>
@@ -90,10 +108,12 @@ import {
   NSelect,
   NButton,
   NSpace,
+  NRadioGroup,
+  NRadio,
   type FormInst,
   type FormRules
 } from 'naive-ui';
-import type { Account, CreateAccountParams, UpdateAccountParams } from '../../../models/entities/Account';
+import type { Account, AccountCategory, CreateAccountParams, UpdateAccountParams } from '../../../models/entities/Account';
 import {
   AccountFormViewModel,
   DEFAULT_FORM_DATA,
@@ -136,7 +156,8 @@ const isEditing = ref(false);
 
 const formTitle = computed(() => isEditing.value ? '编辑账户' : '添加账户');
 const submitButtonText = computed(() => isEditing.value ? '更新' : '创建');
-const typeOptions = computed(() => viewModel.typeOptions);
+const categoryOptions = computed(() => viewModel.categoryOptions);
+const filteredTypeOptions = computed(() => viewModel.getFilteredTypeOptions());
 const tagOptions = computed(() =>
   props.existingTags.map(tag => ({ label: tag, value: tag }))
 );
@@ -147,8 +168,11 @@ const formRules: FormRules = {
     { required: true, message: '请输入账户名称', trigger: 'blur' },
     { min: 2, max: 50, message: '名称长度应为 2-50 个字符', trigger: 'blur' }
   ],
+  category: [
+    { required: true, message: '请选择基础类型', trigger: 'change' }
+  ],
   type: [
-    { required: true, message: '请选择平台类型', trigger: 'change' }
+    { required: true, message: '请选择服务商类型', trigger: 'change' }
   ],
   apiKey: [
     {
@@ -169,11 +193,14 @@ watch(
       isEditing.value = true;
       formData.value = {
         name: account.name,
+        category: account.category,
         type: account.type,
         apiKey: '', // 编辑时不显示API Key
         notes: account.metadata.notes || '',
         tags: [...account.metadata.tags]
       };
+      // 同步更新 viewModel 的 category 以便筛选服务商
+      viewModel.updateCategory(account.category);
     } else {
       resetForm();
     }
@@ -196,6 +223,18 @@ watch(
 // 渲染选项标签（确保文本可见）
 function renderLabel(option: { label: string; value: string }): string {
   return option.label;
+}
+
+// 处理基础类型变化
+function handleCategoryChange(value: AccountCategory): void {
+  formData.value.category = value;
+  viewModel.updateCategory(value);
+  // 更新服务商类型为筛选后的第一个
+  const filtered = viewModel.getFilteredTypeOptions();
+  if (filtered.length > 0) {
+    formData.value.type = filtered[0].value;
+    viewModel.updateField('type', filtered[0].value);
+  }
 }
 
 // 更新字段
@@ -262,6 +301,7 @@ async function handleSubmit(): Promise<void> {
       } else {
         const params: CreateAccountParams = {
           name: formData.value.name,
+          category: formData.value.category,
           type: formData.value.type,
           apiKey: formData.value.apiKey,
           notes: formData.value.notes,
@@ -422,5 +462,28 @@ async function handleSubmit(): Promise<void> {
 
 :deep(.n-dialog) {
   border-radius: var(--radius-xl, 20px) !important;
+}
+
+/* 基础类型选择器样式 */
+.category-label {
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-right: 8px;
+}
+
+.category-desc {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+:deep(.n-radio) {
+  align-items: flex-start;
+  padding: 8px 0;
+}
+
+:deep(.n-radio__label) {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 </style>

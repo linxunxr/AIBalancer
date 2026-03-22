@@ -615,8 +615,8 @@ export class AccountManagementViewModel extends BaseViewModel<AccountManagementS
       { label: 'DeepSeek', value: AT.DEEPSEEK },
       { label: 'OpenAI', value: AT.OPENAI },
       { label: 'Anthropic', value: AT.ANTHROPIC },
-      { label: 'Google AI', value: AT.GOOGLE },
-      { label: 'Azure OpenAI', value: AT.AZURE },
+      { label: '方舟Coding Plan', value: AT.ARK_CODING_PLAN },
+      { label: '阿里云通义千问', value: AT.ALIYUN_QWEN },
       { label: '自定义', value: AT.CUSTOM }
     ];
   }

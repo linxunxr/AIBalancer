@@ -313,6 +313,20 @@ pub fn run_migrations(conn: &Connection) -> Result<(), rusqlite::Error> {
 
     // ==================== 表结构扩展 ====================
 
+    // 扩展 accounts_v2 表（添加 category 字段 - 基础类型）
+    let category_exists: bool = conn.query_row(
+        "SELECT COUNT(*) > 0 FROM pragma_table_info('accounts_v2') WHERE name='category'",
+        [],
+        |row| row.get::<_, i32>(0),
+    ).unwrap_or(0) > 0;
+
+    if !category_exists {
+        conn.execute(
+            "ALTER TABLE accounts_v2 ADD COLUMN category TEXT DEFAULT 'direct_balance'",
+            [],
+        )?;
+    }
+
     // 扩展 accounts_v2 表（添加 quota_strategy 字段）
     // SQLite 不支持 IF NOT EXISTS for ALTER TABLE，需要检查列是否存在
     let quota_strategy_exists: bool = conn.query_row(
@@ -356,6 +370,9 @@ pub fn run_migrations(conn: &Connection) -> Result<(), rusqlite::Error> {
     }
 
     // ==================== 数据迁移 ====================
+
+    // 迁移账户 category 字段
+    migrate_account_categories(conn)?;
 
     // 迁移现有账户到配额系统
     migrate_accounts_to_quota_system(conn)?;
@@ -652,5 +669,40 @@ fn encrypt_existing_api_keys(conn: &Connection) -> Result<(), rusqlite::Error> {
         println!("已加密 {} 个 API Key", updated_count);
     }
 
+    Ok(())
+}
+
+/// 迁移账户 category 字段
+/// 根据服务商类型自动填充基础类型
+fn migrate_account_categories(conn: &Connection) -> Result<(), rusqlite::Error> {
+    // 检查是否有需要迁移的账户（category 为默认值或为空）
+    let needs_migration: bool = conn.query_row(
+        "SELECT COUNT(*) > 0 FROM accounts_v2 WHERE category IS NULL OR category = 'direct_balance'",
+        [],
+        |row| row.get::<_, i32>(0),
+    ).unwrap_or(0) > 0;
+
+    if !needs_migration {
+        return Ok(());
+    }
+
+    // 根据服务商类型更新 category 字段
+    conn.execute(
+        "UPDATE accounts_v2 SET category = CASE type
+            WHEN 'deepseek' THEN 'direct_balance'
+            WHEN 'openai' THEN 'direct_balance'
+            WHEN 'anthropic' THEN 'direct_balance'
+            WHEN 'aliyun_qwen' THEN 'direct_balance'
+            WHEN 'ark_coding_plan' THEN 'comprehensive_quota'
+            WHEN 'google' THEN 'direct_balance'
+            WHEN 'azure' THEN 'direct_balance'
+            WHEN 'custom' THEN 'tokens_account'
+            ELSE 'direct_balance'
+        END
+        WHERE category IS NULL OR category = 'direct_balance'",
+        []
+    )?;
+
+    println!("账户 category 字段迁移完成");
     Ok(())
 }

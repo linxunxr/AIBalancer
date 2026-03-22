@@ -3,10 +3,17 @@ import { accountService } from '../../models/services/AccountService';
 import type {
   Account,
   AccountType,
+  AccountCategory,
   CreateAccountParams,
   UpdateAccountParams
 } from '../../models/entities/Account';
-import { AccountType as AT } from '../../models/entities/Account';
+import {
+  AccountType as AT,
+  AccountCategory as AC,
+  CATEGORY_PROVIDER_MAP,
+  getCategoryLabel,
+  getCategoryDescription
+} from '../../models/entities/Account';
 
 // ==================== 类型定义 ====================
 
@@ -15,7 +22,8 @@ import { AccountType as AT } from '../../models/entities/Account';
  */
 export interface AccountFormData {
   name: string;
-  type: AccountType;
+  category: AccountCategory;  // 基础类型
+  type: AccountType;          // 服务商类型
   apiKey: string;
   notes: string;
   tags: string[];
@@ -56,6 +64,7 @@ export interface AccountFormState {
  */
 export const DEFAULT_FORM_DATA: AccountFormData = {
   name: '',
+  category: AC.DIRECT_BALANCE,
   type: AT.DEEPSEEK,
   apiKey: '',
   notes: '',
@@ -70,14 +79,40 @@ export const DEFAULT_FORM_DATA: AccountFormData = {
  */
 export class AccountFormViewModel extends BaseViewModel<AccountFormState> {
   /**
-   * 可用的账户类型选项
+   * 基础类型选项
    */
-  public readonly typeOptions = [
+  public readonly categoryOptions = [
+    {
+      value: AC.DIRECT_BALANCE,
+      label: getCategoryLabel(AC.DIRECT_BALANCE),
+      description: getCategoryDescription(AC.DIRECT_BALANCE)
+    },
+    {
+      value: AC.COMPREHENSIVE_QUOTA,
+      label: getCategoryLabel(AC.COMPREHENSIVE_QUOTA),
+      description: getCategoryDescription(AC.COMPREHENSIVE_QUOTA)
+    },
+    {
+      value: AC.SUBSCRIPTION_PLAN,
+      label: getCategoryLabel(AC.SUBSCRIPTION_PLAN),
+      description: getCategoryDescription(AC.SUBSCRIPTION_PLAN)
+    },
+    {
+      value: AC.TOKENS_ACCOUNT,
+      label: getCategoryLabel(AC.TOKENS_ACCOUNT),
+      description: getCategoryDescription(AC.TOKENS_ACCOUNT)
+    }
+  ];
+
+  /**
+   * 所有服务商类型选项
+   */
+  public readonly allTypeOptions = [
     { label: 'DeepSeek', value: AT.DEEPSEEK },
     { label: 'OpenAI', value: AT.OPENAI },
     { label: 'Anthropic', value: AT.ANTHROPIC },
-    { label: 'Google AI', value: AT.GOOGLE },
-    { label: 'Azure OpenAI', value: AT.AZURE },
+    { label: '方舟Coding Plan', value: AT.ARK_CODING_PLAN },
+    { label: '阿里云通义千问', value: AT.ALIYUN_QWEN },
     { label: '自定义', value: AT.CUSTOM }
   ];
 
@@ -89,8 +124,11 @@ export class AccountFormViewModel extends BaseViewModel<AccountFormState> {
       { required: true, message: '请输入账户名称' },
       { minLength: 2, maxLength: 50, message: '名称长度应为 2-50 个字符' }
     ],
+    category: [
+      { required: true, message: '请选择基础类型' }
+    ],
     type: [
-      { required: true, message: '请选择平台类型' }
+      { required: true, message: '请选择服务商类型' }
     ],
     apiKey: [
       { required: true, message: '请输入 API Key' }
@@ -129,6 +167,7 @@ export class AccountFormViewModel extends BaseViewModel<AccountFormState> {
       this.state.editingAccountId = account.id;
       this.state.formData = {
         name: account.name,
+        category: account.category,
         type: account.type,
         apiKey: '', // 编辑时不显示API Key
         notes: account.metadata.notes || '',
@@ -138,6 +177,38 @@ export class AccountFormViewModel extends BaseViewModel<AccountFormState> {
       this.resetForm();
     }
     this.clearErrors();
+  }
+
+  /**
+   * 更新基础类型并重置服务商类型
+   * @param category 新的基础类型
+   */
+  public updateCategory(category: AccountCategory): void {
+    this.state.formData.category = category;
+
+    // 获取该基础类型对应的服务商列表
+    const providers = CATEGORY_PROVIDER_MAP[category] || [];
+
+    // 如果当前服务商不在新列表中，重置为第一个可用服务商
+    if (providers.length > 0 && !providers.includes(this.state.formData.type)) {
+      this.state.formData.type = providers[0];
+    }
+
+    // 清除错误
+    if (this.state.errors.category) {
+      delete this.state.errors.category;
+    }
+    if (this.state.errors.type) {
+      delete this.state.errors.type;
+    }
+  }
+
+  /**
+   * 获取筛选后的服务商选项
+   */
+  public getFilteredTypeOptions(): Array<{ label: string; value: AccountType }> {
+    const providers = CATEGORY_PROVIDER_MAP[this.state.formData.category] || [];
+    return this.allTypeOptions.filter(opt => providers.includes(opt.value));
   }
 
   /**
@@ -203,8 +274,8 @@ export class AccountFormViewModel extends BaseViewModel<AccountFormState> {
 
     // 编辑模式下不验证apiKey
     const fieldsToValidate: (keyof AccountFormData)[] = this.state.isEditing
-      ? ['name', 'type', 'notes', 'tags']
-      : ['name', 'type', 'apiKey', 'notes', 'tags'];
+      ? ['name', 'category', 'type', 'notes', 'tags']
+      : ['name', 'category', 'type', 'apiKey', 'notes', 'tags'];
 
     for (const field of fieldsToValidate) {
       if (!this.validateField(field)) {
@@ -246,6 +317,7 @@ export class AccountFormViewModel extends BaseViewModel<AccountFormState> {
         // 创建账户
         const params: CreateAccountParams = {
           name: this.state.formData.name,
+          category: this.state.formData.category,
           type: this.state.formData.type,
           apiKey: this.state.formData.apiKey,
           notes: this.state.formData.notes,

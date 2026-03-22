@@ -10,14 +10,24 @@ export enum AccountStatus {
 }
 
 /**
- * 账户类型枚举
+ * 账户基础类型枚举（按计费模式划分）
+ */
+export enum AccountCategory {
+  DIRECT_BALANCE = 'direct_balance',           // 直接余额账户
+  COMPREHENSIVE_QUOTA = 'comprehensive_quota', // 综合配额账户
+  SUBSCRIPTION_PLAN = 'subscription_plan',     // 订阅计划账户
+  TOKENS_ACCOUNT = 'tokens_account'            // Tokens账户
+}
+
+/**
+ * 账户类型枚举（服务商类型）
  */
 export enum AccountType {
   DEEPSEEK = 'deepseek',
   OPENAI = 'openai',
   ANTHROPIC = 'anthropic',
-  GOOGLE = 'google',
-  AZURE = 'azure',
+  ARK_CODING_PLAN = 'ark_coding_plan',   // 方舟Coding Plan
+  ALIYUN_QWEN = 'aliyun_qwen',           // 阿里云通义千问
   CUSTOM = 'custom'
 }
 
@@ -92,7 +102,8 @@ export interface AccountSettings {
 export interface Account {
   id: string;
   name: string;
-  type: AccountType;
+  category: AccountCategory;  // 基础类型（计费模式）
+  type: AccountType;          // 服务商类型
   status: AccountStatus;
   apiKeys: ApiKeyInfo[];
   currentBalance: number;
@@ -111,6 +122,7 @@ export interface Account {
  */
 export interface CreateAccountParams {
   name: string;
+  category?: AccountCategory;  // 基础类型（可选，根据 type 自动推断）
   type: AccountType;
   apiKey: string;
   organization?: string;
@@ -159,8 +171,8 @@ export interface AccountsSummary {
   withErrors: number;
   totalBalance: number;
   totalUsage: number;
-  byType: Record<AccountType, number>;
-  byStatus: Record<AccountStatus, number>;
+  byType: Record<string, number>;
+  byStatus: Record<string, number>;
 }
 
 /**
@@ -219,8 +231,8 @@ export function getTypeLabel(type: AccountType): string {
     [AccountType.DEEPSEEK]: 'DeepSeek',
     [AccountType.OPENAI]: 'OpenAI',
     [AccountType.ANTHROPIC]: 'Anthropic',
-    [AccountType.GOOGLE]: 'Google AI',
-    [AccountType.AZURE]: 'Azure OpenAI',
+    [AccountType.ARK_CODING_PLAN]: '方舟Coding Plan',
+    [AccountType.ALIYUN_QWEN]: '阿里云通义千问',
     [AccountType.CUSTOM]: '自定义'
   };
   return labels[type] || type;
@@ -265,10 +277,13 @@ export function migrateLegacyAccount(legacy: LegacyAccount): Account {
     'custom': AccountType.CUSTOM
   };
 
+  const accountType = typeMap[legacy.provider] || AccountType.CUSTOM;
+
   return {
     id: legacy.id,
     name: legacy.name,
-    type: typeMap[legacy.provider] || AccountType.CUSTOM,
+    category: getCategoryForProvider(accountType),
+    type: accountType,
     status: legacy.enabled ? AccountStatus.ACTIVE : AccountStatus.INACTIVE,
     apiKeys: [{
       id: crypto.randomUUID(),
@@ -292,4 +307,79 @@ export function migrateLegacyAccount(legacy: LegacyAccount): Account {
     updatedAt: legacy.updatedAt,
     lastSyncedAt: now
   };
+}
+
+// ==================== 类型映射常量 ====================
+
+/**
+ * 基础类型对应的服务商列表
+ */
+export const CATEGORY_PROVIDER_MAP: Record<AccountCategory, AccountType[]> = {
+  [AccountCategory.DIRECT_BALANCE]: [
+    AccountType.DEEPSEEK,
+    AccountType.OPENAI,
+    AccountType.ANTHROPIC,
+    AccountType.ALIYUN_QWEN
+  ],
+  [AccountCategory.COMPREHENSIVE_QUOTA]: [
+    AccountType.ARK_CODING_PLAN
+  ],
+  [AccountCategory.SUBSCRIPTION_PLAN]: [],  // 预留
+  [AccountCategory.TOKENS_ACCOUNT]: [
+    AccountType.CUSTOM
+  ]
+};
+
+/**
+ * 服务商对应的基础类型
+ */
+export const PROVIDER_CATEGORY_MAP: Record<AccountType, AccountCategory> = {
+  [AccountType.DEEPSEEK]: AccountCategory.DIRECT_BALANCE,
+  [AccountType.OPENAI]: AccountCategory.DIRECT_BALANCE,
+  [AccountType.ANTHROPIC]: AccountCategory.DIRECT_BALANCE,
+  [AccountType.ALIYUN_QWEN]: AccountCategory.DIRECT_BALANCE,
+  [AccountType.ARK_CODING_PLAN]: AccountCategory.COMPREHENSIVE_QUOTA,
+  [AccountType.CUSTOM]: AccountCategory.TOKENS_ACCOUNT
+};
+
+// ==================== 辅助函数 ====================
+
+/**
+ * 获取基础类型显示名称
+ */
+export function getCategoryLabel(category: AccountCategory): string {
+  const labels: Record<AccountCategory, string> = {
+    [AccountCategory.DIRECT_BALANCE]: '直接余额账户',
+    [AccountCategory.COMPREHENSIVE_QUOTA]: '综合配额账户',
+    [AccountCategory.SUBSCRIPTION_PLAN]: '订阅计划账户',
+    [AccountCategory.TOKENS_ACCOUNT]: 'Tokens账户'
+  };
+  return labels[category] || category;
+}
+
+/**
+ * 获取基础类型描述
+ */
+export function getCategoryDescription(category: AccountCategory): string {
+  const descriptions: Record<AccountCategory, string> = {
+    [AccountCategory.DIRECT_BALANCE]: '监控金钱余额、API调用费用',
+    [AccountCategory.COMPREHENSIVE_QUOTA]: '方舟Coding Plan等嵌套配额模式',
+    [AccountCategory.SUBSCRIPTION_PLAN]: '包年/包月/包周固定刷新',
+    [AccountCategory.TOKENS_ACCOUNT]: '永久Tokens或按量Tokens'
+  };
+  return descriptions[category] || '';
+}
+
+/**
+ * 根据服务商类型获取对应的基础类型
+ */
+export function getCategoryForProvider(type: AccountType): AccountCategory {
+  return PROVIDER_CATEGORY_MAP[type] || AccountCategory.DIRECT_BALANCE;
+}
+
+/**
+ * 根据基础类型获取可选的服务商列表
+ */
+export function getProvidersForCategory(category: AccountCategory): AccountType[] {
+  return CATEGORY_PROVIDER_MAP[category] || [];
 }

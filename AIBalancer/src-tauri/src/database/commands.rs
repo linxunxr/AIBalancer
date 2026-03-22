@@ -44,9 +44,21 @@ fn get_decrypted_api_key(encrypted_keys: &[ApiKeyInfo]) -> Option<String> {
         .and_then(|k| decrypt_api_key(&k.key).ok())
 }
 
+/// 根据服务商类型获取默认的基础类型
+fn get_default_category_for_provider(provider: &str) -> &str {
+    match provider {
+        "deepseek" | "openai" | "anthropic" | "aliyun_qwen" => "direct_balance",
+        "ark_coding_plan" => "comprehensive_quota",
+        "custom" => "tokens_account",
+        _ => "direct_balance",
+    }
+}
+
 /// 将数据库行转换为 Account，并脱敏 API Keys
+/// 列顺序: id(0), name(1), type(2), category(3), status(4), api_keys(5), current_balance(6), currency(7),
+///         usage(8), alerts(9), metadata(10), settings(11), created_at(12), updated_at(13), last_synced_at(14)
 fn row_to_account(row: &rusqlite::Row) -> Result<Account, rusqlite::Error> {
-    let api_keys: String = row.get(4)?;
+    let api_keys: String = row.get(5)?;
     let encrypted_keys: Vec<ApiKeyInfo> = serde_json::from_str(&api_keys).unwrap_or_default();
     let masked_keys = decrypt_and_mask_api_keys(&encrypted_keys);
 
@@ -54,17 +66,18 @@ fn row_to_account(row: &rusqlite::Row) -> Result<Account, rusqlite::Error> {
         id: row.get(0)?,
         name: row.get(1)?,
         account_type: row.get(2)?,
-        status: row.get(3)?,
+        category: row.get::<_, Option<String>>(3)?.unwrap_or_else(|| "direct_balance".to_string()),
+        status: row.get(4)?,
         api_keys: masked_keys,
-        current_balance: row.get(5)?,
-        currency: row.get(6)?,
-        usage: serde_json::from_str(&row.get::<_, String>(7)?).unwrap_or_default(),
-        alerts: serde_json::from_str(&row.get::<_, String>(8)?).unwrap_or_default(),
-        metadata: serde_json::from_str(&row.get::<_, String>(9)?).unwrap_or_default(),
-        settings: serde_json::from_str(&row.get::<_, String>(10)?).unwrap_or_default(),
-        created_at: row.get(11)?,
-        updated_at: row.get(12)?,
-        last_synced_at: row.get(13)?,
+        current_balance: row.get(6)?,
+        currency: row.get(7)?,
+        usage: serde_json::from_str(&row.get::<_, String>(8)?).unwrap_or_default(),
+        alerts: serde_json::from_str(&row.get::<_, String>(9)?).unwrap_or_default(),
+        metadata: serde_json::from_str(&row.get::<_, String>(10)?).unwrap_or_default(),
+        settings: serde_json::from_str(&row.get::<_, String>(11)?).unwrap_or_default(),
+        created_at: row.get(12)?,
+        updated_at: row.get(13)?,
+        last_synced_at: row.get(14)?,
     })
 }
 
@@ -153,8 +166,9 @@ pub struct AccountSettings {
 pub struct Account {
     pub id: String,
     pub name: String,
+    pub category: String,  // 基础类型（计费模式）
     #[serde(rename = "type")]
-    pub account_type: String,
+    pub account_type: String,  // 服务商类型
     pub status: String,
     #[serde(rename = "apiKeys")]
     pub api_keys: Vec<ApiKeyInfo>,
@@ -176,8 +190,9 @@ pub struct Account {
 #[derive(Debug, Deserialize)]
 pub struct CreateAccountParams {
     pub name: String,
+    pub category: Option<String>,  // 基础类型（可选，根据 type 自动推断）
     #[serde(rename = "type")]
-    pub account_type: String,
+    pub account_type: String,  // 服务商类型
     #[serde(rename = "apiKey")]
     pub api_key: String,
     pub organization: Option<String>,
@@ -228,7 +243,7 @@ pub fn get_all_accounts(db: State<'_, Mutex<Connection>>) -> Result<Vec<Account>
 
     let mut stmt = conn
         .prepare(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2 ORDER BY created_at DESC"
         )
@@ -264,7 +279,7 @@ pub fn get_accounts_by_status(
 
     let mut stmt = conn
         .prepare(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2 WHERE status = ?1 ORDER BY created_at DESC"
         )
@@ -300,7 +315,7 @@ pub fn get_accounts_by_type(
 
     let mut stmt = conn
         .prepare(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2 WHERE type = ?1 ORDER BY created_at DESC"
         )
@@ -386,15 +401,21 @@ pub fn create_account(
         usage_limit: params.settings.as_ref().and_then(|s| s.usage_limit),
     };
 
+    // 获取或推断 category
+    let category = params.category.clone().unwrap_or_else(|| {
+        get_default_category_for_provider(&params.account_type).to_string()
+    });
+
     tracing::debug!("插入账户数据到数据库...");
     conn.execute(
         "INSERT INTO accounts_v2
-        (id, name, type, status, api_keys, current_balance, currency, usage, alerts, metadata, settings, created_at, updated_at, last_synced_at)
-        VALUES (?1, ?2, ?3, 'testing', ?4, 0, 'CNY', ?5, '[]', ?6, ?7, ?8, ?9, ?10)",
+        (id, name, type, category, status, api_keys, current_balance, currency, usage, alerts, metadata, settings, created_at, updated_at, last_synced_at)
+        VALUES (?1, ?2, ?3, ?4, 'testing', ?5, 0, 'CNY', ?6, '[]', ?7, ?8, ?9, ?10, ?11)",
         params![
             &id,
             &params.name,
             &params.account_type,
+            &category,
             serde_json::to_string(&api_keys_storage).map_err(|e| {
                 tracing::error!("序列化 API Keys 失败: {}", e);
                 format!("序列化失败: {}", e)
@@ -436,6 +457,7 @@ pub fn create_account(
     Ok(Account {
         id,
         name: params.name,
+        category,
         account_type: params.account_type,
         status: "testing".to_string(),
         api_keys: api_keys_response,
@@ -583,7 +605,7 @@ pub fn update_account(
     // 查询更新后的账户
     let result = conn
         .query_row(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2 WHERE id = ?1",
             params![&params.id],
@@ -777,7 +799,7 @@ pub fn toggle_account(db: State<'_, Mutex<Connection>>, id: String) -> Result<Op
     // 查询更新后的账户
     let result = conn
         .query_row(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2 WHERE id = ?1",
             params![&id],
@@ -811,7 +833,7 @@ pub fn update_account_balance(
     // 查询更新后的账户
     let result = conn
         .query_row(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2 WHERE id = ?1",
             params![&id],
@@ -891,7 +913,7 @@ pub fn search_accounts(
 
     let mut stmt = conn
         .prepare(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2
              WHERE name LIKE ?1 OR metadata LIKE ?1 OR type LIKE ?1
@@ -1046,7 +1068,7 @@ pub fn add_api_key(
     // 返回更新后的账户
     let account = conn
         .query_row(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2 WHERE id = ?1",
             params![&params.account_id],
@@ -1096,7 +1118,7 @@ pub fn delete_api_key(
     // 返回更新后的账户
     let account = conn
         .query_row(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2 WHERE id = ?1",
             params![&account_id],
@@ -1159,7 +1181,7 @@ pub fn set_api_key_active(
     // 返回更新后的账户
     let account = conn
         .query_row(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2 WHERE id = ?1",
             params![&account_id],
@@ -1219,7 +1241,7 @@ pub fn rotate_api_key(
     // 返回更新后的账户
     let account = conn
         .query_row(
-            "SELECT id, name, type, status, api_keys, current_balance, currency,
+            "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                     usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
              FROM accounts_v2 WHERE id = ?1",
             params![&params.account_id],
@@ -1247,7 +1269,7 @@ pub fn export_accounts(
         for id in account_ids {
             let account = conn
                 .query_row(
-                    "SELECT id, name, type, status, api_keys, current_balance, currency,
+                    "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                             usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
                      FROM accounts_v2 WHERE id = ?1",
                     params![id],
@@ -1263,7 +1285,7 @@ pub fn export_accounts(
         // 导出所有账户
         let mut stmt = conn
             .prepare(
-                "SELECT id, name, type, status, api_keys, current_balance, currency,
+                "SELECT id, name, type, category, status, api_keys, current_balance, currency,
                         usage, alerts, metadata, settings, created_at, updated_at, last_synced_at
                  FROM accounts_v2 ORDER BY created_at DESC"
             )

@@ -114,6 +114,7 @@ import {
   type FormRules
 } from 'naive-ui';
 import type { Account, AccountCategory, CreateAccountParams, UpdateAccountParams } from '../../../models/entities/Account';
+import { CATEGORY_PROVIDER_MAP } from '../../../models/entities/Account';
 import {
   AccountFormViewModel,
   DEFAULT_FORM_DATA,
@@ -157,7 +158,15 @@ const isEditing = ref(false);
 const formTitle = computed(() => isEditing.value ? '编辑账户' : '添加账户');
 const submitButtonText = computed(() => isEditing.value ? '更新' : '创建');
 const categoryOptions = computed(() => viewModel.categoryOptions);
-const filteredTypeOptions = computed(() => viewModel.getFilteredTypeOptions());
+
+// 关键修复：直接访问 reactiveState 以确保 Vue 能追踪依赖
+const filteredTypeOptions = computed(() => {
+  // 显式访问 reactiveState.formData.category 以触发依赖追踪
+  const category = viewModel.reactiveState.formData.category;
+  const providers = CATEGORY_PROVIDER_MAP[category] || [];
+  return viewModel.allTypeOptions.filter(opt => providers.includes(opt.value));
+});
+
 const tagOptions = computed(() =>
   props.existingTags.map(tag => ({ label: tag, value: tag }))
 );
